@@ -28,6 +28,18 @@ const connection = mysql.createConnection({
   database: "boraq_database"
 });
 
+function splitFullName(name) {
+  const parts = (name || "").trim().split(" ");
+  return {
+    first: parts[0] || "",
+    last: parts.slice(1).join(" ") || ""
+  };
+}
+
+function loginDbError(res, logLabel, err) {
+  console.log(logLabel, err);
+  return res.json({ success: false, message: "خطأ في السيرفر" });
+}
 
 /* ==============================
    تسجيل مستخدم جديد
@@ -42,9 +54,7 @@ app.post("/signup", (req, res) => {
     });
   }
 
-  const parts = name.trim().split(" ");
-  const first_name = parts[0] || "";
-  const last_name = parts.slice(1).join(" ") || "";
+  const { first: first_name, last: last_name } = splitFullName(name);
 
   const sql = `
     INSERT INTO customer
@@ -88,8 +98,7 @@ app.post("/login", (req, res) => {
 
     connection.query(sql, [adminId, password], (err, result) => {
       if (err) {
-        console.log("Admin login error:", err);
-        return res.json({ success: false, message: "خطأ في السيرفر" });
+        return loginDbError(res, "Admin login error:", err);
       }
 
       if (result.length === 0) {
@@ -119,8 +128,7 @@ app.post("/login", (req, res) => {
 
     connection.query(sql, [driverId, password], (err, result) => {
       if (err) {
-        console.log("Driver login error:", err);
-        return res.json({ success: false, message: "خطأ في السيرفر" });
+        return loginDbError(res, "Driver login error:", err);
       }
 
       if (result.length === 0) {
@@ -147,8 +155,7 @@ app.post("/login", (req, res) => {
 
   connection.query(sql, [phone, password], (err, result) => {
     if (err) {
-      console.log("Customer login error:", err);
-      return res.json({ success: false, message: "خطأ في السيرفر" });
+      return loginDbError(res, "Customer login error:", err);
     }
 
     if (result.length === 0) {
@@ -208,9 +215,7 @@ app.put("/user/:id", (req, res) => {
   const { name, phone, dob, email, gender } = req.body;
   const cleanDob = dob ? String(dob).split("T")[0] : null;
 
-  const parts = (name || "").trim().split(" ");
-  const first_name = parts[0] || "";
-  const last_name = parts.slice(1).join(" ") || "";
+  const { first: first_name, last: last_name } = splitFullName(name);
 
   const sql = `
     UPDATE customer
@@ -304,15 +309,15 @@ app.post("/driver/signup", (req, res) => {
 
       const tempPassword = "driver" + Date.now();
 
-   const driverSql = `
-  INSERT INTO driver
-  (fast_name_driver, last_name_driver, date_of_birth_driver, phone_driver, address, password, status)
-  VALUES (?, ?, ?, ?, ?, ?, ?)
-`;
+      const driverSql = `
+        INSERT INTO driver
+        (fast_name_driver, last_name_driver, date_of_birth_driver, phone_driver, address, password, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
 
-connection.query(
-  driverSql,
-  [firstName, lastName, dob, phone, address, tempPassword, "pending"],
+      connection.query(
+        driverSql,
+        [firstName, lastName, dob, phone, address, tempPassword, "pending"],
         (driverErr, driverInsertResult) => {
           if (driverErr) {
             console.log("Driver insert error:", driverErr);
@@ -420,9 +425,7 @@ app.put("/driver/profile/:driverId", (req, res) => {
     color
   } = req.body;
 
-  const parts = (name || "").trim().split(" ");
-  const firstName = parts[0] || "";
-  const lastName = parts.slice(1).join(" ") || "";
+  const { first: firstName, last: lastName } = splitFullName(name);
 
   const updateDriverSql = `
     UPDATE driver
@@ -902,6 +905,21 @@ app.get("/customer/subscriptions/:customerId", (req, res) => {
 });
 
 
+function buildDailyTripInsertRow(booking, formattedDate, tripTime, direction, pickupVal, dropoffVal) {
+  return [
+    booking.booking_id,
+    booking.customer_id_fk,
+    booking.dependent_id_fk || null,
+    booking.driver_id_fk,
+    formattedDate,
+    tripTime,
+    direction,
+    JSON.stringify(pickupVal),
+    JSON.stringify(dropoffVal),
+    "scheduled"
+  ];
+}
+
 function createDailyTripsFromBooking(bookingId, callback) {
   const getBookingSql = `
     SELECT *
@@ -925,32 +943,28 @@ function createDailyTripsFromBooking(bookingId, callback) {
 
       const formattedDate = tripDate.toISOString().split("T")[0];
 
-      trips.push([
-        booking.booking_id,
-        booking.customer_id_fk,
-        booking.dependent_id_fk || null,
-        booking.driver_id_fk,
-        formattedDate,
-        booking.start_time,
-        "go",
-        JSON.stringify(booking.pickup),
-        JSON.stringify(booking.dropoff),
-        "scheduled"
-      ]);
+      trips.push(
+        buildDailyTripInsertRow(
+          booking,
+          formattedDate,
+          booking.start_time,
+          "go",
+          booking.pickup,
+          booking.dropoff
+        )
+      );
 
       if (booking.trip_type === "round-trip" && booking.end_time) {
-        trips.push([
-          booking.booking_id,
-          booking.customer_id_fk,
-          booking.dependent_id_fk || null,
-          booking.driver_id_fk,
-          formattedDate,
-          booking.end_time,
-          "return",
-          JSON.stringify(booking.dropoff),
-          JSON.stringify(booking.pickup),
-          "scheduled"
-        ]);
+        trips.push(
+          buildDailyTripInsertRow(
+            booking,
+            formattedDate,
+            booking.end_time,
+            "return",
+            booking.dropoff,
+            booking.pickup
+          )
+        );
       }
     }
 
@@ -1106,136 +1120,6 @@ app.put("/driver/daily-trips/:tripId/arrived", (req, res) => {
   });
 });
 
-function driverParseJson(value) {
-  try {
-    return typeof value === "string" ? JSON.parse(value) : value;
-  } catch {
-    return null;
-  }
-}
-
-async function loadDriverTodayTrips() {
-  const container = document.getElementById("driverTodayTripsList");
-  if (!container) return;
-
-  const driverId = localStorage.getItem("driverId");
-
-  if (!driverId) {
-    container.innerHTML = `<p class="empty-requests">يجب تسجيل الدخول كسائق</p>`;
-    return;
-  }
-
-  const res = await fetch(`/driver/today-trips/${driverId}`);
-  const data = await res.json();
-
-  if (!data.success) {
-    container.innerHTML = `<p class="empty-requests">فشل تحميل الرحلات</p>`;
-    return;
-  }
-
-  if (data.trips.length === 0) {
-    container.innerHTML = `<p class="empty-requests">لا توجد رحلات اليوم</p>`;
-    return;
-  }
-
-  container.innerHTML = "";
-
-  data.trips.forEach((trip) => {
-    const pickup = driverParseJson(trip.pickup);
-    const dropoff = driverParseJson(trip.dropoff);
-
-    const customerName = `${trip.fast_name_caustomer || ""} ${trip.last_name_caustomer || ""}`.trim();
-
-    const card = document.createElement("div");
-    card.className = "subscription-item-card";
-
-    card.innerHTML = `
-      <div class="sub-header-main" onclick="toggleSubscriptionCard(this)">
-        <div class="sub-title-info">
-          <i class="bi bi-person-circle"></i>
-          <span>الراكب: ${customerName}</span>
-        </div>
-        <i class="bi bi-chevron-left arrow-indicator"></i>
-      </div>
-
-      <div class="sub-content-collapsible">
-        <div class="subscription-details-box">
-          <p><strong>وقت الرحلة:</strong> ${trip.trip_time}</p>
-          <p><strong>نوع الرحلة:</strong> ${trip.trip_direction === "return" ? "عودة" : "ذهاب"}</p>
-          <p><strong>حالة الرحلة:</strong> ${trip.status}</p>
-          <p><strong>الهاتف:</strong> ${trip.phone_caustomer || "--"}</p>
-          <p><strong>من:</strong> ${pickup?.name || "--"}</p>
-          <p><strong>إلى:</strong> ${dropoff?.name || "--"}</p>
-        </div>
-
-        <div id="driverTodayMap-${trip.daily_trip_id}" class="driver-mini-map"></div>
-
-        <div class="driver-request-actions">
-          <button class="map-btn" onclick='drawDriverToCustomerMap(${trip.daily_trip_id}, ${JSON.stringify(pickup)})'>
-            عرض الطريق للراكب
-          </button>
-
-          <button class="accept-btn" onclick="markDriverArrived(${trip.daily_trip_id})">
-            أنا وصلت
-          </button>
-        </div>
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
-}
-
-function drawDriverToCustomerMap(tripId, pickup) {
-  if (!pickup) {
-    alert("موقع الراكب غير متوفر");
-    return;
-  }
-
-  if (!navigator.geolocation) {
-    alert("المتصفح لا يدعم تحديد الموقع");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition((pos) => {
-    const driverLocation = {
-      lat: pos.coords.latitude,
-      lng: pos.coords.longitude
-    };
-
-    const mapEl = document.getElementById(`driverTodayMap-${tripId}`);
-    mapEl.style.display = "block";
-
-    const map = new google.maps.Map(mapEl, {
-      center: driverLocation,
-      zoom: 13,
-      mapTypeControl: false,
-      streetViewControl: false
-    });
-
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer({ map });
-
-    directionsService.route(
-      {
-        origin: driverLocation,
-        destination: {
-          lat: Number(pickup.lat),
-          lng: Number(pickup.lng)
-        },
-        travelMode: google.maps.TravelMode.DRIVING
-      },
-      (result, status) => {
-        if (status !== "OK") {
-          alert("تعذر عرض الطريق");
-          return;
-        }
-
-        directionsRenderer.setDirections(result);
-      }
-    );
-  });
-}
 app.put("/driver/daily-trips/:tripId/completed", (req, res) => {
   const tripId = req.params.tripId;
 
@@ -1297,13 +1181,8 @@ app.get("/admin/dashboard-data", (req, res) => {
   });
 });
 
-app.get("/admin/dashboard-section/:section", (req, res) => {
-  const section = req.params.section;
-
-  let sql = "";
-
-  if (section === "users") {
-    sql = `
+const ADMIN_DASHBOARD_SECTION_SQL = {
+  users: `
       SELECT
         caustomer_id AS id,
         CONCAT(fast_name_caustomer, ' ', last_name_caustomer) AS name,
@@ -1311,11 +1190,8 @@ app.get("/admin/dashboard-section/:section", (req, res) => {
         DATE_FORMAT(date_of_birth_caustomer, '%Y-%m-%d') AS dob
       FROM customer
       ORDER BY caustomer_id DESC
-    `;
-  }
-
-  if (section === "pendingSubs") {
-    sql = `
+    `,
+  pendingSubs: `
       SELECT
         b.booking_id AS id,
         CONCAT(c.fast_name_caustomer, ' ', c.last_name_caustomer) AS user,
@@ -1325,11 +1201,8 @@ app.get("/admin/dashboard-section/:section", (req, res) => {
       JOIN customer c ON b.customer_id_fk = c.caustomer_id
       WHERE b.status = 1
       ORDER BY b.booking_id DESC
-    `;
-  }
-
-  if (section === "activeSubs") {
-    sql = `
+    `,
+  activeSubs: `
       SELECT
         b.booking_id AS id,
         CONCAT(c.fast_name_caustomer, ' ', c.last_name_caustomer) AS user,
@@ -1339,11 +1212,8 @@ app.get("/admin/dashboard-section/:section", (req, res) => {
       JOIN customer c ON b.customer_id_fk = c.caustomer_id
       WHERE b.status = 2
       ORDER BY b.booking_id DESC
-    `;
-  }
-
-  if (section === "drivers") {
-    sql = `
+    `,
+  drivers: `
       SELECT
         driver_id AS id,
         CONCAT(fast_name_driver, ' ', last_name_driver) AS name,
@@ -1352,8 +1222,11 @@ app.get("/admin/dashboard-section/:section", (req, res) => {
       FROM driver
       WHERE status = 'accepted'
       ORDER BY driver_id DESC
-    `;
-  }
+    `
+};
+
+app.get("/admin/dashboard-section/:section", (req, res) => {
+  const sql = ADMIN_DASHBOARD_SECTION_SQL[req.params.section];
 
   if (!sql) {
     return res.json({ success: false, message: "قسم غير معروف" });
