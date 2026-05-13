@@ -46,14 +46,18 @@ body {
     margin-bottom: 20px;
 }
 
+h1,
 h2 {
     color: white;
+}
+
+h2 {
     margin-bottom: 25px;
     font-weight: 300;
 }
+
 h1 {
-    color: white;
-      display: flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     height: 10vh;
@@ -209,19 +213,15 @@ footer {
     width: 100%;
 }
 
-/* [تعديل] تنسيق خاص بفورم تسجيل الدخول ليكون عمودياً */
+/* فورم تسجيل الدخول — عمودي */
 #loginForm {
     display: flex;
-    flex-direction: column; /* هذا السطر هو اللي برجع الخانات فوق بعض */
+    flex-direction: column;
     align-items: center;
     width: 100%;
 }
-/* تنسيق مدخلات تسجيل الدخول لضمان عرضها بشكل مرتب */
-#loginForm .input-group {
-    width: 100%;
-    margin-bottom: 20px;
-}
-/* تنسيق مدخلات تسجيل الدخول لضمان عرضها بشكل مرتب */
+
+/* مدخلات تسجيل الدخول */
 #loginForm .input-group {
     width: 100%;
     margin-bottom: 20px;
@@ -386,7 +386,6 @@ footer {
 /* تنسيق النافذة المنبثقة (Modal) */
 .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
 .modal-content { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
-.modal-btns { display: flex; gap: 10px; margin-top: 20px; }
 .confirm-btn { flex: 1; padding: 12px; background: #0059b3; color: white; border: none; border-radius: 10px; cursor: pointer; }
 .cancel-btn { flex: 1; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 10px; cursor: pointer; }
 
@@ -459,8 +458,7 @@ footer {
     height: 100%;
     background: rgba(0, 0, 0, 0.7); /* تعتيم الخلفية */
     z-index: 9999; /* لضمان ظهورها فوق كل شيء */
-    
-    /* هاد الجزء هو المسؤول عن التوسيط في المنتصف تماماً */
+
     align-items: center;
     justify-content: center;
 }
@@ -524,7 +522,6 @@ footer {
 .modal-card input, .modal-card select { 
     width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; 
 }
-.modal-btns { display: flex; gap: 10px; }
 .btn-save { flex: 1; background: #003366; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
 .btn-cancel { flex: 1; background: #eee; color: #333; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
 /* تأثير عند تمرير الفارة على الملف الشخصي في القائمة الجانبية */
@@ -551,7 +548,7 @@ footer {
 .subscription-item-card.active .sub-content-collapsible { display: block; }
 .subscription-item-card.active .arrow-indicator { transform: rotate(-90deg); }
 
-/* تنسيق النافذة المنبثقة */
+/* نافذة تعديل الجدول (مركزية) */
 .modal {
     display: none; position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%); background: white;
@@ -928,6 +925,7 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    transition: 0.3s ease;
 }
 
 .burger-menu .bar {
@@ -990,6 +988,11 @@ footer {
     transform: scaleX(1.2); /* الخطوط بتطول شوي عند الهوفر */
     transition: 0.3s;
 }
+
+.burger-menu:hover {
+    transform: rotate(90deg); /* بيلف 90 درجة لما تأشر عليه - حركة عصرية */
+}
+
 /* --- توزيع الهيدر الجديد --- */
 .header-right-side {
     display: flex;
@@ -1031,19 +1034,6 @@ footer {
 
 .nav-item-effect:hover::after {
     width: 100%; /* الخط بيمتد من اليمين لليسار */
-}
-
-/* --- حركة البرجر أيكون (تفاعل إضافي) --- */
-.burger-menu {
-    transition: 0.3s ease;
-}
-
-.burger-menu:hover {
-    transform: rotate(90deg); /* بيلف 90 درجة لما تأشر عليه - حركة عصرية */
-}
-
-.burger-menu:hover .bar {
-    background-color: #00aeef;
 }
 
 /* ضبط المسافات للجوال */
