@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>براق | الرئيسية</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="script.js"></script>
+</head>
+
+<body>
+  <div id="top-page"></div>
+
+  <header class="main-header">
+    <div class="navbar-container">
+        
+        <div class="header-right-side">
+            <button class="burger-menu" onclick="openNav()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </button>
+
+            <div class="brand">
+                <img src="img/my-horse4.png" alt="شعار براق">
+                <span>براق</span>
+            </div>
+
+            <nav class="nav-links-modern">
+                <a href="#top-page" class="nav-item-effect active">الرئيسية</a>
+                <a href="schedule.html" class="nav-item-effect">الاشتراكات</a>
+                <a href="#about-section" class="nav-item-effect">من نحن</a>
+            </nav>
+        </div>
+
+       <div class="header-left-actions">
+    <div class="auth-group">
+        <a href="login.html" id="loginBtn" class="login-link-new">تسجيل دخول</a>
+        <a href="signup.html" id="signupBtn" class="signup-btn">سجل الآن</a>
+    </div>
+</div>
+
+    </div>
+</header>
+
+  <div class="hero-section">
+    <div class="slogan">
+      <img src="img/my-horse4.png" alt="شعار براق">
+    </div>
+    <h1>رحلاتك اليومية أصبحت أسهل مع براق</h1>
+  </div>
+<div class="plans" id="plans-section">
+
+  <div class="plan">
+    <i class="bi bi-stars"></i>
+
+    <h3>الاشتراك الشهري</h3>
+
+    <p class="price">حسب المسافة / شهرياً</p>
+
+    <ul>
+      <li>🚗 مناسب لطلاب المدارس والجامعات وموظفي الشركات</li>
+      <li>📍 تحديد موقع الانطلاق والوصول عبر الخريطة</li>
+      <li>🪑 اختيار مقعدك بنفسك حسب التوفر</li>
+      <li>🕒 مواعيد مرنة (ذهاب أو ذهاب وإياب)</li>
+      <li>💰 اسعار مناسبه ودقه في المواعيد</li>
+    </ul>
+
+<a href="booking.html" class="btn-subscribe">اشترك الآن</a>  </div>
+
+</div>
+  <section class="how-it-works" id="about-section">
+    <div class="container">
+      <div class="section-badge">
+        <i class="bi bi-lightning-charge-fill"></i> سهولة الاستخدام
+      </div>
+      <h2 class="section-title">كيف يعمل بُراق؟</h2>
+      <p class="section-subtitle">أربع خطوات بسيطة فقط لبدء رحلتك معنا</p>
+
+      <div class="steps-container">
+        <div class="step-item">
+          <div class="step-icon"><i class="bi bi-play-fill"></i><span class="step-number">04</span></div>
+          <h3>ابدأ رحلتك</h3>
+          <p>استمتع بتنقل مريح يومياً</p>
+        </div>
+        <div class="step-item">
+          <div class="step-icon"><i class="bi bi-credit-card-2-back"></i><span class="step-number">03</span></div>
+          <h3>ادفع بسهولة</h3>
+          <p>أتمم الدفع إلكترونياً بسرعة</p>
+        </div>
+        <div class="step-item">
+          <div class="step-icon"><i class="bi bi-share"></i><span class="step-number">02</span></div>
+          <h3>اختر الخط</h3>
+          <p>حدد المسار المناسب لك</p>
+        </div>
+        <div class="step-item">
+          <div class="step-icon"><i class="bi bi-box-seam"></i><span class="step-number">01</span></div>
+          <h3>اختر الباقة</h3>
+          <p>تصفح باقاتنا المناسبة</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="sideMenu" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div class="user-profile-sidebar" onclick="goToProfile()" style="cursor: pointer;">
+  <img src="img/my-user.png" alt="صورة المستخدم" class="sidebar-avatar">
+  <h4 class="user-name" id="sidebarUserName"></h4>
+  <p class="user-phone" id="sidebarUserPhone"></p>
+</div>
+    <div class="sidebar-content">
+      <a href="notifications.html"><i class="bi bi-bell"></i> الإشعارات</a>
+      <a href="#"><i class="bi bi-question-circle"></i> مركز المساعدة</a>
+      <a href="driver-signup.html" class="driver-link"><i class="bi bi-car-front"></i> سجل كسائق براق</a>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" onclick="closeNav()"></div>
+
+  <footer>
+    © 2026 براق للنقل الذكي. جميع الحقوق محفوظة.
+  </footer>
+
+</body>
+</html>

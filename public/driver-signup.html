@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>براق | انضم لفريقنا</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+</head>
+
+<body class="booking-page-bg">
+
+    <div class="driver-header">
+        <div class="brand-header-login">
+            <img src="img/my-horse4.png" alt="لوجو براق" style="width: 80px; height: 80px; border-radius: 50%;">
+        </div>
+
+        <h1 class="brand-name-blue">انضم كسائق</h1>
+        <p class="welcome-msg">
+            سيتم تعبئة بياناتك الأساسية من حسابك، وأدخل فقط البيانات المطلوبة لإكمال التسجيل.
+        </p>
+    </div>
+
+    <div class="driver-card-container">
+
+        <div class="stepper-wrapper">
+            <div class="stepper-item" id="st3">
+                <div class="step-counter"></div>
+                <div class="step-name">إرسال</div>
+            </div>
+
+            <div class="stepper-item active" id="st2">
+                <div class="step-counter"></div>
+                <div class="step-name">بيانات المركبة</div>
+            </div>
+
+            <div class="stepper-item completed" id="st1">
+                <div class="step-counter"></div>
+                <div class="step-name">بيانات السائق</div>
+            </div>
+        </div>
+
+        <div id="registration-content">
+
+            <div id="driver-info-box">
+                <h3 class="form-section-title">بيانات السائق من الحساب</h3>
+
+                <div class="input-box">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="driverFullName" readonly>
+                </div>
+
+                <div class="input-box">
+                    <label>رقم الهاتف</label>
+                    <input type="text" id="driverPhone" readonly>
+                </div>
+
+                <div class="input-box">
+                    <label>تاريخ الميلاد</label>
+                    <input type="date" id="driverDOB" readonly>
+                </div>
+
+                <div class="input-box">
+                    <label>المدينة</label>
+
+                    <div class="custom-select-wrapper" id="citySelect">
+                        <div class="select-trigger" onclick="toggleCitySelect()">
+                            <span id="driverAddress">عمان</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+
+                        <div class="custom-options">
+                            <div class="option-item" onclick="selectCity('عمان')">عمان</div>
+                            <div class="option-item" onclick="selectCity('الزرقاء')">الزرقاء</div>
+                            <div class="option-item" onclick="selectCity('إربد')">إربد</div>
+                            <div class="option-item" onclick="selectCity('العقبة')">العقبة</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step2-form">
+                <h3 class="form-section-title">بيانات المركبة</h3>
+
+                <div class="input-box">
+                    <label>نوع المركبة</label>
+                    <input type="text" id="vehicleType" placeholder="مثال: تويوتا">
+                </div>
+
+                <div class="input-box">
+                    <label>موديل المركبة</label>
+                    <input type="text" id="vehicleModel" placeholder="مثال: كورولا">
+                </div>
+
+                <div class="input-box">
+                    <label>سنة الصنع</label>
+                    <input type="number" id="vehicleYear" placeholder="مثال: 2020">
+                </div>
+
+                <div class="input-box">
+                    <label>رقم اللوحة</label>
+                    <input type="text" id="plateNumber" placeholder="مثال: 22-10543">
+                </div>
+
+                <div class="input-box">
+                    <label>لون المركبة</label>
+                    <input type="text" id="vehicleColor" placeholder="مثال: أبيض">
+                </div>
+
+                <button type="button" class="driver-confirm-btn" onclick="submitDriver()">إرسال الطلب</button>
+            </div>
+
+            <div id="step3-form" style="display: none; text-align: center; padding: 20px;">
+                <i class="bi bi-check-circle-fill" style="font-size: 4rem; color: #28a745;"></i>
+
+                <h3 style="color: #fff; margin-top: 15px;">تم إرسال طلبك بنجاح!</h3>
+
+                <p style="color: #dfe6ff;">
+                    شكراً لانضمامك لبراق. سيقوم فريقنا بمراجعة طلبك والتواصل معك خلال 24 ساعة.
+                </p>
+
+                <button type="button" class="driver-confirm-btn" onclick="location.href='index.html'">
+                    العودة للرئيسية
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

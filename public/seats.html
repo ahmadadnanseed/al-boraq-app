@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>براق | اختر مقعداً</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body class="booking-page-bg">
+
+    <header class="main-header">
+        <div class="navbar-container">
+              <button class="burger-menu" onclick="openNav()">
+                  <div class="bar"></div>
+                 <div class="bar"></div>
+                 <div class="bar"></div>
+             </button>
+
+              <div class="brand">
+                <img src="img/my-horse4.png" alt="شعار براق" style="width: 30px; height: 30px; border-radius: 50%;">
+                <span>براق</span>
+              </div>
+
+                <a href="javascript:history.back()" class="back-link" style="color: white; text-decoration: none; font-size: 0.9rem;">
+                 رجوع <i class="bi bi-chevron-left"></i>
+               </a>
+        </div>
+    </header>
+
+    <div class="booking-card-container" style="margin-top: 100px;">
+  <h2 class="booking-title">اختر مقعداً</h2>
+
+  <div class="car-layout">
+    <div class="seat-row front-row">
+      <div class="seat driver reserved">
+        <i class="bi bi-steering exchange-icon-inner"></i>
+        <span class="seat-label">السائق</span>
+      </div>
+
+      <div class="seat-box available" onclick="selectSeat(this)" data-seat="1">
+        <div class="seat-square"></div>
+        <span class="seat-number">1</span>
+      </div>
+    </div>
+
+    <div class="seat-row back-row">
+      <div class="seat-box available" onclick="selectSeat(this)" data-seat="2">
+        <div class="seat-square"></div>
+        <span class="seat-number">2</span>
+      </div>
+
+      <div class="seat-box available" onclick="selectSeat(this)" data-seat="3">
+        <div class="seat-square"></div>
+        <span class="seat-number">3</span>
+      </div>
+
+      <div class="seat-box available" onclick="selectSeat(this)" data-seat="4">
+        <div class="seat-square"></div>
+        <span class="seat-number">4</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="booking-summary-box">
+    <h3>ملخص الحجز</h3>
+    <p>عدد المقاعد: <span id="selectedSeatsCount">0</span></p>
+    <p>المقاعد المختارة: <span id="selectedSeatsText">لا يوجد</span></p>
+    <p>المسافة التقريبية: <span id="distanceText">--</span> كم</p>
+    <p>السعر الشهري: <span id="priceText">--</span> JOD</p>
+  </div>
+
+  <div class="seat-actions">
+    <button class="confirm-search-btn" id="confirmBtn" disabled onclick="confirmBooking()">
+      طلب سائق
+    </button>
+
+    <button class="cancel-booking-btn" onclick="cancelSeatBooking()">
+      إلغاء
+    </button>
+  </div>
+</div>
+    <div id="sideMenu" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        
+      <div class="user-profile-sidebar" onclick="goToProfile()" style="cursor: pointer;">
+      <img src="img/my-user.png" alt="صورة المستخدم" class="sidebar-avatar">
+   <h4 class="user-name" id="sidebarUserName"></h4>
+  <p class="user-phone" id="sidebarUserPhone"></p>
+       </div>
+
+        <hr style="border: 0.5px solid rgba(255,255,255,0.1); margin: 10px 20px;">
+
+        <div class="sidebar-content">
+            <a href="notifications.html"><i class="bi bi-bell"></i> الإشعارات</a>
+            <a href="#"><i class="bi bi-question-circle"></i> مركز المساعدة</a>
+            <hr style="border: 0.5px solid rgba(255,255,255,0.1); margin: 20px;">
+            <a href="driver-signup.html" class="driver-link"><i class="bi bi-car-front"></i> سجل كسائق براق</a>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
+   <script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcoBS38vS_L76jZlhy2VGPFSSfRdjQ8Ns&libraries=places&v=beta&loading=async&callback=initMapInputs"
+  async
+  defer>
+</script>
+    <script src="script.js"></script>
+</body>
+</html>
