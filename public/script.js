@@ -242,50 +242,6 @@ function updateSeatsSummary() {
   document.getElementById("priceText").innerText = price.toFixed(2);
 }
 
-async function confirmBooking() {
-  const bookingId = localStorage.getItem("bookingId");
-  const bookingData = JSON.parse(localStorage.getItem("bookingData") || "{}");
-
-  const pickup = bookingData.pickup || JSON.parse(localStorage.getItem("pickupLocation") || "null");
-  const dropoff = bookingData.dropoff || JSON.parse(localStorage.getItem("dropoffLocation") || "null");
-  const tripType = bookingData.trip_type || bookingData.tripType || "one-way";
-
-  if (!bookingId) {
-    alert("لا يوجد رقم حجز");
-    return;
-  }
-
-  if (selectedSeats.length === 0) {
-    alert("اختر مقعد واحد على الأقل");
-    return;
-  }
-
-  const distanceKm = calculateDistanceKm(pickup, dropoff);
-  const price = calculateMonthlyPrice(distanceKm, selectedSeats.length, tripType);
-
-  const res = await fetch(`/booking/${bookingId}/seats`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      selectedSeats,
-      seatsCount: selectedSeats.length,
-      price: price.toFixed(2)
-    })
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "فشل تأكيد المقاعد");
-    return;
-  }
-
-  alert("تم إرسال طلبك للسائقين بنجاح");
-  window.location.href = "schedule.html";
-}
-
 async function cancelSeatBooking() {
   const bookingId = localStorage.getItem("bookingId");
 
@@ -351,20 +307,6 @@ function getRealRouteInfo(pickup, dropoff) {
   });
 }
 
-function calculateMonthlyPrice(distanceKm, seatsCount, tripType) {
-  const days = 22;
-  const pricePerKm = 0.20;
-
-  let price = distanceKm * pricePerKm * days;
-
-  if (tripType === "round-trip") {
-    price *= 2;
-  }
-
-  price *= seatsCount;
-
-  return price;
-}
 /* =========================================================
    ✅ تأكيد الحجز
 ========================================================= */
@@ -517,8 +459,9 @@ function handleSelectionLogic(changedElement) {
     const special = document.getElementById('checkSpecial');
     const other = document.getElementById('checkOther');
     const otherFields = document.getElementById('otherInfoFields');
+    const fullCar = document.getElementById("checkFullCar");
 
-    if (fullCar.checked && (adult.checked || special.checked || other.checked)) {
+    if (fullCar && fullCar.checked && (adult.checked || special.checked || other.checked)) {
         alert("لا يمكن الجمع مع مركبة كاملة");
         changedElement.checked = false;
         return;
@@ -624,11 +567,6 @@ async function checkAndGo() {
 /* =========================================================
    📝 التسجيل + OTP (تم دمج التكرار)
 ========================================================= */
-function handleSignup(event) {
-    event.preventDefault();
-    document.getElementById('otpModal').style.display = 'flex';
-}
-
 function closeOTP() {
     document.getElementById('otpModal').style.display = 'none';
 }
@@ -654,10 +592,6 @@ document.querySelectorAll('.otp-field, .otp-digit').forEach((input, index, input
 /* =========================================================
    🔄 تنقل
 ========================================================= */
-function goToProfile() {
-    window.location.href = "profile.html";
-}
-
 function drivergoToProfile() {
     window.location.href = "driver-profile.html";
 }
@@ -784,26 +718,29 @@ window.addEventListener("DOMContentLoaded", () => {
 /* =========================================================
    🚗 قبول الرحلة (driver-requests.html)
 ========================================================= */
-function calculateAgeFromDate(dob) {
-  if (!dob) return "غير محدد";
-  const birth = new Date(dob);
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-
-  return age;
-}
-
 function safeJsonParse(value) {
   try {
     return typeof value === "string" ? JSON.parse(value) : value;
   } catch {
     return null;
   }
+}
+
+function yearsSinceBirth(dob) {
+  if (!dob) return null;
+  const birth = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+function calculateAgeFromDate(dob) {
+  const age = yearsSinceBirth(dob);
+  return age === null ? "غير محدد" : age;
 }
 
 async function loadDriverBookingRequests() {
@@ -926,17 +863,16 @@ function toggleDriverRequest(header) {
   card.classList.toggle("active");
 }
 
-function drawDriverRoute(bookingId, pickup, dropoff) {
+function drawDirectionsOnMap(mapEl, pickup, dropoff) {
   if (!pickup || !dropoff) {
     alert("بيانات الموقع غير مكتملة");
     return;
   }
 
-  const mapEl = document.getElementById(`driverMap-${bookingId}`);
   mapEl.style.display = "block";
 
   const map = new google.maps.Map(mapEl, {
-    center: { lat: pickup.lat, lng: pickup.lng },
+    center: { lat: Number(pickup.lat), lng: Number(pickup.lng) },
     zoom: 12,
     mapTypeControl: false,
     streetViewControl: false
@@ -960,6 +896,73 @@ function drawDriverRoute(bookingId, pickup, dropoff) {
       }
 
       directionsRenderer.setDirections(result);
+    }
+  );
+}
+
+function drawDriverRoute(bookingId, pickup, dropoff) {
+  const mapEl = document.getElementById(`driverMap-${bookingId}`);
+  drawDirectionsOnMap(mapEl, pickup, dropoff);
+}
+
+function drawDriverToCustomerMap(tripId, pickup) {
+  if (!pickup) {
+    alert("موقع الراكب غير متوفر");
+    return;
+  }
+
+  if (!navigator.geolocation) {
+    alert("المتصفح لا يدعم تحديد الموقع");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const driverLocation = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      };
+
+      const mapEl = document.getElementById(`driverTodayMap-${tripId}`);
+      if (!mapEl) {
+        alert("تعذر تحضير الخريطة");
+        return;
+      }
+
+      mapEl.style.display = "block";
+
+      const map = new google.maps.Map(mapEl, {
+        center: driverLocation,
+        zoom: 13,
+        mapTypeControl: false,
+        streetViewControl: false
+      });
+
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer({ map });
+
+      directionsService.route(
+        {
+          origin: driverLocation,
+          destination: {
+            lat: Number(pickup.lat),
+            lng: Number(pickup.lng)
+          },
+          travelMode: google.maps.TravelMode.DRIVING
+        },
+        (result, status) => {
+          if (status !== "OK") {
+            alert("تعذر عرض الطريق");
+            return;
+          }
+
+          directionsRenderer.setDirections(result);
+        }
+      );
+    },
+    (error) => {
+      console.log(error);
+      alert("لم يتم السماح بالوصول إلى الموقع");
     }
   );
 }
@@ -997,50 +1000,6 @@ window.addEventListener("DOMContentLoaded", () => {
 /* =========================================================
    👨‍✈️ تعديل بيانات السائق
 ========================================================= */
-let targetField = "";
-
-function driver_openEdit(id, title) {
-    targetField = id;
-
-    document.getElementById('modalTitle').innerText = "تعديل " + title;
-
-    const inputBox = document.getElementById('inputBox');
-    const currentValue = document.getElementById('val-' + id).innerText;
-
-    inputBox.innerHTML = `<input type="text" id="newInput" value="${currentValue}">`;
-
-    document.getElementById('driverEditModal').style.display = 'flex';
-}
-
-function driver_closeEdit() {
-    document.getElementById('driverEditModal').style.display = 'none';
-}
-
-function driver_saveChange() {
-    const newVal = document.getElementById('newInput').value;
-
-    if (newVal.trim() === "") {
-        alert("أدخل قيمة صحيحة");
-        return;
-    }
-
-    document.getElementById('val-' + targetField).innerText = newVal;
-
-    if (targetField === 'name') {
-        document.getElementById('topName').innerText = newVal;
-    } else if (targetField === 'phone') {
-        document.getElementById('topPhone').innerText = newVal;
-    }
-
-    alert("تم التحديث بنجاح");
-    driver_closeEdit();
-}
-function handleLogout() {
-    if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
-        window.location.href = "login.html";
-    }
-}
-
 /* =========================================================
    👨‍✈️ توليد جدول رحلات الساىق 
 ========================================================= */
@@ -1173,31 +1132,18 @@ function openEdit(field, title) {
 
   document.getElementById("modalTitle").innerText = "تعديل " + title;
 
-  let currentValue = "";
+  const valEl = document.getElementById("val-" + field);
+  const currentValue = valEl ? valEl.innerText : "";
+
   let inputHTML = "";
 
-  if (field === "name") {
-    currentValue = document.getElementById("val-name").innerText;
+  if (field === "name" || field === "phone") {
     inputHTML = `<input type="text" id="editInput" value="${currentValue}" style="width:100%;padding:10px;">`;
-  }
-
-  if (field === "phone") {
-    currentValue = document.getElementById("val-phone").innerText;
-    inputHTML = `<input type="text" id="editInput" value="${currentValue}" style="width:100%;padding:10px;">`;
-  }
-
-  if (field === "email") {
-    currentValue = document.getElementById("val-email").innerText;
+  } else if (field === "email") {
     inputHTML = `<input type="email" id="editInput" value="${currentValue}" style="width:100%;padding:10px;">`;
-  }
-
-  if (field === "dob") {
-    currentValue = document.getElementById("val-dob").innerText;
+  } else if (field === "dob") {
     inputHTML = `<input type="date" id="editInput" value="${currentValue}" style="width:100%;padding:10px;">`;
-  }
-
-  if (field === "gender") {
-    currentValue = document.getElementById("val-gender").innerText;
+  } else if (field === "gender") {
     inputHTML = `
       <select id="editInput" style="width:100%;padding:10px;">
         <option value="ذكر" ${currentValue === "ذكر" ? "selected" : ""}>ذكر</option>
@@ -1526,10 +1472,6 @@ async function driver_saveChange() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  loadDriverProfile();
-});
-
 let currentSection = "users";
 let adminChart = null;
 let currentRows = [];
@@ -1712,21 +1654,8 @@ async function openDriverRequestsModal() {
   renderDriverRequests(driverRequests);
 }
 function calculateAge(dob) {
-  if (!dob) return "";
-
-  const birthDate = new Date(dob);
-  const today = new Date();
-
-  let age = today.getFullYear() - birthDate.getFullYear();
-
-  const monthDiff = today.getMonth() - birthDate.getMonth();
-  const dayDiff = today.getDate() - birthDate.getDate();
-
-  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-    age--;
-  }
-
-  return age;
+  const age = yearsSinceBirth(dob);
+  return age === null ? "" : age;
 }
 
 async function acceptDriver(id) {
@@ -1829,14 +1758,6 @@ function filterDriverRequests() {
   renderDriverRequests(filtered);
 }
 
-
-window.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("usersCount")) {
-    loadOverviewCounts();
-    renderChart("users");
-    renderTable("users");
-  }
-});
 
 let pickupLocation = null;
 let dropoffLocation = null;
@@ -2155,28 +2076,9 @@ function cancelOtherPerson() {
   document.getElementById("otherPersonModal").style.display = "none";
 }
 
-function parseJsonSafe(value) {
-  try {
-    return typeof value === "string" ? JSON.parse(value) : value;
-  } catch {
-    return null;
-  }
-}
-
 function getAge(dob) {
-  if (!dob) return "--";
-
-  const birth = new Date(dob);
-  const today = new Date();
-
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-
-  return age;
+  const age = yearsSinceBirth(dob);
+  return age === null ? "--" : age;
 }
 
 async function loadCustomerSubscriptions() {
@@ -2207,9 +2109,9 @@ async function loadCustomerSubscriptions() {
     container.innerHTML = "";
 
     data.subscriptions.forEach((sub) => {
-      const pickup = parseJsonSafe(sub.pickup);
-      const dropoff = parseJsonSafe(sub.dropoff);
-      const seats = parseJsonSafe(sub.selected_seats) || [];
+      const pickup = safeJsonParse(sub.pickup);
+      const dropoff = safeJsonParse(sub.dropoff);
+      const seats = safeJsonParse(sub.selected_seats) || [];
 
       const driverName = `${sub.fast_name_driver || ""} ${sub.last_name_driver || ""}`.trim();
       const driverAge = getAge(sub.date_of_birth_driver);
@@ -2279,50 +2181,11 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function drawCustomerRoute(bookingId, pickup, dropoff) {
-  if (!pickup || !dropoff) {
-    alert("بيانات الموقع غير مكتملة");
-    return;
-  }
-
   const mapEl = document.getElementById(`customerMap-${bookingId}`);
-  mapEl.style.display = "block";
-
-  const map = new google.maps.Map(mapEl, {
-    center: { lat: Number(pickup.lat), lng: Number(pickup.lng) },
-    zoom: 12,
-    mapTypeControl: false,
-    streetViewControl: false
-  });
-
-  const directionsService = new google.maps.DirectionsService();
-  const directionsRenderer = new google.maps.DirectionsRenderer({ map });
-
-  directionsService.route(
-    {
-      origin: { lat: Number(pickup.lat), lng: Number(pickup.lng) },
-      destination: { lat: Number(dropoff.lat), lng: Number(dropoff.lng) },
-      travelMode: google.maps.TravelMode.DRIVING
-    },
-    (result, status) => {
-      if (status !== "OK") {
-        alert("تعذر عرض المسار");
-        return;
-      }
-
-      directionsRenderer.setDirections(result);
-    }
-  );
+  drawDirectionsOnMap(mapEl, pickup, dropoff);
 }
 
 let selectedTripToPostpone = null;
-
-function parseTripLocation(value) {
-  try {
-    return typeof value === "string" ? JSON.parse(value) : value;
-  } catch {
-    return null;
-  }
-}
 
 async function loadTodayTripNotifications() {
   const container = document.getElementById("todayTripsNotifications");
@@ -2363,8 +2226,8 @@ async function loadTodayTripNotifications() {
     container.innerHTML = "";
 
     data.trips.forEach((trip) => {
-      const pickup = parseTripLocation(trip.pickup);
-      const dropoff = parseTripLocation(trip.dropoff);
+      const pickup = safeJsonParse(trip.pickup);
+      const dropoff = safeJsonParse(trip.dropoff);
 
       const directionText = trip.trip_direction === "return" ? "رحلة العودة" : "رحلة الذهاب";
       const driverName = `${trip.fast_name_driver || ""} ${trip.last_name_driver || ""}`.trim();
@@ -2575,6 +2438,8 @@ async function loadDriverTodayTrips() {
               </a>
             </div>
 
+            <div id="driverTodayMap-${trip.daily_trip_id}" class="driver-mini-map"></div>
+
             <div class="driver-contact-actions" style="margin-top:10px;">
               <button class="map-btn" onclick='drawDriverToCustomerMap(${trip.daily_trip_id}, ${JSON.stringify(pickup)})'>
                 عرض الطريق للراكب
@@ -2627,12 +2492,6 @@ async function markDriverArrived(tripId) {
   alert("تم إشعار الراكب بأنك وصلت");
   loadDriverTodayTrips();
 }
-
-window.addEventListener("DOMContentLoaded", () => {
-  loadDriverTodayTrips();
-});
-
-
 
 function driverParseJson(value) {
   try {
