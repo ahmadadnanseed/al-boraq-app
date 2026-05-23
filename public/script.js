@@ -1025,17 +1025,6 @@ function driver_loadSchedule(header) {
     }
 }
 
-function showResetStep(step) {
-    document.getElementById('forgot-step1').style.display = 'none';
-    document.getElementById('forgot-step2').style.display = 'none';
-    document.getElementById('forgot-step3').style.display = 'none';
-
-    if (step === 2) {
-        document.getElementById('forgot-step2').style.display = 'block';
-    } else if (step === 3) {
-        document.getElementById('forgot-step3').style.display = 'block';
-    }
-}
 
 /* =========================================
    التسجيل signup
@@ -2231,7 +2220,13 @@ async function loadTodayTripNotifications() {
 
       const directionText = trip.trip_direction === "return" ? "رحلة العودة" : "رحلة الذهاب";
       const driverName = `${trip.fast_name_driver || ""} ${trip.last_name_driver || ""}`.trim();
+const dependentName = `${trip.fast_name_dependent || ""} ${trip.last_name_dependent || ""}`.trim();
+const relation = trip.relationship || "";
+const isDependentTrip = !!dependentName;
 
+const passengerText = isDependentTrip
+  ? `${relation} ${dependentName}`
+  : "أنت";
       const card = document.createElement("div");
       card.className = "notification-card today";
 
@@ -2243,20 +2238,51 @@ async function loadTodayTripNotifications() {
         <div class="notification-text">
           <h3>${directionText} اليوم</h3>
 
-          <p>
-            لديك رحلة اليوم الساعة <strong>${trip.trip_time}</strong>.
-            يرجى أن تكون جاهزاً قبل الموعد بـ <strong>10 دقائق</strong>.
-          </p>
+       
 
           ${trip.status === "driver_arrived" ? `
   <div class="arrival-alert">
     🚕 السائق وصل وهو بانتظارك الآن
   </div>
 ` : ""}
+${trip.status === "scheduled" ? `
+  <p>
+    لديك رحلة اليوم الساعة <strong>${trip.trip_time}</strong>.
+    ${isDependentTrip 
+      ? `يرجى أن يكون ${passengerText} جاهزاً قبل الموعد بـ <strong>10 دقائق</strong>.`
+      : `يرجى أن تكون جاهزاً قبل الموعد بـ <strong>10 دقائق</strong>.`
+    }
+  </p>
+` : ""}
+${trip.status === "driver_started" ? `
+  <div class="arrival-alert">
+    🚗 السائق تحرك باتجاه ${isDependentTrip ? passengerText : "موقعك"}
+  </div>
+
+  <div class="driver-contact-actions">
+    <a class="driver-action-btn" href="https://wa.me/${String(trip.phone_driver).replace("+", "")}" target="_blank">
+      <i class="bi bi-whatsapp"></i> مراسلة السائق
+    </a>
+
+    <a class="driver-action-btn" href="tel:${trip.phone_driver}">
+      <i class="bi bi-telephone-fill"></i> اتصال
+    </a>
+  </div>
+` : ""}
+${trip.status === "driver_arrived" ? `
+  <div class="arrival-alert">
+    🚕 السائق وصل وهو بانتظار ${isDependentTrip ? passengerText : "ك الآن"}
+  </div>
+` : ""}
+${trip.status === "passenger_picked" ? `
+  <div class="arrival-alert">
+    ✅ تم ركوب ${isDependentTrip ? passengerText : "الراكب"}، الرحلة بدأت الآن
+  </div>
+` : ""}
 
 ${trip.status === "completed" ? `
   <div class="arrival-alert">
-    ✅ وصلت إلى وجهتك بنجاح
+    ✅ ${isDependentTrip ? `لقد وصل ${passengerText} إلى وجهته` : "وصلت إلى وجهتك بنجاح"}
   </div>
 
   <div class="rating-box">
@@ -2277,17 +2303,17 @@ ${trip.status === "completed" ? `
     </button>
   </div>
 ` : ""}
-
+${trip.status === "scheduled" ? `
+  <button class="postpone-btn" onclick="openPostponeModal(${trip.daily_trip_id})">
+    تأجيل الرحلة
+  </button>
+` : ""}
           <p><strong>السائق:</strong> ${driverName || "--"}</p>
           <p><strong>الهاتف:</strong> ${trip.phone_driver || "--"}</p>
           <p><strong>المركبة:</strong> ${trip.vehicle_type || ""} ${trip.vehicle_mode || ""} ${trip.vehicle_year_of_manufacturel || ""}</p>
          
 
           <span class="notification-time">اليوم</span>
-
-          <button class="postpone-btn" onclick="openPostponeModal(${trip.daily_trip_id})">
-            تأجيل الرحلة
-          </button>
         </div>
       `;
 
@@ -2445,25 +2471,37 @@ async function loadDriverTodayTrips() {
                 عرض الطريق للراكب
               </button>
 
-              ${
-                trip.status === "driver_arrived"
-                  ? `
-                    <button class="accept-btn" onclick="markTripCompleted(${trip.daily_trip_id})">
-                      تم إنزال الراكب
-                    </button>
-                  `
-                  : trip.status === "completed"
-                  ? `
-                    <button class="accept-btn" disabled style="background:#777; cursor:not-allowed;">
-                      تم التوصيل
-                    </button>
-                  `
-                  : `
-                    <button class="accept-btn" onclick="markDriverArrived(${trip.daily_trip_id})">
-                      أنا وصلت
-                    </button>
-                  `
-              }
+       ${
+  trip.status === "scheduled"
+    ? `
+      <button class="accept-btn" onclick="markDriverStarted(${trip.daily_trip_id})">
+        بدء الرحلة
+      </button>
+    `
+    : trip.status === "driver_started"
+    ? `
+      <button class="accept-btn" onclick="markDriverArrived(${trip.daily_trip_id})">
+        أنا وصلت
+      </button>
+    `
+    : trip.status === "driver_arrived"
+    ? `
+      <button class="accept-btn" onclick="markPassengerPicked(${trip.daily_trip_id})">
+        هل أقلت الراكب؟
+      </button>
+    `
+    : trip.status === "passenger_picked"
+    ? `
+      <button class="accept-btn" onclick="markTripCompleted(${trip.daily_trip_id})">
+        تم إنزال الراكب
+      </button>
+    `
+    : `
+      <button class="accept-btn" disabled style="background:#777; cursor:not-allowed;">
+        تم التوصيل
+      </button>
+    `
+}
             </div>
           </div>
         </div>
@@ -2557,3 +2595,161 @@ async function submitTripRating(tripId) {
   loadTodayTripNotifications();
 }
 
+async function markDriverStarted(tripId) {
+  const res = await fetch(`/driver/daily-trips/${tripId}/start`, {
+    method: "PUT"
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || "فشل بدء الرحلة");
+    return;
+  }
+
+  loadDriverTodayTrips();
+}
+async function markPassengerPicked(tripId) {
+  const res = await fetch(`/driver/daily-trips/${tripId}/picked`, {
+    method: "PUT"
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || "فشل تأكيد ركوب الراكب");
+    return;
+  }
+
+  loadDriverTodayTrips();
+}
+
+let resetPhoneNumber = "";
+let resetCode = "";
+
+async function sendResetCode() {
+  const phoneInput = document.getElementById("resetPhone").value.trim();
+
+  if (!phoneInput) {
+    alert("أدخل رقم الهاتف");
+    return;
+  }
+
+  resetPhoneNumber = "+962" + phoneInput;
+
+  const res = await fetch("/forgot-password/send-code", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone: resetPhoneNumber })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || "فشل إرسال الرمز");
+    return;
+  }
+
+  window.open(data.whatsappUrl, "_blank");
+document.getElementById(
+"verificationPhone"
+).innerText = resetPhoneNumber;
+  showResetStep(2);
+}
+
+async function verifyResetCode() {
+  const inputs = document.querySelectorAll(".otp-field");
+  resetCode = Array.from(inputs).map(input => input.value).join("");
+
+  if (resetCode.length !== 4) {
+    alert("أدخل رمز التحقق كاملاً");
+    return;
+  }
+
+  const res = await fetch("/forgot-password/verify-code", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      phone: resetPhoneNumber,
+      code: resetCode
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || "رمز غير صحيح");
+    return;
+  }
+
+  showResetStep(3);
+}
+
+async function finishPasswordReset() {
+  const newPass = document.getElementById("newPass").value.trim();
+  const confirmPass = document.getElementById("confirmNewPass").value.trim();
+
+  if (!newPass || !confirmPass) {
+    alert("أدخل كلمة المرور");
+    return;
+  }
+
+  if (newPass !== confirmPass) {
+    alert("كلمتا المرور غير متطابقتين");
+    return;
+  }
+
+  const res = await fetch("/forgot-password/reset", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      phone: resetPhoneNumber,
+      code: resetCode,
+      newPassword: newPass
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || "فشل تغيير كلمة المرور");
+    return;
+  }
+
+  alert("تم تغيير كلمة المرور بنجاح");
+  window.location.href = "login.html";
+}
+
+function showResetStep(step) {
+  document.getElementById("forgot-step1").style.display = "none";
+  document.getElementById("forgot-step2").style.display = "none";
+  document.getElementById("forgot-step3").style.display = "none";
+
+  document.getElementById(`forgot-step${step}`).style.display = "block";
+}
+
+document.querySelectorAll(".otp-field").forEach((input,index,inputs)=>{
+
+    input.addEventListener("input",()=>{
+
+        input.value=input.value.replace(/\D/g,'');
+
+        if(input.value && index<inputs.length-1){
+            inputs[index+1].focus();
+        }
+
+    });
+
+    input.addEventListener("keydown",(e)=>{
+
+        if(
+            e.key==="Backspace" &&
+            !input.value &&
+            index>0
+        ){
+            inputs[index-1].focus();
+        }
+
+    });
+
+});

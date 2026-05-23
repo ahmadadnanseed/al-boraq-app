@@ -1,5 +1,7 @@
 const express = require("express");
-const mysql = require("mysql");
+const connection = require("./src/db");
+const authRoutes = require("./src/routes/auth");
+const customerRoutes = require("./src/routes/customers");
 
 const app = express();
 const PORT = 3000;
@@ -9,6 +11,8 @@ const PORT = 3000;
 ============================== */
 app.use(express.static("public"));
 app.use(express.json());
+app.use(authRoutes);
+app.use(customerRoutes);
 
 /* ==============================
    تشغيل السيرفر
@@ -17,238 +21,6 @@ app.listen(PORT, () => {
   console.log("Express server is running at port no: " + PORT);
 });
 
-/* ==============================
-   الاتصال بقاعدة البيانات
-============================== */
-const connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "root",
-  database: "boraq_database"
-});
-
-function splitFullName(name) {
-  const parts = (name || "").trim().split(" ");
-  return {
-    first: parts[0] || "",
-    last: parts.slice(1).join(" ") || ""
-  };
-}
-
-function loginDbError(res, logLabel, err) {
-  console.log(logLabel, err);
-  return res.json({ success: false, message: "خطأ في السيرفر" });
-}
-
-/* ==============================
-   تسجيل مستخدم جديد
-============================== */
-app.post("/signup", (req, res) => {
-  const { name, phone, dob, password } = req.body;
-
-  if (!name || !phone || !dob || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "جميع الحقول مطلوبة"
-    });
-  }
-
-  const { first: first_name, last: last_name } = splitFullName(name);
-
-  const sql = `
-    INSERT INTO customer
-    (fast_name_caustomer, last_name_caustomer, phone_caustomer, date_of_birth_caustomer, password)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-
-  connection.query(sql, [first_name, last_name, phone, dob, password], (err, result) => {
-    if (err) {
-      console.log("Signup error:", err);
-      return res.status(500).json({
-        success: false,
-        message: "فشل إنشاء الحساب",
-        error: err.sqlMessage
-      });
-    }
-
-    res.json({
-      success: true,
-      message: "تم إنشاء الحساب بنجاح",
-      userId: result.insertId
-    });
-  });
-});
-
-/* ==============================
-   تسجيل الدخول
-============================== */
-app.post("/login", (req, res) => {
-  console.log("LOGIN BODY:", req.body);
-
-  const { loginType, phone, driverCode, adminCode, password } = req.body;
-
-  if (loginType === "admin") {
-    const adminId = adminCode.toLowerCase().replace("admin", "");
-
-    const sql = `
-      SELECT * FROM admin
-      WHERE admin_id = ? AND password = ?
-    `;
-
-    connection.query(sql, [adminId, password], (err, result) => {
-      if (err) {
-        return loginDbError(res, "Admin login error:", err);
-      }
-
-      if (result.length === 0) {
-        return res.json({
-          success: false,
-          message: "رقم الأدمن أو كلمة المرور غير صحيحة"
-        });
-      }
-
-      return res.json({
-        success: true,
-        role: "admin",
-        adminId: result[0].admin_id
-      });
-    });
-
-    return;
-  }
-
-  if (loginType === "driver") {
-    const driverId = driverCode.toLowerCase().replace("driver", "");
-
-    const sql = `
-      SELECT * FROM driver
-      WHERE driver_id = ? AND password = ?
-    `;
-
-    connection.query(sql, [driverId, password], (err, result) => {
-      if (err) {
-        return loginDbError(res, "Driver login error:", err);
-      }
-
-      if (result.length === 0) {
-        return res.json({
-          success: false,
-          message: "الرقم الوظيفي أو كلمة المرور غير صحيحة"
-        });
-      }
-
-      return res.json({
-        success: true,
-        role: "driver",
-        driverId: result[0].driver_id
-      });
-    });
-
-    return;
-  }
-
-  const sql = `
-    SELECT * FROM customer
-    WHERE phone_caustomer = ? AND password = ?
-  `;
-
-  connection.query(sql, [phone, password], (err, result) => {
-    if (err) {
-      return loginDbError(res, "Customer login error:", err);
-    }
-
-    if (result.length === 0) {
-      return res.json({
-        success: false,
-        message: "رقم الهاتف أو كلمة المرور غير صحيحة"
-      });
-    }
-
-    res.json({
-      success: true,
-      role: "customer",
-      userId: result[0].caustomer_id
-    });
-  });
-});
-/* ==============================
-   جلب بيانات المستخدم للملف الشخصي
-============================== */
-app.get("/user/:id", (req, res) => {
-  const userId = req.params.id;
-
-  const sql = `
-    SELECT *
-    FROM customer
-    WHERE caustomer_id = ?
-  `;
-
-  connection.query(sql, [userId], (err, result) => {
-    if (err) {
-      console.log("Get user error:", err);
-      return res.status(500).json({
-        success: false,
-        message: "خطأ في جلب البيانات"
-      });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "المستخدم غير موجود"
-      });
-    }
-
-    res.json({
-      success: true,
-      user: result[0]
-    });
-  });
-});
-
-/* ==============================
-   تعديل بيانات المستخدم
-============================== */
-app.put("/user/:id", (req, res) => {
-  const userId = req.params.id;
-  const { name, phone, dob, email, gender } = req.body;
-  const cleanDob = dob ? String(dob).split("T")[0] : null;
-
-  const { first: first_name, last: last_name } = splitFullName(name);
-
-  const sql = `
-    UPDATE customer
-    SET
-      fast_name_caustomer = ?,
-      last_name_caustomer = ?,
-      phone_caustomer = ?,
-      date_of_birth_caustomer = ?,
-      email = ?,
-      gender = ?
-    WHERE caustomer_id = ?
-  `;
-
-  connection.query(
-    sql,
-[first_name, last_name, phone || "", cleanDob, email || "", gender || "", userId],
-    (err, result) => {
-      if (err) {
-        console.log("Update error:", err);
-        return res.status(500).json({
-          success: false,
-          message: "فشل التعديل",
-          error: err.sqlMessage
-        });
-      }
-
-      res.json({
-        success: true,
-        message: "تم تحديث البيانات بنجاح"
-      });
-    }
-  );
-});
 app.post("/driver/signup", (req, res) => {
   const {
     userId,
@@ -848,63 +620,6 @@ app.put("/driver/booking-requests/:id/accept", (req, res) => {
   });
 });
 
-app.get("/customer/subscriptions/:customerId", (req, res) => {
-  const customerId = req.params.customerId;
-
-  const sql = `
-    SELECT
-      b.booking_id,
-      b.start_date_booking,
-      TIME_FORMAT(b.start_time, '%H:%i') AS start_time,
-      TIME_FORMAT(b.end_time, '%H:%i') AS end_time,
-      b.trip_type,
-      b.pickup,
-      b.dropoff,
-      b.seats_count,
-      b.selected_seats,
-      b.price,
-      b.distance_km,
-      b.duration_min,
-
-      d.driver_id,
-      d.fast_name_driver,
-      d.last_name_driver,
-      d.phone_driver,
-      d.date_of_birth_driver,
-
-      v.vehicle_type,
-      v.vehicle_mode,
-      v.vehicle_year_of_manufacturel,
-      v.vehicle_license_blate_number,
-      v.color
-
-    FROM booking b
-    LEFT JOIN driver d ON b.driver_id_fk = d.driver_id
-    LEFT JOIN vehicle v ON v.driver_id_fk = d.driver_id
-
-    WHERE b.customer_id_fk = ?
-    AND b.status = 2
-
-    ORDER BY b.booking_id DESC
-  `;
-
-  connection.query(sql, [customerId], (err, result) => {
-    if (err) {
-      console.log("Customer subscriptions error:", err);
-      return res.json({
-        success: false,
-        message: "فشل جلب الاشتراكات"
-      });
-    }
-
-    res.json({
-      success: true,
-      subscriptions: result
-    });
-  });
-});
-
-
 function buildDailyTripInsertRow(booking, formattedDate, tripTime, direction, pickupVal, dropoffVal) {
   return [
     booking.booking_id,
@@ -1006,6 +721,10 @@ app.get("/customer/today-trips/:customerId", (req, res) => {
       d.last_name_driver,
       d.phone_driver,
 
+      dep.fast_name_dependent,
+      dep.last_name_dependent,
+      dep.relationship,
+
       v.vehicle_type,
       v.vehicle_mode,
       v.vehicle_year_of_manufacturel,
@@ -1013,14 +732,15 @@ app.get("/customer/today-trips/:customerId", (req, res) => {
 
     FROM daily_trips dt
     JOIN driver d ON dt.driver_id_fk = d.driver_id
+    LEFT JOIN dependent dep ON dt.dependent_id_fk = dep.dependent_id
     LEFT JOIN vehicle v ON v.driver_id_fk = d.driver_id
 
     WHERE dt.customer_id_fk = ?
     AND dt.trip_date = CURDATE()
-  AND (
-  dt.status IN ('scheduled','driver_arrived')
-  OR (dt.status = 'completed' AND dt.customer_completion_confirmed = 0)
-)
+    AND (
+      dt.status IN ('scheduled','driver_started','driver_arrived','passenger_picked')
+      OR (dt.status = 'completed' AND dt.customer_completion_confirmed = 0)
+    )
 
     ORDER BY dt.trip_time ASC
   `;
@@ -1084,7 +804,7 @@ app.get("/driver/today-trips/:driverId", (req, res) => {
 
     WHERE dt.driver_id_fk = ?
     AND dt.trip_date = CURDATE()
-    AND dt.status IN ('scheduled','driver_on_way','driver_arrived')
+   AND dt.status IN ('scheduled','driver_started','driver_arrived','passenger_picked')
 
     ORDER BY dt.trip_time ASC
   `;
@@ -1239,5 +959,134 @@ app.get("/admin/dashboard-section/:section", (req, res) => {
     }
 
     res.json({ success: true, rows });
+  });
+});
+
+app.put("/driver/daily-trips/:tripId/start", (req, res) => {
+  const tripId = req.params.tripId;
+
+  const sql = `
+    UPDATE daily_trips
+    SET status = 'driver_started'
+    WHERE daily_trip_id = ?
+  `;
+
+  connection.query(sql, [tripId], (err) => {
+    if (err) {
+      console.log("Start trip error:", err);
+      return res.json({ success: false, message: "فشل بدء الرحلة" });
+    }
+
+    res.json({ success: true, message: "تم بدء الرحلة" });
+  });
+});
+
+app.put("/driver/daily-trips/:tripId/picked", (req, res) => {
+  const tripId = req.params.tripId;
+
+  const sql = `
+    UPDATE daily_trips
+    SET status = 'passenger_picked'
+    WHERE daily_trip_id = ?
+  `;
+
+  connection.query(sql, [tripId], (err) => {
+    if (err) {
+      console.log("Picked passenger error:", err);
+      return res.json({ success: false, message: "فشل تأكيد الركوب" });
+    }
+
+    res.json({ success: true, message: "تم تأكيد ركوب الراكب" });
+  });
+});
+
+const resetCodes = {};
+
+app.post("/forgot-password/send-code", (req, res) => {
+  const { phone } = req.body;
+
+  if (!phone) {
+    return res.json({ success: false, message: "أدخل رقم الهاتف" });
+  }
+
+  const sql = `
+    SELECT caustomer_id
+    FROM customer
+    WHERE phone_caustomer = ?
+  `;
+
+  connection.query(sql, [phone], (err, result) => {
+    if (err) {
+      console.log("Forgot check phone error:", err);
+      return res.json({ success: false, message: "خطأ في السيرفر" });
+    }
+
+    if (result.length === 0) {
+      return res.json({ success: false, message: "رقم الهاتف غير مسجل" });
+    }
+
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+
+    resetCodes[phone] = {
+      code,
+      expiresAt: Date.now() + 5 * 60 * 1000
+    };
+
+    res.json({
+      success: true,
+      code,
+      whatsappUrl: `https://wa.me/${phone.replace("+", "")}?text=${encodeURIComponent("رمز استعادة كلمة المرور في براق هو: " + code)}`
+    });
+  });
+});
+
+app.post("/forgot-password/verify-code", (req, res) => {
+  const { phone, code } = req.body;
+
+  const saved = resetCodes[phone];
+
+  if (!saved) {
+    return res.json({ success: false, message: "لم يتم إرسال رمز لهذا الرقم" });
+  }
+
+  if (Date.now() > saved.expiresAt) {
+    delete resetCodes[phone];
+    return res.json({ success: false, message: "انتهت صلاحية الرمز" });
+  }
+
+  if (saved.code !== code) {
+    return res.json({ success: false, message: "رمز التحقق غير صحيح" });
+  }
+
+  res.json({ success: true, message: "تم التحقق" });
+});
+
+app.put("/forgot-password/reset", (req, res) => {
+  const { phone, code, newPassword } = req.body;
+
+  const saved = resetCodes[phone];
+
+  if (!saved || saved.code !== code || Date.now() > saved.expiresAt) {
+    return res.json({ success: false, message: "رمز التحقق غير صالح" });
+  }
+
+  const sql = `
+    UPDATE customer
+    SET password = ?
+    WHERE phone_caustomer = ?
+  `;
+
+  connection.query(sql, [newPassword, phone], (err) => {
+    if (err) {
+      console.log("Reset password error:", err);
+      return res.json({ success: false, message: "فشل تغيير كلمة المرور" });
+    }
+
+    delete resetCodes[phone];
+
+    res.json({
+      success: true,
+      message: "تم تغيير كلمة المرور بنجاح"
+    });
   });
 });

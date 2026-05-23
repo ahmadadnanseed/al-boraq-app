@@ -2405,3 +2405,24 @@ label, .date-field {
 #adminChart {
   max-height: 300px;
 }
+
+.otp-flex {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  direction: ltr;
+  margin: 25px 0;
+}
+
+.otp-field {
+  width: 55px !important;
+  height: 55px !important;
+  text-align: center !important;
+  font-size: 26px !important;
+  font-weight: bold !important;
+  color: #003366 !important;
+  background: #ffffff !important;
+  border: 2px solid #0d6efd !important;
+  border-radius: 12px !important;
+  caret-color: #003366 !important;
+}
