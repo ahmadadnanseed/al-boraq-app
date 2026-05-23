@@ -1,3 +1,9 @@
+["api", "storage", "dom"].forEach((name) => {
+  const script = document.createElement("script");
+  script.src = `js/core/${name}.js`;
+  document.head.appendChild(script);
+});
+
 async function handleLogin(e) {
   e.preventDefault();
 
