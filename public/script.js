@@ -2,14 +2,19 @@
   "core/api",
   "core/storage",
   "core/dom",
+  "shared/helpers",
+  "shared/navigation",
+  "shared/sidebar",
   "shared/maps",
   "pages/login",
   "pages/signup",
   "pages/forgot-password",
   "pages/profile",
   "pages/notifications",
+  "pages/subscriptions",
   "pages/booking",
   "pages/seats",
+  "pages/driver-signup",
   "pages/driver-profile",
   "pages/driver-requests",
   "pages/driver-daily-trips",
@@ -21,48 +26,7 @@
   document.head.appendChild(script);
 });
 /* =========================================================
-   📱 القائمة الجانبية (Menu)
-========================================================= */
-function openNav() {
-    document.getElementById("sideMenu").style.width = "300px";
-    document.getElementById("overlay").style.display = "block";
-}
-
-function closeNav() {
-    document.getElementById("sideMenu").style.width = "0";
-    document.getElementById("overlay").style.display = "none";
-}
-async function loadSidebarUserData() {
-  const userId = localStorage.getItem("userId");
-  if (!userId) return;
-
-  const nameEl = document.getElementById("sidebarUserName");
-  const phoneEl = document.getElementById("sidebarUserPhone");
-
-  if (!nameEl || !phoneEl) return;
-
-  try {
-    const res = await fetch(`/user/${userId}`);
-    const data = await res.json();
-
-    if (!data.success) return;
-
-    const user = data.user;
-    const fullName = `${user.fast_name_caustomer || ""} ${user.last_name_caustomer || ""}`.trim();
-    const phone = user.phone_caustomer || "";
-
-    nameEl.innerText = fullName;
-    phoneEl.innerText = phone;
-  } catch (error) {
-    console.log("Sidebar load error:", error);
-  }
-}
-window.addEventListener("DOMContentLoaded", () => {
-  loadSidebarUserData();
-});
-
-/* =========================================================
-   📅 تحميل الصفحة (عام)
+    تحميل الصفحة (عام)
 ========================================================= */
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -165,152 +129,11 @@ document.querySelectorAll('.otp-field, .otp-digit').forEach((input, index, input
 
 
 /* =========================================================
-   🔄 تنقل
-========================================================= */
-function drivergoToProfile() {
-    window.location.href = "driver-profile.html";
-}
-
-/* =========================================================
-   📊 الأدمن Tabs
+    الأدمن Tabs
 ========================================================= */
 function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(p => p.style.display = 'none');
     document.getElementById(tabId).style.display = 'block';
-}
-
-/* =========================================================
-   🌆 اختيار المدينة
-========================================================= */
-function selectCity(city) {
-  const el = document.getElementById("driverAddress");
-
-  if (el) {
-    el.textContent = city; // أفضل من innerText
-  }
-}
-/* =========================================================
-   🚗 تحميل بيانات السائق من customer
-========================================================= */
-async function loadDriverSignupData() {
- const userId = localStorage.getItem("userId");
-if (!userId) {
-  return;
-}
-
-  const fullNameEl = document.getElementById("driverFullName");
-  const phoneEl = document.getElementById("driverPhone");
-  const dobEl = document.getElementById("driverDOB");
-  const addressEl = document.getElementById("driverAddress");
-
-  if (!fullNameEl || !phoneEl || !dobEl || !addressEl) return;
-
-  try {
-    const res = await fetch(`/user/${userId}`);
-    const data = await res.json();
-
-    if (!data.success) {
-      alert("تعذر جلب بيانات المستخدم");
-      return;
-    }
-
-    const user = data.user;
-    const fullName = `${user.fast_name_caustomer || ""} ${user.last_name_caustomer || ""}`.trim();
-
-    fullNameEl.value = fullName;
-    phoneEl.value = user.phone_caustomer || "";
-    dobEl.value = user.date_of_birth_caustomer ? String(user.date_of_birth_caustomer).split("T")[0] : "";
-    addressEl.value = user.address || "";
-  } catch (error) {
-    console.log("loadDriverSignupData error:", error);
-    alert("خطأ في تحميل بيانات السائق");
-  }
-}
-
-/* =========================================================
-   🚗 إرسال بيانات السائق والمركبة
-========================================================= */
-async function submitDriver() {
-  console.log("submitDriver clicked");
-
-  const userId = localStorage.getItem("userId");
-  console.log("userId:", userId);
-
-  const address = document.getElementById("driverAddress")?.innerText.trim();
-  const vehicleType = document.getElementById("vehicleType")?.value.trim();
-  const vehicleModel = document.getElementById("vehicleModel")?.value.trim();
-  const vehicleYear = document.getElementById("vehicleYear")?.value.trim();
-  const plateNumber = document.getElementById("plateNumber")?.value.trim();
-  const color = document.getElementById("vehicleColor")?.value.trim();
-
-  console.log({ address, vehicleType, vehicleModel, vehicleYear, plateNumber, color });
-
-  if (!userId) {
-    alert("يجب تسجيل الدخول كمستخدم أولاً حتى تسجل كسائق");
-    return;
-  }
-
-  if (!address || !vehicleType || !vehicleModel || !vehicleYear || !plateNumber || !color) {
-    alert("يرجى تعبئة جميع الحقول المطلوبة");
-    return;
-  }
-
-  const res = await fetch("/driver/signup", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      userId,
-      address,
-      vehicleType,
-      vehicleModel,
-      vehicleYear,
-      plateNumber,
-      color
-    })
-  });
-
-  const data = await res.json();
-  console.log("driver signup response:", data);
-
-  if (!data.success) {
-    alert(data.message || "فشل الإرسال");
-    return;
-  }
-
-  document.getElementById("driver-info-box").style.display = "none";
-  document.getElementById("step2-form").style.display = "none";
-  document.getElementById("step3-form").style.display = "block";
-}
-
-/* =========================================================
-   🚗 تشغيل تحميل البيانات عند فتح الصفحة
-========================================================= */
-window.addEventListener("DOMContentLoaded", () => {
-  loadDriverSignupData();
-});
-/* =========================================================
-   🚗 قبول الرحلة (driver-requests.html)
-========================================================= */
-function safeJsonParse(value) {
-  try {
-    return typeof value === "string" ? JSON.parse(value) : value;
-  } catch {
-    return null;
-  }
-}
-
-function yearsSinceBirth(dob) {
-  if (!dob) return null;
-  const birth = new Date(dob);
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-  return age;
 }
 
 /* =========================================================
@@ -341,155 +164,6 @@ function driver_loadSchedule(header) {
     }
 }
 
-
-/* =========================================
-  اخفاء كبست تسجيل الدخول عندما يكون المستخدم مسجل من قبل 
-========================================= */
-function checkLoginButtons() {
-  const userId = localStorage.getItem("userId");
-
-  const signupBtn = document.getElementById("signupBtn");
-  const loginBtn = document.getElementById("loginBtn");
-
-  if (userId) {
-    // المستخدم مسجل → اخفيهم
-    if (signupBtn) signupBtn.style.display = "none";
-    if (loginBtn) loginBtn.style.display = "none";
-  } else {
-    // المستخدم مش مسجل → خليهم ظاهرين
-    if (signupBtn) signupBtn.style.display = "inline-block";
-    if (loginBtn) loginBtn.style.display = "inline-block";
-  }
-}
-
-window.addEventListener("DOMContentLoaded", checkLoginButtons);
-
-function getAge(dob) {
-  const age = yearsSinceBirth(dob);
-  return age === null ? "--" : age;
-}
-
-async function loadCustomerSubscriptions() {
-  const container = document.getElementById("subscriptionsList");
-  if (!container) return;
-
-  const customerId = localStorage.getItem("userId");
-
-  if (!customerId) {
-    container.innerHTML = `<p class="empty-requests">يجب تسجيل الدخول أولاً</p>`;
-    return;
-  }
-
-  try {
-    const res = await fetch(`/customer/subscriptions/${customerId}`);
-    const data = await res.json();
-
-    if (!data.success) {
-      container.innerHTML = `<p class="empty-requests">فشل تحميل الاشتراكات</p>`;
-      return;
-    }
-
-    if (data.subscriptions.length === 0) {
-      container.innerHTML = `<p class="empty-requests">لا توجد اشتراكات حالياً</p>`;
-      return;
-    }
-
-    container.innerHTML = "";
-
-    data.subscriptions.forEach((sub) => {
-      const pickup = safeJsonParse(sub.pickup);
-      const dropoff = safeJsonParse(sub.dropoff);
-      const seats = safeJsonParse(sub.selected_seats) || [];
-
-      const driverName = `${sub.fast_name_driver || ""} ${sub.last_name_driver || ""}`.trim();
-      const driverAge = getAge(sub.date_of_birth_driver);
-
-      const card = document.createElement("div");
-      card.className = "subscription-item-card";
-
-      card.innerHTML = `
-        <div class="sub-header-main" onclick="toggleSubscriptionCard(this)">
-          <div class="sub-title-info">
-            <i class="bi bi-calendar-check icon-sub"></i>
-            <span>${sub.trip_type === "round-trip" ? "اشتراك ذهاب وإياب" : "اشتراك ذهاب"}</span>
-          </div>
-          <i class="bi bi-chevron-left arrow-indicator"></i>
-        </div>
-
-        <div class="sub-content-collapsible">
-          <div class="subscription-details-box">
-            <p><strong>تاريخ البدء:</strong> ${sub.start_date_booking}</p>
-            <p><strong>وقت الذهاب:</strong> ${sub.start_time}</p>
-            <p><strong>وقت العودة:</strong> ${sub.end_time || "--"}</p>
-            <p><strong>عدد المقاعد:</strong> ${sub.seats_count || 1}</p>
-            <p><strong>المقاعد:</strong> ${sub.is_full_car ? "سيارة كاملة" : (seats.length ? seats.join("، ") : "--")}</p>
-            <p><strong>السعر الشهري:</strong> ${sub.price || "--"} JOD</p>
-            <p><strong>المسافة:</strong> ${sub.distance_km || "--"} كم</p>
-            <p><strong>مدة الرحلة:</strong> ${sub.duration_min || "--"} دقيقة</p>
-          </div>
-
-          <div id="customerMap-${sub.booking_id}" class="driver-mini-map"></div>
-
-<button class="map-btn" onclick='drawCustomerRoute(${sub.booking_id}, ${JSON.stringify(pickup)}, ${JSON.stringify(dropoff)})'>
-  عرض المسار على الخريطة
-</button>
-
-          <div class="driver-info-card">
-            <h3>معلومات السائق</h3>
-            <div class="driver-details">
-              <img src="img/my-user.png" alt="صورة السائق" class="driver-img">
-              <div class="driver-text">
-                <h4>${driverName || "غير محدد"}</h4>
-                <p><i class="bi bi-telephone"></i> ${sub.phone_driver || "--"}</p>
-                <p><i class="bi bi-car-front"></i> ${sub.vehicle_type || ""} ${sub.vehicle_mode || ""} ${sub.vehicle_year_of_manufacturel || ""}</p>
-                <p><i class="bi bi-palette"></i> اللون: ${sub.color || "--"}</p>
-                <p><i class="bi bi-person-badge"></i> العمر: ${driverAge} سنة</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      container.appendChild(card);
-    });
-
-  } catch (err) {
-    console.log("Subscriptions error:", err);
-    container.innerHTML = `<p class="empty-requests">خطأ في الاتصال بالسيرفر</p>`;
-  }
-}
-
-function toggleSubscriptionCard(header) {
-  const card = header.closest(".subscription-item-card");
-  card.classList.toggle("active");
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  loadCustomerSubscriptions();
-});
-
-async function submitTripRating(tripId) {
-  const rating = document.getElementById(`rating-${tripId}`).value;
-  const comment = document.getElementById(`comment-${tripId}`).value;
-
-  const res = await fetch(`/customer/daily-trips/${tripId}/rate`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ rating, comment })
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "فشل إرسال التقييم");
-    return;
-  }
-
-  alert("شكراً لتقييمك");
-  loadTodayTripNotifications();
-}
 
 document.querySelectorAll(".otp-field").forEach((input,index,inputs)=>{
 
