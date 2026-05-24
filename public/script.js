@@ -1,81 +1,16 @@
-["api", "storage", "dom"].forEach((name) => {
+[
+  "core/api",
+  "core/storage",
+  "core/dom",
+  "pages/login",
+  "pages/signup",
+  "pages/forgot-password"
+].forEach((name) => {
   const script = document.createElement("script");
-  script.src = `js/core/${name}.js`;
+  script.async = false;
+  script.src = `js/${name}.js`;
   document.head.appendChild(script);
 });
-
-async function handleLogin(e) {
-  e.preventDefault();
-
-  const rawInput = document.getElementById("userPhone").value.trim();
-  const countryCode = document.getElementById("countryCode").value;
-  const password = document.getElementById("password").value.trim();
-  const errorMsg = document.getElementById("errorMessage");
-
-  errorMsg.innerText = "";
-
-  let loginData;
-
-  if (/^admin\d+$/i.test(rawInput)) {
-    loginData = {
-      loginType: "admin",
-      adminCode: rawInput,
-      password: password
-    };
-  } else if (/^driver\d+$/i.test(rawInput)) {
-    loginData = {
-      loginType: "driver",
-      driverCode: rawInput,
-      password: password
-    };
-  } else {
-    loginData = {
-      loginType: "customer",
-      phone: countryCode + rawInput,
-      password: password
-    };
-  }
-
-  try {
-    const res = await fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(loginData)
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      if (data.role === "admin") {
-        localStorage.setItem("adminId", data.adminId);
-        localStorage.setItem("userType", "admin");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("driverId");
-        window.location.href = "admin.html";
-      } else if (data.role === "driver") {
-        localStorage.setItem("driverId", data.driverId);
-        localStorage.setItem("userType", "driver");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("adminId");
-        window.location.href = "driver-requests.html";
-      } else {
-        localStorage.setItem("userId", data.userId);
-        localStorage.setItem("userType", "customer");
-        localStorage.removeItem("driverId");
-        localStorage.removeItem("adminId");
-        window.location.href = "index.html";
-      }
-    } else {
-      errorMsg.innerText = data.message || "فشل تسجيل الدخول";
-    }
-
-  } catch (err) {
-    console.log("ERROR:", err);
-    errorMsg.innerText = "خطأ في الاتصال بالسيرفر";
-  }
-}
 /* =========================================================
    📱 القائمة الجانبية (Menu)
 ========================================================= */
@@ -571,19 +506,7 @@ async function checkAndGo() {
 }
 
 /* =========================================================
-   📝 التسجيل + OTP (تم دمج التكرار)
-========================================================= */
-function closeOTP() {
-    document.getElementById('otpModal').style.display = 'none';
-}
-
-function verifyOTP() {
-    alert("تم التحقق بنجاح!");
-    window.location.href = "index.html";
-}
-
-/* =========================================================
-   🔢 OTP Auto Focus
+    OTP Auto Focus
 ========================================================= */
 document.querySelectorAll('.otp-field, .otp-digit').forEach((input, index, inputs) => {
     input.addEventListener('input', () => {
@@ -1031,45 +954,6 @@ function driver_loadSchedule(header) {
     }
 }
 
-
-/* =========================================
-   التسجيل signup
-========================================= */
-const signupForm = document.getElementById("signupForm");
-
-if (signupForm) {
-  signupForm.addEventListener("submit", handleSignup);
-}
-
-async function handleSignup(e) {
-  e.preventDefault();
-
-  const name = document.getElementById("userName").value;
-  const phone = document.getElementById("countryCode").value + document.getElementById("userPhone").value;
-  const dob = document.getElementById("userDOB").value;
-  const password = document.getElementById("userPass").value;
-
-  try {
-    const res = await fetch("/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ name, phone, dob, password })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      localStorage.setItem("userId", data.userId);
-      alert("تم إنشاء الحساب بنجاح");
-      window.location.href = "index.html";
-    } 
-  } catch (err) {
-    console.log("Signup fetch error:", err);
-    alert("خطأ في الاتصال بالسيرفر");
-  }
-}
 
 /* =========================================
    تحميل بيانات الملف الشخصي
@@ -2628,110 +2512,6 @@ async function markPassengerPicked(tripId) {
   }
 
   loadDriverTodayTrips();
-}
-
-let resetPhoneNumber = "";
-let resetCode = "";
-
-async function sendResetCode() {
-  const phoneInput = document.getElementById("resetPhone").value.trim();
-
-  if (!phoneInput) {
-    alert("أدخل رقم الهاتف");
-    return;
-  }
-
-  resetPhoneNumber = "+962" + phoneInput;
-
-  const res = await fetch("/forgot-password/send-code", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone: resetPhoneNumber })
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "فشل إرسال الرمز");
-    return;
-  }
-
-  window.open(data.whatsappUrl, "_blank");
-document.getElementById(
-"verificationPhone"
-).innerText = resetPhoneNumber;
-  showResetStep(2);
-}
-
-async function verifyResetCode() {
-  const inputs = document.querySelectorAll(".otp-field");
-  resetCode = Array.from(inputs).map(input => input.value).join("");
-
-  if (resetCode.length !== 4) {
-    alert("أدخل رمز التحقق كاملاً");
-    return;
-  }
-
-  const res = await fetch("/forgot-password/verify-code", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      phone: resetPhoneNumber,
-      code: resetCode
-    })
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "رمز غير صحيح");
-    return;
-  }
-
-  showResetStep(3);
-}
-
-async function finishPasswordReset() {
-  const newPass = document.getElementById("newPass").value.trim();
-  const confirmPass = document.getElementById("confirmNewPass").value.trim();
-
-  if (!newPass || !confirmPass) {
-    alert("أدخل كلمة المرور");
-    return;
-  }
-
-  if (newPass !== confirmPass) {
-    alert("كلمتا المرور غير متطابقتين");
-    return;
-  }
-
-  const res = await fetch("/forgot-password/reset", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      phone: resetPhoneNumber,
-      code: resetCode,
-      newPassword: newPass
-    })
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "فشل تغيير كلمة المرور");
-    return;
-  }
-
-  alert("تم تغيير كلمة المرور بنجاح");
-  window.location.href = "login.html";
-}
-
-function showResetStep(step) {
-  document.getElementById("forgot-step1").style.display = "none";
-  document.getElementById("forgot-step2").style.display = "none";
-  document.getElementById("forgot-step3").style.display = "none";
-
-  document.getElementById(`forgot-step${step}`).style.display = "block";
 }
 
 document.querySelectorAll(".otp-field").forEach((input,index,inputs)=>{
