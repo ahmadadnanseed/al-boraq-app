@@ -358,7 +358,8 @@ footer {
 .trip-summary { background: #0059b3; color: white; padding: 10px 20px; border-radius: 10px; margin-bottom: 15px; text-align: center; }
 
 .table-wrapper { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 25px; }
-.schedule-table { width: 100%; border-collapse: collapse; text-align: right; }
+.schedule-table,
+.modern-dark-table { width: 100%; border-collapse: collapse; text-align: right; }
 .schedule-table th { background: #f8f9fa; padding: 12px; color: #003366; border-bottom: 2px solid #eee; }
 .schedule-table td { padding: 12px; border-bottom: 1px solid #eee; color: #444; font-size: 0.9rem; }
 
@@ -536,7 +537,8 @@ footer {
 
 /* إخفاء الجدول افتراضياً */
 .sub-content-collapsible { display: none; padding: 10px; border-top: 1px solid #eee; }
-.subscription-item-card.active .sub-content-collapsible { display: block; }
+.subscription-item-card.active .sub-content-collapsible,
+.driver-request-card.active .driver-request-details { display: block; }
 .subscription-item-card.active .arrow-indicator { transform: rotate(-90deg); }
 
 /* نافذة تعديل الجدول (مركزية) */
@@ -1243,12 +1245,6 @@ label, .date-field {
     padding: 20px;
 }
 
-.modern-dark-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: right;
-}
-
 .modern-dark-table th {
     padding: 15px;
     color: #00aeef;
@@ -1458,7 +1454,8 @@ label, .date-field {
     animation: slideDown 0.3s ease;
 }
 
-.custom-select-wrapper.open .bi-chevron-down {
+.custom-select-wrapper.open .bi-chevron-down,
+.driver-request-card.active .request-arrow {
     transform: rotate(180deg);
 }
 
@@ -1645,14 +1642,6 @@ label, .date-field {
     margin-bottom: 20px;
 }
 
-.close-modal-btn {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
 .admin-modal-search input {
     width: 100%;
     padding: 14px;
@@ -1662,30 +1651,10 @@ label, .date-field {
     margin-bottom: 20px;
 }
 
-.whatsapp-btn,
-.accept-btn,
-.reject-btn {
-    border: none;
-    border-radius: 10px;
-    padding: 8px 14px;
-    cursor: pointer;
-    color: white;
-    font-size: 0.9rem;
-    margin: 2px;
-}
-
 .whatsapp-btn {
     background: #25D366;
     text-decoration: none;
     display: inline-block;
-}
-
-.accept-btn {
-    background: #16a34a;
-}
-
-.reject-btn {
-    background: #dc2626;
 }
 
 .active-card {
@@ -2205,18 +2174,10 @@ label, .date-field {
     transition: 0.3s;
 }
 
-.driver-request-card.active .request-arrow {
-    transform: rotate(180deg);
-}
-
 .driver-request-details {
     display: none;
     padding: 18px;
     border-top: 1px solid #eee;
-}
-
-.driver-request-card.active .driver-request-details {
-    display: block;
 }
 
 .driver-request-grid {
