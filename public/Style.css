@@ -2462,6 +2462,391 @@ label, .date-field {
     gap: 12px;
 }
 
+.assistant-mascot{
+    width:95px;
+    height:95px;
+    position:absolute;
+    bottom:70px;
+    right:25px;
+
+    background:linear-gradient(
+        135deg,
+        #ffffff,
+        #d8f1ff,
+        #0ea5e9
+    );
+
+    border-radius:50%;
+
+    box-shadow:
+    0 0 20px rgba(14,165,233,.6),
+    0 0 35px rgba(255,255,255,.4);
+
+    transition:.4s;
+}
+
+@media(max-width:768px){
+    .assistant-mascot{
+        width:70px;
+        height:70px;
+        bottom:75px;
+        right:15px;
+    }
+}
+
+.buraq-mascot {
+    position: relative;
+    width: 132px;
+    height: 88px;
+    animation: mascotFloat 2.2s ease-in-out infinite;
+    filter: drop-shadow(0 14px 18px rgba(0, 26, 51, 0.38));
+}
+
+.mascot-body {
+    position: absolute;
+    left: 34px;
+    top: 38px;
+    width: 62px;
+    height: 30px;
+    border: 3px solid #7ce9ff;
+    border-radius: 34px 38px 22px 26px;
+    background: linear-gradient(140deg, #ffffff 15%, #eafcff 58%, #98edff 100%);
+    box-shadow: inset -8px -6px 0 rgba(0, 174, 239, 0.12);
+}
+
+.mascot-chest {
+    position: absolute;
+    right: -3px;
+    top: 4px;
+    width: 18px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.75);
+}
+
+.mascot-neck {
+    position: absolute;
+    left: 86px;
+    top: 26px;
+    width: 18px;
+    height: 35px;
+    border: 3px solid #7ce9ff;
+    border-bottom: none;
+    border-radius: 18px 18px 8px 8px;
+    background: linear-gradient(90deg, #ffffff, #dff8ff);
+    transform: rotate(-20deg);
+}
+
+.mascot-head {
+    position: absolute;
+    left: 97px;
+    top: 14px;
+    width: 32px;
+    height: 27px;
+    border: 3px solid #7ce9ff;
+    border-radius: 20px 22px 18px 12px;
+    background: linear-gradient(135deg, #ffffff, #e7fbff);
+    box-shadow: inset -4px -3px 0 rgba(0, 174, 239, 0.12);
+}
+
+.mascot-ear {
+    position: absolute;
+    right: 7px;
+    top: -13px;
+    width: 10px;
+    height: 16px;
+    border: 3px solid #7ce9ff;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(#ffffff, #dff8ff);
+    transform: rotate(15deg);
+}
+
+.mascot-mane {
+    position: absolute;
+    left: -8px;
+    top: 2px;
+    width: 9px;
+    height: 28px;
+    border-radius: 12px;
+    background: linear-gradient(#003366, #0077cc 55%, #7ce9ff);
+}
+
+.mascot-eye {
+    position: absolute;
+    right: 8px;
+    top: 9px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #003366;
+    box-shadow: 0 0 0 3px rgba(124, 233, 255, 0.22);
+}
+
+.mascot-smile {
+    position: absolute;
+    right: 5px;
+    bottom: 6px;
+    width: 13px;
+    height: 7px;
+    border-bottom: 2px solid #003366;
+    border-radius: 0 0 10px 10px;
+}
+
+.mascot-wing {
+    position: absolute;
+    left: 47px;
+    top: 19px;
+    width: 46px;
+    height: 30px;
+    border: 3px solid #7ce9ff;
+    border-radius: 85% 22% 82% 24%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(124,233,255,0.34));
+    transform-origin: right bottom;
+    box-shadow: inset -5px -4px 0 rgba(0, 174, 239, 0.1);
+}
+
+.mascot-wing::after {
+    content: "";
+    position: absolute;
+    left: 9px;
+    top: 8px;
+    width: 24px;
+    height: 12px;
+    border-top: 2px solid rgba(0, 89, 179, 0.26);
+    border-radius: 50%;
+}
+
+.wing-back {
+    opacity: 0.48;
+    transform: rotate(-18deg) translateX(-10px);
+}
+
+.wing-front {
+    transform: rotate(-30deg);
+}
+
+.mascot-tail {
+    position: absolute;
+    left: -23px;
+    top: 5px;
+    width: 28px;
+    height: 14px;
+    border-top: 5px solid #7ce9ff;
+    border-radius: 50%;
+    transform: rotate(12deg);
+}
+
+.mascot-tail::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: -8px;
+    width: 18px;
+    height: 10px;
+    border-top: 4px solid #003366;
+    border-radius: 50%;
+}
+
+.mascot-leg {
+    position: absolute;
+    bottom: -20px;
+    width: 8px;
+    height: 22px;
+    border-radius: 8px;
+    background: linear-gradient(#ffffff, #dff8ff);
+    border: 2px solid #7ce9ff;
+}
+
+.leg-one {
+    left: 16px;
+}
+
+.leg-two {
+    right: 15px;
+}
+
+.mascot-typing-dots {
+    position: absolute;
+    left: -4px;
+    top: 4px;
+    display: none;
+    gap: 4px;
+    padding: 7px 9px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 8px 18px rgba(0, 26, 51, 0.16);
+}
+
+.mascot-typing-dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #00aeef;
+    animation: mascotTypingDot 0.8s ease-in-out infinite;
+}
+
+.mascot-typing-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.mascot-typing-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.mascot-stars {
+    position: absolute;
+    left: 70px;
+    top: -6px;
+    width: 52px;
+    height: 32px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mascot-stars span {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #00aeef;
+    clip-path: polygon(50% 0%, 62% 35%, 100% 50%, 62% 65%, 50% 100%, 38% 65%, 0% 50%, 38% 35%);
+}
+
+.mascot-stars span:nth-child(1) {
+    left: 2px;
+    top: 14px;
+}
+
+.mascot-stars span:nth-child(2) {
+    left: 20px;
+    top: 0;
+    background: #ffffff;
+}
+
+.mascot-stars span:nth-child(3) {
+    right: 0;
+    top: 12px;
+}
+
+.buraq-mascot[data-state="idle"] .mascot-wing {
+    animation: mascotWingIdle 2s ease-in-out infinite;
+}
+
+.buraq-mascot[data-state="loading"] {
+    animation: mascotRunBody 0.32s linear infinite;
+}
+
+.buraq-mascot[data-state="loading"] .mascot-wing {
+    animation: mascotWingLoading 0.24s linear infinite;
+}
+
+.buraq-mascot[data-state="loading"] .mascot-leg {
+    animation: mascotRunLeg 0.26s linear infinite;
+}
+
+.buraq-mascot[data-state="loading"] .leg-two {
+    animation-delay: 0.13s;
+}
+
+.buraq-mascot[data-state="loading"] .mascot-typing-dots {
+    display: flex;
+}
+
+.buraq-mascot[data-state="error"] {
+    animation: mascotHitWall 0.45s ease-in-out 4;
+}
+
+.buraq-mascot[data-state="error"] .mascot-stars {
+    opacity: 1;
+    animation: mascotStarsSpin 0.7s linear infinite;
+}
+
+@keyframes mascotFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes mascotWingIdle {
+    0%, 100% {
+        transform: rotate(-24deg);
+    }
+
+    50% {
+        transform: rotate(-34deg);
+    }
+}
+
+@keyframes mascotWingLoading {
+    0%, 100% {
+        transform: rotate(-18deg) scaleY(1);
+    }
+
+    50% {
+        transform: rotate(-48deg) scaleY(0.88);
+    }
+}
+
+@keyframes mascotRunBody {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-3px) rotate(-2deg);
+    }
+}
+
+@keyframes mascotRunLeg {
+    0%, 100% {
+        transform: rotate(18deg);
+    }
+
+    50% {
+        transform: rotate(-18deg);
+    }
+}
+
+@keyframes mascotTypingDot {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.45;
+    }
+
+    50% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
+}
+
+@keyframes mascotHitWall {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+
+    30% {
+        transform: translateX(8px) rotate(3deg);
+    }
+
+    60% {
+        transform: translateX(-7px) rotate(-4deg);
+    }
+}
+
+@keyframes mascotStarsSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .help-message {
     max-width: 75%;
     padding: 13px 16px;

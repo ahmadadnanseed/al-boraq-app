@@ -50,6 +50,36 @@
                 </div>
             </div>
 
+            <div class="assistant-mascot-row">
+                <div class="buraq-mascot" id="buraqMascot" data-state="idle" aria-label="مساعد براق">
+                    <div class="mascot-stars">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="mascot-wing wing-back"></div>
+                    <div class="mascot-body">
+                        <div class="mascot-chest"></div>
+                        <div class="mascot-tail"></div>
+                        <div class="mascot-leg leg-one"></div>
+                        <div class="mascot-leg leg-two"></div>
+                    </div>
+                    <div class="mascot-wing wing-front"></div>
+                    <div class="mascot-neck"></div>
+                    <div class="mascot-head">
+                        <div class="mascot-ear"></div>
+                        <div class="mascot-mane"></div>
+                        <div class="mascot-eye"></div>
+                        <div class="mascot-smile"></div>
+                    </div>
+                    <div class="mascot-typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
             <div class="help-input-area">
                 <input type="text" id="helpMessageInput" placeholder="اكتب رسالتك هنا..." aria-label="رسالة المستخدم">
                 <button type="button" id="helpSendButton">إرسال</button>
@@ -84,6 +114,22 @@
         const helpMessagesArea = document.getElementById("helpMessagesArea");
         const helpMessageInput = document.getElementById("helpMessageInput");
         const helpSendButton = document.getElementById("helpSendButton");
+        const buraqMascot = document.getElementById("buraqMascot");
+        let mascotResetTimer;
+
+        function setMascotState(state) {
+            const allowedStates = ["idle", "loading", "error"];
+            const nextState = allowedStates.includes(state) ? state : "idle";
+
+            clearTimeout(mascotResetTimer);
+            buraqMascot.dataset.state = nextState;
+
+            if (nextState === "error") {
+                mascotResetTimer = setTimeout(function() {
+                    setMascotState("idle");
+                }, 2000);
+            }
+        }
 
         function addHelpMessage(text, type) {
             const messageBubble = document.createElement("div");
@@ -100,6 +146,7 @@
 
             addHelpMessage(message, "user");
             helpMessageInput.value = "";
+            setMascotState("loading");
 
             try {
                 const response = await fetch("/api/help-chat", {
@@ -111,9 +158,18 @@
                 });
 
                 const data = await response.json();
-                addHelpMessage(data.reply || "خدمة المساعدة غير متاحة حالياً", "assistant");
+                const reply = data.reply || "خدمة المساعدة غير متاحة حالياً";
+                addHelpMessage(reply, "assistant");
+
+                if (reply.includes("أنا مساعد براق فقط")) {
+                    setMascotState("error");
+                } else {
+                    setMascotState("idle");
+                }
             } catch (error) {
-                addHelpMessage("خدمة المساعدة غير متاحة حالياً", "assistant");
+                const fallbackReply = "خدمة المساعدة غير متاحة حالياً";
+                addHelpMessage(fallbackReply, "assistant");
+                setMascotState("idle");
             }
         }
 
