@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const connection = require("./src/db");
 const authRoutes = require("./src/routes/auth");
 const customerRoutes = require("./src/routes/customers");
@@ -19,6 +20,117 @@ app.use(customerRoutes);
 app.use(bookingRoutes);
 app.use(dailyTripRoutes);
 app.use(driverRoutes);
+
+app.post("/api/help-chat", async (req, res) => {
+  const { message } = req.body;
+
+  if (!message || typeof message !== "string") {
+    const errorMessage = "الرسالة مطلوبة";
+
+    return res.status(400).json({
+      success: false,
+      reply: "خدمة المساعدة غير متاحة حالياً",
+      debug: errorMessage
+    });
+  }
+
+  if (!process.env.GEMINI_API_KEY) {
+    const errorMessage = "GEMINI_API_KEY is missing";
+
+    return res.status(500).json({
+      success: false,
+      reply: "خدمة المساعدة غير متاحة حالياً",
+      debug: errorMessage
+    });
+  }
+
+  try {
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [
+              {
+                text: `You are BURAQ Help Assistant.
+
+Answer only about:
+- registration
+- booking
+- subscriptions
+- seats
+- notifications
+- drivers
+- daily trips
+- maps
+- cancellation
+- contacting admin
+
+If outside BURAQ:
+"أنا مساعد براق فقط، يمكنني مساعدتك في استخدام التطبيق."`
+              }
+            ]
+          },
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: message
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
+
+    console.log("Gemini response status:", geminiResponse.status);
+
+    const responseBody = await geminiResponse.text();
+
+    if (!geminiResponse.ok) {
+      console.log("Gemini error body:", responseBody);
+
+      return res.status(500).json({
+        success: false,
+        reply: "خدمة المساعدة غير متاحة حالياً",
+        debug: responseBody
+      });
+    }
+
+    const data = JSON.parse(responseBody);
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!reply) {
+      const errorMessage = "Gemini response did not include a reply";
+
+      return res.status(500).json({
+        success: false,
+        reply: "خدمة المساعدة غير متاحة حالياً",
+        debug: errorMessage
+      });
+    }
+
+    res.json({
+      success: true,
+      reply
+    });
+  } catch (error) {
+    const errorMessage = error.message || "Unknown help chat error";
+    console.log("Help chat error:", errorMessage);
+
+    res.status(500).json({
+      success: false,
+      reply: "خدمة المساعدة غير متاحة حالياً",
+      debug: errorMessage
+    });
+  }
+});
 
 /* ==============================
    تشغيل السيرفر

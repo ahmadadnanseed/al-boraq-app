@@ -8,33 +8,33 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="booking-page-bg">
-     <header class="main-header">
-    <div class="navbar-container">
-        
-        <div class="header-right-side">
-            <button class="burger-menu" onclick="openNav()">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </button>
+    <header class="main-header">
+        <div class="navbar-container">
+            <div class="header-right-side">
+                <button class="burger-menu" onclick="openNav()">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </button>
 
-            <div class="brand">
-                <img src="img/my-horse4.png" alt="شعار براق">
-                <span>براق</span>
+                <div class="brand">
+                    <img src="img/my-horse4.png" alt="شعار براق">
+                    <span>براق</span>
+                </div>
+
+                <nav class="nav-links-modern">
+                    <a href="index.html" class="nav-item-effect active"> العوده للرئيسية</a>
+                    <a href="index.html#about-section" class="nav-item-effect">من نحن</a>
+                </nav>
             </div>
 
-            <nav class="nav-links-modern">
-                <a href="index.html" class="nav-item-effect active"> العوده للرئيسية</a>
-                <a href="index.html#about-section" class="nav-item-effect">من نحن</a>
-                
+            <div class="header-left-actions">
+                <div class="auth-group">
+                    <a href="login.html" id="loginBtn" class="login-link-new">تسجيل دخول</a>
+                    <a href="signup.html" id="signupBtn" class="signup-btn">سجل الآن</a>
+                </div>
+            </div>
         </div>
-
-       <div class="header-left-actions">
-    <div class="auth-group">
-        <a href="login.html" id="loginBtn" class="login-link-new">تسجيل دخول</a>
-        <a href="signup.html" id="signupBtn" class="signup-btn">سجل الآن</a>
-    </div>
-</div>
     </header>
 
     <main class="help-page-container">
@@ -58,7 +58,7 @@
 
         <section class="help-support-section">
             <p>هل لم تُحل مشكلتك؟</p>
-            <button type="button">التواصل مع الإدارة</button>
+            <button type="button" onclick="window.open('https://wa.me/962786727856', '_blank')">التواصل مع الإدارة</button>
         </section>
     </main>
 
@@ -85,22 +85,6 @@
         const helpMessageInput = document.getElementById("helpMessageInput");
         const helpSendButton = document.getElementById("helpSendButton");
 
-        function getTemporaryHelpReply(message) {
-            if (message.includes("تسجيل")) {
-                return "يمكنك التسجيل من صفحة إنشاء حساب.";
-            }
-
-            if (message.includes("حجز")) {
-                return "يمكنك إنشاء حجز من صفحة الحجز.";
-            }
-
-            if (message.includes("اشتراك")) {
-                return "يمكنك إدارة الاشتراكات من صفحة الاشتراكات.";
-            }
-
-            return "لم أفهم سؤالك، يمكنك التواصل مع الإدارة.";
-        }
-
         function addHelpMessage(text, type) {
             const messageBubble = document.createElement("div");
             messageBubble.className = `help-message ${type}-message`;
@@ -109,14 +93,28 @@
             helpMessagesArea.scrollTop = helpMessagesArea.scrollHeight;
         }
 
-        function sendHelpMessage() {
+        async function sendHelpMessage() {
             const message = helpMessageInput.value.trim();
 
             if (!message) return;
 
             addHelpMessage(message, "user");
             helpMessageInput.value = "";
-            addHelpMessage(getTemporaryHelpReply(message), "assistant");
+
+            try {
+                const response = await fetch("/api/help-chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                addHelpMessage(data.reply || "خدمة المساعدة غير متاحة حالياً", "assistant");
+            } catch (error) {
+                addHelpMessage("خدمة المساعدة غير متاحة حالياً", "assistant");
+            }
         }
 
         helpSendButton.addEventListener("click", sendHelpMessage);
