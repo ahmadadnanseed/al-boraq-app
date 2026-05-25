@@ -1,4 +1,5 @@
 /* بّسࣵـــــــــم ۫اّلࣾلࣵـــهࣾ ࣵاۧلٔرًحۜمٓـــــنࣹ ۣاٍلۭرۡحَـــيۤمࣻ */
+/* Shared Components */
 html {
     scroll-behavior: smooth !important;
     scroll-padding-top: 100px; /* مسافة عشان الهيدر الثابت */
@@ -20,6 +21,7 @@ body {
     background-color: #001a33;
 }
 
+/* Authentication */
 /* ====================== تنسيقات صفحة تسجيل الدخول ====================== */
 /* لجعل البطاقة في منتصف الشاشة تماماً */
 .login-page-body {
@@ -92,6 +94,7 @@ h1 {
     background-color: #0056b3;
 }
 
+/* Shared Components */
 /* ====================== تنسيقات الصفحة الرئيسية (الاشتراكات) ====================== */
 
 /* شريط العنوان العلوي */
@@ -203,6 +206,7 @@ footer {
     text-align: center;
 }
 
+/* Authentication */
 /* فورم تسجيل الدخول — عمودي */
 #loginForm {
     display: flex;
@@ -226,6 +230,7 @@ footer {
     box-sizing: border-box;
 }
 
+/* Shared Components */
 /* ===== تنسيق القائمة الجانبية ===== */
 .sidebar {
     height: 100%;
@@ -318,6 +323,7 @@ footer {
     direction: ltr; /* عشان الرقم يظهر صح من اليسار لليمين */
 }
 
+/* Booking */
 /* ===== تنسيق صفحة الحجز الجديدة ===== */
 .booking-card-container { padding: 90px 20px 40px; max-width: 450px; margin: 0 auto; }
 .booking-title { text-align: center; color: #003366; margin-bottom: 25px; font-weight: 800; }
@@ -345,6 +351,7 @@ footer {
 
 
 
+/* Shared Components */
 /* ===== تنسيق جدول الرحلات ومعلومات السائق ===== */
 .schedule-container { padding: 90px 15px 30px; max-width: 800px; margin: 0 auto; }
 
@@ -370,6 +377,7 @@ footer {
 .confirm-btn { flex: 1; padding: 12px; background: #0059b3; color: white; border: none; border-radius: 10px; cursor: pointer; }
 .cancel-btn { flex: 1; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 10px; cursor: pointer; }
 
+/* Authentication */
 /* ===== تنسيقات صفحة التسجيل ===== */
 .auth-container {
     display: flex;
@@ -462,6 +470,7 @@ footer {
     to { opacity: 1; transform: scale(1); }
 }
 
+/* Profile */
 /* ألوان براق الهادئة */
 .profile-body { background: #f2f5f8; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
@@ -515,6 +524,7 @@ footer {
     transform: scale(0.98); /* تأثير ضغطة بسيطة */
 }
 
+/* Shared Components */
 /* تنسيق بطاقة الاشتراك والسهم */
 .subscription-item-card {
     background: white; border-radius: 15px; margin-bottom: 20px;
@@ -542,6 +552,7 @@ footer {
 .confirm-btn { flex: 1; background: #003366; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
 .cancel-btn { flex: 1; background: #f0f0f0; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
 
+/* Driver */
 /* ألوان الهوية البصرية لبراق */
 .driver-header { text-align: center; padding: 40px 20px 20px; }
 .brand-logo-circle {
@@ -653,6 +664,7 @@ footer {
 .card-footer-text { text-align: center; margin-top: 25px; font-size: 0.9rem; color: #666; }
 .card-footer-text a { color: #003366; font-weight: bold; text-decoration: none; }
 
+/* Driver */
 /* تنسيقات واجهة السائق */
 .driver-dashboard-bg { background-color: #f0f4f8; margin: 0; }
 .driver-top-nav { background: #003366; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -689,6 +701,7 @@ footer {
     align-items: center;
     z-index: 1000;
 }
+/* Shared Components */
 /* ====================== تحديث أزرار الهيدر (براق الجديد) ====================== */
 
 /* حاوية الأزرار */
@@ -999,6 +1012,7 @@ footer {
         display: none; /* إخفاء الروابط في الجوال لأنها صارت بالسايد بار */
     }
 }
+/* Booking */
 /* --- تنسيق صفحة الحجز الملمومة والواضحة --- */
 .booking-page-bg {
     background: #001a33 !important; /* لون غامق صلب عشان الخط يوضح */
@@ -1088,6 +1102,7 @@ label, .date-field {
     font-size: 0.8rem !important;
     box-shadow: 0 0 10px rgba(255, 204, 0, 0.4); /* توهج خفيف */
 }
+/* Seats */
 /* توضيح كلمة السائق في صفحة المقاعد */
 .car-layout span, 
 .car-layout label,
@@ -1097,6 +1112,7 @@ label, .date-field {
     font-size: 1rem !important;
     text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* ظل خفيف للبروز */
 }
+/* Admin */
 /* ====================== Admin Dashboard Luxury Dark Style ====================== */
 
 /* 1. تنسيق الخلفية العامة للأدمن (الكحلي العميق لبراق) */
@@ -1285,6 +1301,7 @@ label, .date-field {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* Driver */
 /* --- تنسيق صفحة انضمام السائق (براق Luxury) --- */
 
 /* بطاقة التسجيل - تحويلها لستايل زجاجي غامق */
@@ -1479,6 +1496,7 @@ label, .date-field {
 }
 
 
+/* Admin */
 .requests-btn {
     background: #14b8ff;
     color: #fff;
@@ -1719,6 +1737,7 @@ label, .date-field {
 }
 
 
+/* Maps */
 .loc-input-wrap {
     display: flex;
     align-items: center;
@@ -1814,6 +1833,7 @@ label, .date-field {
     cursor: pointer;
 }
 
+/* Booking */
 /* ===== إصلاحات صفحة الحجز ===== */
 
 .location-group,
@@ -1946,6 +1966,7 @@ label, .date-field {
     font-weight: bold;
 }
 
+/* Maps */
 /* ===== خريطة تحديد الموقع ===== */
 
 .map-modal {
@@ -2038,6 +2059,7 @@ label, .date-field {
     border: 1px solid #ddd;
     box-sizing: border-box;
 }
+/* Seats */
 /* ===== تنسيقات صفحة اختيار المقاعد (براق) ===== */
 .car-layout {
     background: rgba(255, 255, 255, 0.05); /* خلفية شفافة للمخطط */
@@ -2143,6 +2165,7 @@ label, .date-field {
     font-weight: bold;
     cursor: pointer;
 }
+/* Driver */
 .driver-page-title {
     color: #003366;
     text-align: center;
@@ -2244,6 +2267,7 @@ label, .date-field {
     text-align: center;
     font-weight: bold;
 }
+/* Shared Components */
 .subscription-details-box {
     background: #fff;
     padding: 15px;
@@ -2264,6 +2288,7 @@ label, .date-field {
   width: 400px;
 }
 
+/* Notifications */
 .notifications-container {
     width: 90%;
     max-width: 650px;
@@ -2337,6 +2362,7 @@ label, .date-field {
     font-weight: bold;
 }
 
+/* Driver */
 .driver-trip-table {
     background: #fff;
     border-radius: 18px;
@@ -2382,6 +2408,7 @@ label, .date-field {
 .driver-action-btn:hover {
     background: #0059b3;
 }
+/* Notifications */
 .rating-box {
     margin-top: 12px;
     background: #f5f8fc;
@@ -2398,6 +2425,7 @@ label, .date-field {
     border: 1px solid #ddd;
 }
 
+/* Admin */
 .chart-box {
   height: 360px;
 }
@@ -2406,6 +2434,7 @@ label, .date-field {
   max-height: 300px;
 }
 
+/* Authentication */
 .otp-flex {
   display: flex;
   justify-content: center;
