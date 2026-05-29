@@ -325,13 +325,18 @@ footer {
 
 /* 5. Booking Page */
 /* ===== تنسيق صفحة الحجز الجديدة ===== */
-.booking-card-container { padding: 90px 20px 40px; max-width: 450px; margin: 0 auto; }
-.booking-title { text-align: center; color: #003366; margin-bottom: 25px; font-weight: 800; }
+.booking-card-container { 
+    padding: 90px 20px 40px; max-width: 450px; margin: 0 auto; }
+.booking-title { 
+    text-align: center; color: #003366; margin-bottom: 25px; font-weight: 800; }
 
 /* أزرار ذهاب وإياب */
-.trip-options { display: flex; background: #e0e6ed; border-radius: 12px; margin-bottom: 20px; padding: 5px; }
-.opt-btn { flex: 1; padding: 10px; border: none; background: none; cursor: pointer; font-weight: bold; color: #555; }
-.opt-btn.active { background: #0059b3; color: white; border-radius: 10px; }
+.trip-options { 
+    display: flex; background: #e0e6ed; border-radius: 12px; margin-bottom: 20px; padding: 5px; }
+.opt-btn {
+     flex: 1; padding: 10px; border: none; background: none; cursor: pointer; font-weight: bold; color: #555; }
+.opt-btn.active { 
+    background: #0059b3; color: white; border-radius: 10px; }
 
 /* الحقول البيضاء */
 .location-group, .date-group, .passengers-group { 
@@ -340,44 +345,65 @@ footer {
     position: relative;
 }
 
-.location-item { cursor: pointer; padding: 10px 0; border-bottom: 1px solid #eee; }
-.location-item:last-child { border: none; }
+.location-item { 
+    cursor: pointer; padding: 10px 0; border-bottom: 1px solid #eee; }
+.location-item:last-child {
+     border: none; }
 
-.date-field { width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-top: 10px; color: #003366; font-family: inherit; }
+.date-field { 
+    width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-top: 10px; color: #003366; font-family: inherit; }
 
 /* زر البحث الكبير */
-.confirm-search-btn { width: 100%; padding: 16px; background: #0059b3; color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-.confirm-search-btn:hover { background: #003d7a; transform: scale(1.02); }
+.confirm-search-btn {
+     width: 100%; padding: 16px; background: #0059b3; color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.confirm-search-btn:hover { 
+    background: #003d7a; transform: scale(1.02); }
 
 
 
 /* 9. Schedule / Subscriptions Page */
 /* ===== تنسيق جدول الرحلات ومعلومات السائق ===== */
-.schedule-container { padding: 90px 15px 30px; max-width: 800px; margin: 0 auto; }
+.schedule-container { 
+    padding: 90px 15px 30px; max-width: 800px; margin: 0 auto; }
 
-.trip-summary { background: #0059b3; color: white; padding: 10px 20px; border-radius: 10px; margin-bottom: 15px; text-align: center; }
+.trip-summary { 
+    background: #0059b3; color: white; padding: 10px 20px; border-radius: 10px; margin-bottom: 15px; text-align: center; }
 
-.table-wrapper { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 25px; }
+.table-wrapper {
+     background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 25px; }
 .schedule-table,
-.modern-dark-table { width: 100%; border-collapse: collapse; text-align: right; }
-.schedule-table th { background: #f8f9fa; padding: 12px; color: #003366; border-bottom: 2px solid #eee; }
-.schedule-table td { padding: 12px; border-bottom: 1px solid #eee; color: #444; font-size: 0.9rem; }
+.modern-dark-table { 
+    width: 100%; border-collapse: collapse; text-align: right; }
+.schedule-table th { 
+    background: #f8f9fa; padding: 12px; color: #003366; border-bottom: 2px solid #eee; }
+.schedule-table td {
+     padding: 12px; border-bottom: 1px solid #eee; color: #444; font-size: 0.9rem; }
 
-.edit-icon-btn { border: none; background: none; color: #007bff; cursor: pointer; font-size: 1.1rem; }
+.edit-icon-btn {
+     border: none; background: none; color: #007bff; cursor: pointer; font-size: 1.1rem; }
 
 /* بطاقة السائق */
-.driver-info-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-.driver-details { display: flex; align-items: center; gap: 20px; margin-top: 15px; }
-.driver-img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #0059b3; object-fit: cover; }
-.driver-text h4 { margin: 0; color: #003366; }
-.driver-text p { margin: 5px 0; font-size: 0.85rem; color: #666; }
+.driver-info-card { 
+    background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.driver-details { 
+    display: flex; align-items: center; gap: 20px; margin-top: 15px; }
+.driver-img { 
+    width: 80px; height: 80px; border-radius: 50%; border: 2px solid #0059b3; object-fit: cover; }
+.driver-text h4 {
+     margin: 0; color: #003366; }
+.driver-text p { 
+    margin: 5px 0; font-size: 0.85rem; color: #666; }
 
 /* 13. Modals */
 /* تنسيق النافذة المنبثقة (Modal) */
-.modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
-.modal-content { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
-.confirm-btn { flex: 1; padding: 12px; background: #0059b3; color: white; border: none; border-radius: 10px; cursor: pointer; }
-.cancel-btn { flex: 1; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 10px; cursor: pointer; }
+.modal {
+     display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+.modal-content {
+     background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; }
+.confirm-btn { 
+    flex: 1; padding: 12px; background: #0059b3; color: white; border: none; border-radius: 10px; cursor: pointer; }
+.cancel-btn {
+     flex: 1; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 10px; cursor: pointer; }
 
 /* 4. Signup Page */
 /* ===== تنسيقات صفحة التسجيل ===== */
@@ -390,9 +416,12 @@ footer {
     padding: 20px;
 }
 
-.auth-logo { text-align: center; margin-bottom: 30px; color: white; }
-.auth-logo img { width: 80px; margin-bottom: 10px; }
-.auth-logo h1 { font-size: 2.5rem; margin: 0; }
+.auth-logo { 
+    text-align: center; margin-bottom: 30px; color: white; }
+.auth-logo img {
+     width: 80px; margin-bottom: 10px; }
+.auth-logo h1 { 
+    font-size: 2.5rem; margin: 0; }
 
 .auth-card {
     background: white;
@@ -403,8 +432,10 @@ footer {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-.input-group-auth { margin-bottom: 20px; text-align: right; }
-.input-group-auth label { display: block; margin-bottom: 8px; color: #003366; font-weight: bold; }
+.input-group-auth {
+     margin-bottom: 20px; text-align: right; }
+.input-group-auth label { 
+    display: block; margin-bottom: 8px; color: #003366; font-weight: bold; }
 .input-group-auth input {
     width: 100%;
     padding: 12px;
@@ -425,20 +456,29 @@ footer {
     transition: 0.3s;
 }
 
-.auth-btn:hover { background: #003366; transform: translateY(-2px); }
+.auth-btn:hover {
+     background: #003366; transform: translateY(-2px); }
 
-.auth-footer { margin-top: 20px; text-align: center; font-size: 0.9rem; color: #666; }
-.auth-footer a { color: #0059b3; text-decoration: none; font-weight: bold; }
+.auth-footer { 
+    margin-top: 20px; text-align: center; font-size: 0.9rem; color: #666; }
+.auth-footer a {
+     color: #0059b3; text-decoration: none; font-weight: bold; }
 
 /* تنسيق خانة الهاتف */
-.phone-input-wrapper { display: flex; gap: 5px; direction: ltr; } /* جعل الهاتف من اليسار لليمين */
-.country-select { padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: #eee; font-size: 0.9rem; }
-#userPhone { flex: 1; text-align: left; padding: 12px; border-radius: 10px; border: 1px solid #ddd; }
+.phone-input-wrapper { 
+    display: flex; gap: 5px; direction: ltr; } /* جعل الهاتف من اليسار لليمين */
+.country-select { 
+    padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: #eee; font-size: 0.9rem; }
+#userPhone {
+     flex: 1; text-align: left; padding: 12px; border-radius: 10px; border: 1px solid #ddd; }
 
 /* تنسيق نافذة الـ OTP */
-.otp-inputs { display: flex; gap: 10px; justify-content: center; margin: 20px 0; direction: ltr; }
-.otp-digit { width: 45px; height: 55px; text-align: center; font-size: 1.5rem; font-weight: bold; border: 2px solid #0059b3; border-radius: 8px; }
-.cancel-link { background: none; border: none; color: #666; cursor: pointer; margin-top: 10px; text-decoration: underline; }
+.otp-inputs {
+     display: flex; gap: 10px; justify-content: center; margin: 20px 0; direction: ltr; }
+.otp-digit { 
+    width: 45px; height: 55px; text-align: center; font-size: 1.5rem; font-weight: bold; border: 2px solid #0059b3; border-radius: 8px; }
+.cancel-link { 
+    background: none; border: none; color: #666; cursor: pointer; margin-top: 10px; text-decoration: underline; }
 /* تنسيق الغطاء الخلفي (الخلفية المعتمة) */
 .modal-overlay {
     display: none; /* مخفية افتراضياً */
@@ -473,48 +513,64 @@ footer {
 }
 /* 7. Profile Page */
 /* ألوان براق الهادئة */
-.profile-body { background: #f2f5f8; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.profile-body {
+     background: #f2f5f8; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
 .profile-header-nav { 
     background: white; padding: 12px 15px; display: flex; 
     justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;
 }
 
-.user-main-info { background: white; text-align: center; padding: 25px 0; margin-bottom: 8px; }
+.user-main-info {
+     background: white; text-align: center; padding: 25px 0; margin-bottom: 8px; }
 .avatar-circle { 
     width: 65px; height: 65px; background: #e2e8f0; border-radius: 50%; 
     margin: 0 auto 10px; display: flex; align-items: center; justify-content: center;
     font-size: 1.5rem; color: #003366; font-weight: bold;
 }
-#topName { margin: 0; font-size: 1.1rem; color: #333; }
-#topPhone { margin: 5px 0 0; color: #888; font-size: 0.85rem; }
+#topName {
+     margin: 0; font-size: 1.1rem; color: #333; }
+#topPhone {
+     margin: 5px 0 0; color: #888; font-size: 0.85rem; }
 
 /* القائمة */
-.settings-list { background: white; }
+.settings-list { 
+    background: white; }
 .setting-item { 
     display: flex; align-items: center; padding: 12px 20px; 
     border-bottom: 1px solid #f8f8f8; cursor: pointer; transition: 0.2s;
 }
-.setting-item:active { background: #f0f0f0; }
-.setting-text { flex: 1; text-align: right; margin-right: 15px; }
-.label { display: block; font-size: 0.7rem; color: #999; }
-.value { display: block; font-size: 0.9rem; color: #333; margin-top: 2px; }
-.icon-gray { color: #666; font-size: 1.1rem; }
-.verified { color: #28a745; font-size: 0.75rem; margin-right: 4px; }
-.list-divider { height: 10px; background: #f2f5f8; }
+.setting-item:active {
+     background: #f0f0f0; }
+.setting-text { 
+    flex: 1; text-align: right; margin-right: 15px; }
+.label {
+     display: block; font-size: 0.7rem; color: #999; }
+.value { 
+    display: block; font-size: 0.9rem; color: #333; margin-top: 2px; }
+.icon-gray {
+     color: #666; font-size: 1.1rem; }
+.verified {
+     color: #28a745; font-size: 0.75rem; margin-right: 4px; }
+.list-divider {
+     height: 10px; background: #f2f5f8; }
 
 /* النافذة المنبثقة */
 .modal-overlay { 
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;
 }
-.modal-card { background: white; width: 85%; max-width: 320px; padding: 20px; border-radius: 15px; text-align: right; }
-.modal-card h3 { margin: 0 0 15px; font-size: 1rem; color: #003366; }
+.modal-card {
+     background: white; width: 85%; max-width: 320px; padding: 20px; border-radius: 15px; text-align: right; }
+.modal-card h3 {
+     margin: 0 0 15px; font-size: 1rem; color: #003366; }
 .modal-card input, .modal-card select { 
     width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; 
 }
-.btn-save { flex: 1; background: #003366; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
-.btn-cancel { flex: 1; background: #eee; color: #333; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
+.btn-save {
+     flex: 1; background: #003366; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
+.btn-cancel {
+     flex: 1; background: #eee; color: #333; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
 /* تأثير عند تمرير الفارة على الملف الشخصي في القائمة الجانبية */
 .user-profile-sidebar:hover {
     background-color: rgba(0, 51, 102, 0.1); /* لون خفيف جداً */
@@ -531,15 +587,21 @@ footer {
     background: white; border-radius: 15px; margin-bottom: 20px;
     overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
-.sub-header-main { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-.sub-title-info { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #003366; }
-.arrow-indicator { transition: 0.3s; color: #003366; }
+.sub-header-main {
+     padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.sub-title-info {
+     display: flex; align-items: center; gap: 10px; font-weight: bold; color: #003366; }
+.arrow-indicator { 
+    transition: 0.3s; color: #003366; }
 
 /* إخفاء الجدول افتراضياً */
-.sub-content-collapsible { display: none; padding: 10px; border-top: 1px solid #eee; }
+.sub-content-collapsible {
+     display: none; padding: 10px; border-top: 1px solid #eee; }
 .subscription-item-card.active .sub-content-collapsible,
-.driver-request-card.active .driver-request-details { display: block; }
-.subscription-item-card.active .arrow-indicator { transform: rotate(-90deg); }
+.driver-request-card.active .driver-request-details { 
+    display: block; }
+.subscription-item-card.active .arrow-indicator {
+     transform: rotate(-90deg); }
 
 /* نافذة تعديل الجدول (مركزية) */
 .modal {
@@ -548,23 +610,32 @@ footer {
     padding: 25px; border-radius: 15px; z-index: 10001;
     width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
-.modal-content-box h3 { margin-top: 0; color: #003366; font-size: 1.1rem; }
-.date-field { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
-.modal-btns { display: flex; gap: 10px; margin-top: 10px; }
-.confirm-btn { flex: 1; background: #003366; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
-.cancel-btn { flex: 1; background: #f0f0f0; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
+.modal-content-box h3 { 
+    margin-top: 0; color: #003366; font-size: 1.1rem; }
+.date-field { 
+    width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+.modal-btns { 
+    display: flex; gap: 10px; margin-top: 10px; }
+.confirm-btn {
+     flex: 1; background: #003366; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
+.cancel-btn {
+     flex: 1; background: #f0f0f0; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
 
 /* Driver */
 /* ألوان الهوية البصرية لبراق */
-.driver-header { text-align: center; padding: 40px 20px 20px; }
+.driver-header { 
+    text-align: center; padding: 40px 20px 20px; }
 .brand-logo-circle {
     width: 90px; height: 90px; background: white; border-radius: 50%;
     margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.brand-logo-circle img { width: 60px; height: 60px; object-fit: contain; }
-.brand-name-blue { color: #003366; margin: 0; font-size: 2rem; font-weight: bold; }
-.welcome-msg { color: #555; font-size: 0.95rem; margin-top: 5px; }
+.brand-logo-circle img { 
+    width: 60px; height: 60px; object-fit: contain; }
+.brand-name-blue {
+     color: #003366; margin: 0; font-size: 2rem; font-weight: bold; }
+.welcome-msg {
+     color: #555; font-size: 0.95rem; margin-top: 5px; }
 
 /* بطاقة التسجيل */
 .driver-card-container {
@@ -638,16 +709,21 @@ footer {
     font-weight: bold;
 }
 /* المدخلات */
-.form-section-title { text-align: center; color: #003366; margin-bottom: 25px; }
-.input-box { margin-bottom: 18px; text-align: right; }
-.input-box label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #333; }
+.form-section-title {
+     text-align: center; color: #003366; margin-bottom: 25px; }
+.input-box { 
+    margin-bottom: 18px; text-align: right; }
+.input-box label { 
+    display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #333; }
 .input-box input, .input-box select { 
     width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; 
     background: #f9f9f9; box-sizing: border-box; 
 }
 
-.gender-selection { display: flex; justify-content: flex-end; gap: 15px; padding: 5px 0; font-size: 0.85rem; }
-.phone-row-input { display: flex; gap: 10px; direction: ltr; }
+.gender-selection { 
+    display: flex; justify-content: flex-end; gap: 15px; padding: 5px 0; font-size: 0.85rem; }
+.phone-row-input {
+     display: flex; gap: 10px; direction: ltr; }
 .flag-code { 
     display: flex; align-items: center; gap: 5px; padding: 10px; 
     background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 0.9rem;
@@ -657,42 +733,65 @@ footer {
     width: 100%; padding: 15px; background: #003366; color: white; border: none;
     border-radius: 12px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; margin-top: 10px;
 }
-.driver-confirm-btn:hover { background: #002244; transform: translateY(-2px); }
+.driver-confirm-btn:hover { 
+    background: #002244; transform: translateY(-2px); }
 
 /* OTP */
-.otp-flex { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
-.otp-field { width: 45px; height: 55px; text-align: center; font-size: 1.5rem; border: 2px solid #eee; border-radius: 10px; }
+.otp-flex {
+     display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+.otp-field {
+     width: 45px; height: 55px; text-align: center; font-size: 1.5rem; border: 2px solid #eee; border-radius: 10px; }
 
-.card-footer-text { text-align: center; margin-top: 25px; font-size: 0.9rem; color: #666; }
-.card-footer-text a { color: #003366; font-weight: bold; text-decoration: none; }
+.card-footer-text {
+     text-align: center; margin-top: 25px; font-size: 0.9rem; color: #666; }
+.card-footer-text a {
+     color: #003366; font-weight: bold; text-decoration: none; }
 
 /* Driver */
 /* تنسيقات واجهة السائق */
-.driver-dashboard-bg { background-color: #f0f4f8; margin: 0; }
-.driver-top-nav { background: #003366; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-.online-dot { width: 12px; height: 12px; background: #28a745; border-radius: 50%; box-shadow: 0 0 10px #28a745; }
+.driver-dashboard-bg {
+     background-color: #f0f4f8; margin: 0; }
+.driver-top-nav {
+     background: #003366; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.online-dot { 
+    width: 12px; height: 12px; background: #28a745; border-radius: 50%; box-shadow: 0 0 10px #28a745; }
 
-.requests-container { padding: 20px; }
-.request-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 20px; }
+.requests-container { 
+    padding: 20px; }
+.request-card { 
+    background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 20px; }
 
-.request-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.trip-type-tag { background: #e7f1ff; color: #003366; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
-.trip-price { font-size: 1.2rem; font-weight: bold; color: #28a745; }
+.request-header {
+     display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.trip-type-tag {
+     background: #e7f1ff; color: #003366; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
+.trip-price { 
+    font-size: 1.2rem; font-weight: bold; color: #28a745; }
 
-.loc-item { display: flex; gap: 15px; align-items: flex-start; }
-.loc-item label { font-size: 0.75rem; color: #888; display: block; }
-.loc-item p { margin: 2px 0 0; font-size: 0.95rem; font-weight: bold; }
-.loc-divider { height: 30px; border-right: 2px dashed #ddd; margin: -5px 10px 5px 0; }
+.loc-item {
+     display: flex; gap: 15px; align-items: flex-start; }
+.loc-item label { 
+    font-size: 0.75rem; color: #888; display: block; }
+.loc-item p { 
+    margin: 2px 0 0; font-size: 0.95rem; font-weight: bold; }
+.loc-divider { 
+    height: 30px; border-right: 2px dashed #ddd; margin: -5px 10px 5px 0; }
 
-.user-mini-info { display: flex; align-items: center; gap: 10px; margin: 20px 0; padding-top: 15px; border-top: 1px solid #eee; }
-.user-mini-info img { width: 40px; height: 40px; border-radius: 50%; }
+.user-mini-info {
+     display: flex; align-items: center; gap: 10px; margin: 20px 0; padding-top: 15px; border-top: 1px solid #eee; }
+.user-mini-info img { 
+    width: 40px; height: 40px; border-radius: 50%; }
 
-.accept-btn { width: 100%; padding: 15px; background: #003366; color: white; border: none; border-radius: 12px; font-size: 1.1rem; cursor: pointer; }
+.accept-btn { 
+    width: 100%; padding: 15px; background: #003366; color: white; border: none; border-radius: 12px; font-size: 1.1rem; cursor: pointer; }
 
 /* كرت النجاح */
-.success-alert-card { background: #d4edda; border: 1px solid #c3e6cb; border-radius: 15px; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.alert-icon { font-size: 2.5rem; color: #155724; margin-bottom: 10px; }
-.go-to-schedule-btn { background: #155724; color: white; border: none; padding: 12px 25px; border-radius: 10px; margin-top: 15px; cursor: pointer; }
+.success-alert-card {
+     background: #d4edda; border: 1px solid #c3e6cb; border-radius: 15px; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.alert-icon {
+     font-size: 2.5rem; color: #155724; margin-bottom: 10px; }
+.go-to-schedule-btn {
+     background: #155724; color: white; border: none; padding: 12px 25px; border-radius: 10px; margin-top: 15px; cursor: pointer; }
 .modal-overlay {
     display: none; /* مخفي افتراضياً */
     position: fixed;
@@ -1108,8 +1207,8 @@ label, .date-field {
 /* Seats */
 /* توضيح كلمة السائق في صفحة المقاعد */
 .car-layout span, 
-.car-layout label,
-[style*="color: #555"] { 
+.car-layout label,[
+    style*="color: #555"] { 
     color: #ffffff !important; /* تحويل اللون للأبيض الناصع */
     font-weight: bold !important; /* تسميك الخط */
     font-size: 1rem !important;
@@ -2050,7 +2149,8 @@ label, .date-field {
     width: 100%;
 }
 
-.front-row { justify-content: space-around; max-width: 250px; } /* تباعد المقاعد الأمامية */
+.front-row {
+     justify-content: space-around; max-width: 250px; } /* تباعد المقاعد الأمامية */
 
 /* تصميم شكل المقعد المربع */
 .seat-square {
@@ -2063,13 +2163,16 @@ label, .date-field {
 }
 
 /* حالة المقعد المتاح */
-.seat-box.available .seat-square { background-color: #f8f9fa; cursor: pointer; }
+.seat-box.available .seat-square {
+     background-color: #f8f9fa; cursor: pointer; }
 
 /* حالة المقعد المحجوز (رمادي مثل الصورة التي أرفقتها) */
-.seat-box.reserved .seat-square { background-color: #6c757d; cursor: not-allowed; }
+.seat-box.reserved .seat-square { 
+    background-color: #6c757d; cursor: not-allowed; }
 
 /* حالة المقعد المختار (أزرق براق) */
-.seat-box.selected .seat-square { background-color: #007bff; border-color: #0056b3; }
+.seat-box.selected .seat-square { 
+    background-color: #007bff; border-color: #0056b3; }
 
 /* تنسيق مفتاح الألوان السفلي */
 .legend-group {
@@ -2081,10 +2184,14 @@ label, .date-field {
     margin-bottom: 20px;
 }
 
-.legend-color { width: 20px; height: 20px; border-radius: 5px; border: 1px solid #ddd; }
-.legend-color.available { background-color: #f8f9fa; }
-.legend-color.reserved { background-color: #6c757d; }
-.legend-color.selected { background-color: #007bff; }
+.legend-color {
+     width: 20px; height: 20px; border-radius: 5px; border: 1px solid #ddd; }
+.legend-color.available {
+     background-color: #f8f9fa; }
+.legend-color.reserved { 
+    background-color: #6c757d; }
+.legend-color.selected {
+     background-color: #007bff; }
 /* تحسين شكل المقعد */
 .seat-box {
     display: flex;
@@ -2761,91 +2868,6 @@ label, .date-field {
     animation: mascotStarsSpin 0.7s linear infinite;
 }
 
-@keyframes mascotFloat {
-    0%, 100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-5px);
-    }
-}
-
-@keyframes mascotWingIdle {
-    0%, 100% {
-        transform: rotate(-24deg);
-    }
-
-    50% {
-        transform: rotate(-34deg);
-    }
-}
-
-@keyframes mascotWingLoading {
-    0%, 100% {
-        transform: rotate(-18deg) scaleY(1);
-    }
-
-    50% {
-        transform: rotate(-48deg) scaleY(0.88);
-    }
-}
-
-@keyframes mascotRunBody {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
-    }
-
-    50% {
-        transform: translateY(-3px) rotate(-2deg);
-    }
-}
-
-@keyframes mascotRunLeg {
-    0%, 100% {
-        transform: rotate(18deg);
-    }
-
-    50% {
-        transform: rotate(-18deg);
-    }
-}
-
-@keyframes mascotTypingDot {
-    0%, 100% {
-        transform: translateY(0);
-        opacity: 0.45;
-    }
-
-    50% {
-        transform: translateY(-4px);
-        opacity: 1;
-    }
-}
-
-@keyframes mascotHitWall {
-    0%, 100% {
-        transform: translateX(0) rotate(0deg);
-    }
-
-    30% {
-        transform: translateX(8px) rotate(3deg);
-    }
-
-    60% {
-        transform: translateX(-7px) rotate(-4deg);
-    }
-}
-
-@keyframes mascotStarsSpin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
 
 .help-message {
     max-width: 75%;
@@ -2918,27 +2940,530 @@ label, .date-field {
     font-weight: bold;
 }
 
+.mascot-loading {
+  animation: mascotRun 0.45s infinite;
+}
+
+.mascot-error {
+  animation: mascotHit 0.35s 4;
+}
+
+@keyframes mascotRun {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.04); }
+}
+
+@keyframes mascotHit {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-10px) rotate(-4deg); }
+  50% { transform: translateX(10px) rotate(4deg); }
+  75% { transform: translateX(-6px) rotate(-2deg); }
+  100% { transform: translateX(0); }
+}
+/* Driver Statistics Page */
+
+.driver-stats-container {
+    width: 92%;
+    max-width: 1100px;
+    margin: 120px auto 40px;
+}
+
+.driver-stats-title {
+    color: #ffffff;
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.driver-stats-title i {
+    color: #00aeef;
+    margin-left: 8px;
+}
+
+.stats-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+    margin-bottom: 30px;
+}
+
+.stats-card {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    position: relative;
+}
+
+.stats-circle {
+    width: 115px;
+    height: 115px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    border: 12px solid #e9f6ff;
+    border-top-color: #00aeef;
+    border-right-color: #0059b3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #003366;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.stats-card h3 {
+    color: #003366;
+    font-size: 1rem;
+    margin: 10px 0 0;
+}
+
+.stats-icon {
+    position: absolute;
+    bottom: 14px;
+    left: 18px;
+    color: #00aeef;
+    font-size: 1.4rem;
+}
+
+.trips-summary-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 30px;
+}
+
+.trips-summary-box h2 {
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 25px;
+}
+
+.stats-bar-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: end;
+    height: 210px;
+    border-bottom: 2px solid rgba(255,255,255,0.25);
+}
+
+.stats-bar-item {
+    text-align: center;
+    color: #ffffff;
+    width: 20%;
+}
+
+.stats-bar-item span {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.stats-bar {
+    width: 55px;
+    margin: 0 auto 10px;
+    border-radius: 12px 12px 0 0;
+}
+
+.stats-bar.completed {
+    background: #16a34a;
+}
+
+.stats-bar.pending {
+    background: #00aeef;
+}
+
+.stats-bar.postponed {
+    background: #f59e0b;
+}
+
+.stats-bar.cancelled {
+    background: #dc2626;
+}
+
+.stats-bar-item p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.earnings-card {
+    background: linear-gradient(135deg, #0059b3, #00aeef);
+    border-radius: 24px;
+    padding: 26px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.28);
+}
+
+.earnings-card h2 {
+    margin: 0 0 10px;
+}
+
+.earnings-card p {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.earnings-card button {
+    border: none;
+    background: #ffffff;
+    color: #0059b3;
+    padding: 14px 24px;
+    border-radius: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .stats-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 600px) {
-    .help-page-container {
+    .driver-stats-container {
         width: 94%;
-        margin-top: 105px;
+        margin-top: 100px;
     }
 
-    .help-messages-area {
-        height: 360px;
-        padding: 14px;
+    .stats-cards-grid {
+        grid-template-columns: 1fr;
     }
 
-    .help-message {
-        max-width: 88%;
-        font-size: 0.95rem;
-    }
-
-    .help-input-area {
+    .earnings-card {
         flex-direction: column;
+        gap: 18px;
+        text-align: center;
     }
 
-    .help-input-area button {
-        width: 100%;
+  .bar-chart {
+        gap: 12px;
     }
+
+    .bar {
+        width: 42px;
+    }
+}
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 10px 15px;
+  }
+
+  .nav-links-modern,
+  .auth-group {
+    display: none;
+  }
+
+  .main-header {
+    height: auto;
+  }
+
+  .booking-card-container,
+  .schedule-container,
+  .driver-stats-container,
+  .help-page-container {
+    width: 94%;
+    margin-top: 95px;
+    padding: 0;
+  }
+
+  .stats-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-trip-table {
+    overflow-x: auto;
+  }
+
+  .table-head,
+  .table-row {
+    min-width: 600px;
+  }
+
+  .driver-contact-actions {
+    flex-direction: column;
+  }
+
+  button,
+  .driver-action-btn,
+  .accept-btn,
+  .map-btn {
+    width: 100%;
+  }
+}
+/* ================= Mobile Final Fixes ================= */
+@media (max-width: 768px) {
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .navbar-container {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+  }
+
+  .header-right-side {
+    gap: 12px;
+  }
+
+  .brand span {
+    font-size: 1rem !important;
+  }
+
+  .nav-links-modern,
+  .auth-group {
+    display: none !important;
+  }
+
+  .burger-menu {
+    display: flex !important;
+    width: 42px;
+    height: 42px;
+    padding: 8px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .burger-menu .bar {
+    width: 24px !important;
+    height: 3px !important;
+    margin: 2px 0 !important;
+  }
+
+  .booking-card-container,
+  .schedule-container,
+  .driver-stats-container,
+  .help-page-container,
+  .admin-main-wrapper,
+  .requests-container {
+    width: 94% !important;
+    max-width: 94% !important;
+    margin: 95px auto 25px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .stats-cards-grid,
+  .stats-overview-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .driver-contact-actions {
+    flex-direction: column !important;
+    gap: 10px;
+  }
+
+  .driver-action-btn,
+  .accept-btn,
+  .reject-btn,
+  .map-btn,
+  .confirm-search-btn,
+  .driver-confirm-btn,
+  .auth-btn,
+  .login-btn {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .driver-details {
+    flex-direction: column !important;
+    text-align: center;
+  }
+
+  .driver-trip-table,
+  .admin-modal-table-wrapper,
+  .table-wrapper {
+    overflow-x: auto !important;
+  }
+
+  .table-head,
+  .table-row {
+    min-width: 560px;
+  }
+
+  .bar-chart {
+    overflow-x: auto;
+    gap: 18px;
+    justify-content: flex-start;
+    padding-bottom: 10px;
+  }
+
+  .bar-item {
+    min-width: 90px;
+  }
+
+  .map-box {
+    width: 94% !important;
+    max-width: 94% !important;
+  }
+
+  .picker-map,
+  .driver-mini-map {
+    height: 280px !important;
+  }
+
+  .help-chat-card,
+  .help-support-section,
+  .earnings-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .help-input-area {
+    flex-direction: column;
+  }
+
+  .help-input-area button {
+    width: 100%;
+  }
+
+  .modal-card,
+  .modal-content,
+  .admin-modal-card {
+    width: 94% !important;
+    max-width: 94% !important;
+    box-sizing: border-box;
+  }
+}
+/* ================= Login Page Final Fix ================= */
+
+.login-page-body {
+    min-height: 100vh;
+    padding: 90px 16px 30px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 390px;
+    padding: 30px 24px;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+    backdrop-filter: blur(14px);
+}
+
+.login-card .logo {
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+    margin-bottom: 18px;
+}
+
+.login-card h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 28px;
+    color: #ffffff;
+}
+
+#loginForm {
+    width: 100%;
+    gap: 14px;
+}
+
+#loginForm .input-group {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.phone-input-wrapper {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.phone-input-wrapper select {
+    height: 52px;
+    border-radius: 14px;
+    border: none;
+    padding: 0 8px;
+    background: #ffffff;
+    color: #001a33;
+    font-weight: bold;
+}
+
+#loginForm input {
+    height: 52px;
+    border-radius: 16px;
+    padding: 0 16px;
+    font-size: 1rem;
+    background: #eef5ff;
+    color: #001a33;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+#loginForm input::placeholder {
+    color: #6b7280;
+}
+
+.login-btn {
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #00aeef, #0059b3);
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.auth-footer,
+.login-card p {
+    color: #ffffff;
+    text-align: center;
+    margin-top: 18px;
+}
+
+.auth-footer a,
+.login-card a {
+    color: #00aeef !important;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* Mobile login */
+@media (max-width: 600px) {
+    .login-page-body {
+        align-items: flex-start;
+        padding-top: 70px;
+    }
+
+    .login-card {
+        max-width: 92%;
+        padding: 26px 18px;
+    }
+
+    .login-card .logo {
+        width: 110px;
+        height: 110px;
+    }
+
+    .login-card h2 {
+        font-size: 1.45rem;
+    }
+
+    .phone-input-wrapper {
+        flex-direction: row;
+    }
+
+    .phone-input-wrapper select {
+        width: 95px;
+        font-size: 0.9rem;
+    }
+}
+.login-error {
+  color: #ff6b6b;
+  font-weight: bold;
+  margin-top: 5px;
+  min-height: 20px;
 }

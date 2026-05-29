@@ -2,8 +2,17 @@ function openMaps() {
     window.open("https://www.google.com/maps", "_blank");
 }
 
+function isGoogleMapsReady() {
+  return typeof google !== "undefined" && google.maps;
+}
+
 function getRealRouteInfo(pickup, dropoff) {
   return new Promise((resolve, reject) => {
+    if (!isGoogleMapsReady()) {
+      reject("Google Maps API is not loaded");
+      return;
+    }
+
     console.log("PICKUP:", pickup);
     console.log("DROPOFF:", dropoff);
 
@@ -36,6 +45,8 @@ function getRealRouteInfo(pickup, dropoff) {
 }
 
 function drawDirectionsOnMap(mapEl, pickup, dropoff) {
+  if (!isGoogleMapsReady()) return;
+
   if (!pickup || !dropoff) {
     alert("بيانات الموقع غير مكتملة");
     return;
@@ -78,6 +89,8 @@ function drawDriverRoute(bookingId, pickup, dropoff) {
 }
 
 function drawDriverToCustomerMap(tripId, pickup) {
+  const modal = document.getElementById("mapModal");
+
   if (!pickup) {
     alert("موقع الراكب غير متوفر");
     return;
@@ -102,13 +115,16 @@ function drawDriverToCustomerMap(tripId, pickup) {
       }
 
       mapEl.style.display = "block";
+if (typeof google === "undefined" || !google.maps) {
+  return;
+}
 
-      const map = new google.maps.Map(mapEl, {
-        center: driverLocation,
-        zoom: 13,
-        mapTypeControl: false,
-        streetViewControl: false
-      });
+const map = new google.maps.Map(mapEl, {
+  center: driverLocation,
+  zoom: 13,
+  mapTypeControl: false,
+  streetViewControl: false
+});
 
       const directionsService = new google.maps.DirectionsService();
       const directionsRenderer = new google.maps.DirectionsRenderer({ map });
@@ -151,7 +167,7 @@ async function initMapInputs() {
   const pickupBox = document.getElementById("pickupInput");
   const dropoffBox = document.getElementById("dropoffInput");
 
-  if (!pickupBox || !dropoffBox || !google?.maps?.places) return;
+  if (!pickupBox || !dropoffBox || !isGoogleMapsReady() || !google.maps.places) return;
 
   pickupBox.innerHTML = "";
   dropoffBox.innerHTML = "";
@@ -258,6 +274,8 @@ function openMapPicker(type) {
 }
 
 function initPickerMap() {
+  if (!isGoogleMapsReady()) return;
+
   const defaultLocation = { lat: 31.9539, lng: 35.9106 };
 
   if (!mapPicker) {
@@ -314,6 +332,8 @@ function initPickerMap() {
 }
 
 function setMarkerLocation(latLng, placeName = null) {
+  if (!isGoogleMapsReady()) return;
+
   mapMarker.setPosition(latLng);
 
   selectedMapLocation = {
@@ -326,6 +346,8 @@ function setMarkerLocation(latLng, placeName = null) {
 }
 
 function reverseGeocode(latLng) {
+  if (!isGoogleMapsReady()) return;
+
   const geocoder = new google.maps.Geocoder();
 
   geocoder.geocode({ location: latLng }, (results, status) => {
@@ -373,6 +395,7 @@ function closeMapPicker() {
 }
 
 window.openMaps = openMaps;
+window.isGoogleMapsReady = isGoogleMapsReady;
 window.getRealRouteInfo = getRealRouteInfo;
 window.drawDirectionsOnMap = drawDirectionsOnMap;
 window.drawDriverRoute = drawDriverRoute;

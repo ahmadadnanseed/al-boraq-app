@@ -1,3 +1,7 @@
+window.initMapInputs = window.initMapInputs || function() {
+  window.__googleMapsReady = true;
+};
+
 [
   "core/api",
   "core/storage",

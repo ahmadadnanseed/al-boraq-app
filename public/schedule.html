@@ -6,6 +6,8 @@
     <title>براق | جدول رحلاتي</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#003366">
 </head>
 <body class="booking-page-bg">
 
@@ -81,6 +83,12 @@
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcoBS38vS_L76jZlhy2VGPFSSfRdjQ8Ns&libraries=places&v=beta&loading=async&callback=initMapInputs"
   async
   defer>
+
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js");
+  }
 </script>
 </body>
 </html>

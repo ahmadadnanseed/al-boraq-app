@@ -445,6 +445,43 @@ router.put("/driver/daily-trips/:tripId/picked", (req, res) => {
     res.json({ success: true, message: "تم تأكيد ركوب الراكب" });
   });
 });
+router.get("/driver/statistics/:driverId", (req, res) => {
+  const driverId = req.params.driverId;
 
+  const sql = `
+    SELECT
+      COALESCE(SUM(CASE WHEN DATE(dt.trip_date) = CURDATE() THEN 1 ELSE 0 END), 0) AS todayTrips,
+      COALESCE(SUM(CASE WHEN MONTH(dt.trip_date) = MONTH(CURDATE()) AND YEAR(dt.trip_date) = YEAR(CURDATE()) THEN 1 ELSE 0 END), 0) AS monthlyTrips,
+
+      COALESCE(SUM(CASE WHEN dt.status = 'completed' THEN 1 ELSE 0 END), 0) AS completedTrips,
+      COALESCE(SUM(CASE WHEN dt.status IN ('scheduled','driver_started','driver_arrived','passenger_picked','missed') THEN 1 ELSE 0 END), 0) AS pendingTrips,
+      COALESCE(SUM(CASE WHEN dt.status = 'postponed' THEN 1 ELSE 0 END), 0) AS postponedTrips,
+      COALESCE(SUM(CASE WHEN dt.status = 'cancelled' THEN 1 ELSE 0 END), 0) AS cancelledTrips,
+
+      COALESCE(SUM(CASE WHEN DATE(dt.trip_date) = CURDATE() AND dt.status = 'completed' THEN b.price ELSE 0 END), 0) AS todayEarnings,
+      COALESCE(SUM(CASE WHEN MONTH(dt.trip_date) = MONTH(CURDATE()) AND YEAR(dt.trip_date) = YEAR(CURDATE()) AND dt.status = 'completed' THEN b.price ELSE 0 END), 0) AS monthlyEarnings,
+      COALESCE(SUM(CASE WHEN dt.status = 'completed' THEN b.price ELSE 0 END), 0) AS availableBalance
+
+    FROM daily_trips dt
+    LEFT JOIN booking b ON dt.booking_id_fk = b.booking_id
+    WHERE dt.driver_id_fk = ?
+  `;
+
+  connection.query(sql, [driverId], (err, result) => {
+    if (err) {
+      console.log("Driver statistics error:", err);
+      return res.json({
+        success: false,
+        message: "فشل تحميل إحصائيات السائق",
+        error: err.sqlMessage
+      });
+    }
+
+    res.json({
+      success: true,
+      statistics: result[0]
+    });
+  });
+});
 
 module.exports = router;

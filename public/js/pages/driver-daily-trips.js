@@ -34,9 +34,13 @@ async function loadDriverTodayTrips() {
       const actionText =
         trip.status === "driver_arrived"
           ? "وصلت"
+          : trip.status === "passenger_picked"
+          ? "تم ركوب الراكب"
           : trip.status === "completed"
           ? "تم التوصيل"
-          : "قادم";
+          : trip.status === "driver_started"
+          ? "قادم"
+          : "مجدولة";
 
       const card = document.createElement("div");
       card.className = "subscription-item-card driver-daily-card";
@@ -67,7 +71,7 @@ async function loadDriverTodayTrips() {
                   <i class="bi bi-geo-alt"></i> الخريطة
                 </a>
               </span>
-              <span>${actionText}</span>
+              <span class="trip-status-text">${actionText}</span>
             </div>
           </div>
 
@@ -99,37 +103,37 @@ async function loadDriverTodayTrips() {
                 عرض الطريق للراكب
               </button>
 
-       ${
-  trip.status === "scheduled"
-    ? `
-      <button class="accept-btn" onclick="markDriverStarted(${trip.daily_trip_id})">
-        بدء الرحلة
-      </button>
-    `
-    : trip.status === "driver_started"
-    ? `
-      <button class="accept-btn" onclick="markDriverArrived(${trip.daily_trip_id})">
-        أنا وصلت
-      </button>
-    `
-    : trip.status === "driver_arrived"
-    ? `
-      <button class="accept-btn" onclick="markPassengerPicked(${trip.daily_trip_id})">
-        هل أقلت الراكب؟
-      </button>
-    `
-    : trip.status === "passenger_picked"
-    ? `
-      <button class="accept-btn" onclick="markTripCompleted(${trip.daily_trip_id})">
-        تم إنزال الراكب
-      </button>
-    `
-    : `
-      <button class="accept-btn" disabled style="background:#777; cursor:not-allowed;">
-        تم التوصيل
-      </button>
-    `
-}
+              ${
+                trip.status === "scheduled"
+                  ? `
+                    <button class="accept-btn" onclick="markDriverStarted(${trip.daily_trip_id}, event)">
+                      بدء الرحلة
+                    </button>
+                  `
+                  : trip.status === "driver_started"
+                  ? `
+                    <button class="accept-btn" onclick="markDriverArrived(${trip.daily_trip_id}, event)">
+                      أنا وصلت
+                    </button>
+                  `
+                  : trip.status === "driver_arrived"
+                  ? `
+                    <button class="accept-btn" onclick="markPassengerPicked(${trip.daily_trip_id}, event)">
+                      هل أقلت الراكب؟
+                    </button>
+                  `
+                  : trip.status === "passenger_picked"
+                  ? `
+                    <button class="accept-btn" onclick="markTripCompleted(${trip.daily_trip_id}, event)">
+                      تم إنزال الراكب
+                    </button>
+                  `
+                  : `
+                    <button class="accept-btn" disabled style="background:#777; cursor:not-allowed;">
+                      تم التوصيل
+                    </button>
+                  `
+              }
             </div>
           </div>
         </div>
@@ -144,7 +148,38 @@ async function loadDriverTodayTrips() {
   }
 }
 
-async function markDriverArrived(tripId) {
+function updateTripStatus(button, text) {
+  const card = button.closest(".driver-daily-card");
+  const statusText = card?.querySelector(".trip-status-text");
+
+  if (statusText) {
+    statusText.textContent = text;
+  }
+}
+
+async function markDriverStarted(tripId, event) {
+  const button = event.target;
+
+  const res = await fetch(`/driver/daily-trips/${tripId}/start`, {
+    method: "PUT"
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || "فشل بدء الرحلة");
+    return;
+  }
+
+  updateTripStatus(button, "قادم");
+
+  button.textContent = "أنا وصلت";
+  button.setAttribute("onclick", `markDriverArrived(${tripId}, event)`);
+}
+
+async function markDriverArrived(tripId, event) {
+  const button = event.target;
+
   const res = await fetch(`/driver/daily-trips/${tripId}/arrived`, {
     method: "PUT"
   });
@@ -157,7 +192,55 @@ async function markDriverArrived(tripId) {
   }
 
   alert("تم إشعار الراكب بأنك وصلت");
-  loadDriverTodayTrips();
+
+  updateTripStatus(button, "وصلت");
+
+  button.textContent = "هل أقلت الراكب؟";
+  button.setAttribute("onclick", `markPassengerPicked(${tripId}, event)`);
+}
+
+async function markPassengerPicked(tripId, event) {
+  const button = event.target;
+
+  const res = await fetch(`/driver/daily-trips/${tripId}/picked`, {
+    method: "PUT"
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || "فشل تأكيد ركوب الراكب");
+    return;
+  }
+
+  updateTripStatus(button, "تم ركوب الراكب");
+
+  button.textContent = "تم إنزال الراكب";
+  button.setAttribute("onclick", `markTripCompleted(${tripId}, event)`);
+}
+
+async function markTripCompleted(tripId, event) {
+  const button = event.target;
+
+  const res = await fetch(`/driver/daily-trips/${tripId}/completed`, {
+    method: "PUT"
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || "فشل إنهاء الرحلة");
+    return;
+  }
+
+  alert("تم إنهاء الرحلة بنجاح");
+
+  updateTripStatus(button, "تم التوصيل");
+
+  button.textContent = "تم التوصيل";
+  button.disabled = true;
+  button.style.background = "#777";
+  button.style.cursor = "not-allowed";
 }
 
 function driverParseJson(value) {
@@ -177,52 +260,6 @@ function driverParseJson(value) {
     console.log("driverParseJson error:", e, value);
     return null;
   }
-}
-
-async function markTripCompleted(tripId) {
-  const res = await fetch(`/driver/daily-trips/${tripId}/completed`, {
-    method: "PUT"
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "فشل إنهاء الرحلة");
-    return;
-  }
-
-  alert("تم إنهاء الرحلة بنجاح");
-  loadDriverTodayTrips();
-}
-
-async function markDriverStarted(tripId) {
-  const res = await fetch(`/driver/daily-trips/${tripId}/start`, {
-    method: "PUT"
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "فشل بدء الرحلة");
-    return;
-  }
-
-  loadDriverTodayTrips();
-}
-
-async function markPassengerPicked(tripId) {
-  const res = await fetch(`/driver/daily-trips/${tripId}/picked`, {
-    method: "PUT"
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "فشل تأكيد ركوب الراكب");
-    return;
-  }
-
-  loadDriverTodayTrips();
 }
 
 function initDriverDailyTripsPage() {

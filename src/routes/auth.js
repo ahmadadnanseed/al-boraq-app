@@ -2,6 +2,94 @@ const express = require("express");
 const connection = require("../db");
 
 const router = express.Router();
+const signupOtpCodes = {};
+
+router.post("/signup/send-otp", (req, res) => {
+  const { phone } = req.body;
+
+  if (!phone) {
+    return res.json({ success: false, message: "رقم الهاتف مطلوب" });
+  }
+
+  const checkSql = `
+    SELECT caustomer_id
+    FROM customer
+    WHERE phone_caustomer = ?
+  `;
+
+  connection.query(checkSql, [phone], (err, result) => {
+    if (err) {
+      console.log("Check phone error:", err);
+      return res.json({ success: false, message: "خطأ في السيرفر" });
+    }
+
+    if (result.length > 0) {
+      return res.json({ success: false, message: "رقم الهاتف مسجل مسبقًا" });
+    }
+
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+
+    signupOtpCodes[phone] = {
+      code,
+      expiresAt: Date.now() + 5 * 60 * 1000
+    };
+
+    console.log("Signup OTP for", phone, "is:", code);
+
+    res.json({
+      success: true,
+      message: "تم إرسال رمز التحقق",
+      code
+    });
+  });
+});
+router.post("/signup/verify", (req, res) => {
+  const { name, phone, dob, password, code } = req.body;
+
+  if (!name || !phone || !dob || !password || !code) {
+    return res.json({ success: false, message: "جميع الحقول مطلوبة" });
+  }
+
+  const saved = signupOtpCodes[phone];
+
+  if (!saved) {
+    return res.json({ success: false, message: "لم يتم إرسال رمز لهذا الرقم" });
+  }
+
+  if (Date.now() > saved.expiresAt) {
+    delete signupOtpCodes[phone];
+    return res.json({ success: false, message: "انتهت صلاحية الرمز" });
+  }
+
+  if (saved.code !== code) {
+    return res.json({ success: false, message: "رمز التحقق غير صحيح" });
+  }
+
+  const { first, last } = splitFullName(name);
+
+  const sql = `
+    INSERT INTO customer
+    (fast_name_caustomer, last_name_caustomer, phone_caustomer, date_of_birth_caustomer, password)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  connection.query(sql, [first, last, phone, dob, password], (err, result) => {
+    if (err) {
+      console.log("Signup verify error:", err);
+      return res.json({
+        success: false,
+        message: "فشل إنشاء الحساب"
+      });
+    }
+
+    delete signupOtpCodes[phone];
+
+    res.json({
+      success: true,
+      userId: result.insertId
+    });
+  });
+});
 
 function splitFullName(name) {
   const parts = (name || "").trim().split(" ");
