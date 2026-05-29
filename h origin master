@@ -1,0 +1,7 @@
+[35mpublic/booking.html[m[36m:[m[32m156[m[36m:[m  src="https://maps.googleapis.com/maps/api/js?key=[1;31mAIza[mSyCcoBS38vS_L76jZlhy2VGPFSSfRdjQ8Ns&libraries=places&v=beta&loading=async&callback=initMapInputs"
+[35mpublic/driver-daily-trips.html[m[36m:[m[32m59[m[36m:[m  src="https://maps.googleapis.com/maps/api/js?key=[1;31mAIza[mSyCcoBS38vS_L76jZlhy2VGPFSSfRdjQ8Ns&libraries=places&v=beta&loading=async&callback=initMapInputs"
+[35mpublic/driver-requests.html[m[36m:[m[32m42[m[36m:[m  src="https://maps.googleapis.com/maps/api/js?key=[1;31mAIza[mSyCcoBS38vS_L76jZlhy2VGPFSSfRdjQ8Ns&libraries=places&v=beta&loading=async&callback=initMapInputs"
+[35mpublic/js/pages/signup.js[m[36m:[m[32m2[m[36m:[m  apiKey: "[1;31mAIza[mSyCOwZSVTQaoIp0zwzoN0S0ZdYIXs6ScAtM",
+[35mpublic/notifications.html[m[36m:[m[32m51[m[36m:[m  src="https://maps.googleapis.com/maps/api/js?key=[1;31mAIza[mSyCcoBS38vS_L76jZlhy2VGPFSSfRdjQ8Ns&libraries=places&v=beta&loading=async&callback=initMapInputs"
+[35mpublic/schedule.html[m[36m:[m[32m83[m[36m:[m  src="https://maps.googleapis.com/maps/api/js?key=[1;31mAIza[mSyCcoBS38vS_L76jZlhy2VGPFSSfRdjQ8Ns&libraries=places&v=beta&loading=async&callback=initMapInputs"
+[35mpublic/seats.html[m[36m:[m[32m108[m[36m:[m  src="https://maps.googleapis.com/maps/api/js?key=[1;31mAIza[mSyCcoBS38vS_L76jZlhy2VGPFSSfRdjQ8Ns&libraries=places&v=beta&loading=async&callback=initMapInputs"
