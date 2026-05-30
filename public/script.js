@@ -2,7 +2,8 @@ window.initMapInputs = window.initMapInputs || function() {
   window.__googleMapsReady = true;
 };
 
-[
+// تحديد السكريبتات المطلوب تحميلها ديناميكياً
+const scriptsToLoad = [
   "core/api",
   "core/storage",
   "core/dom",
@@ -11,7 +12,6 @@ window.initMapInputs = window.initMapInputs || function() {
   "shared/sidebar",
   "shared/maps",
   "pages/login",
-  "pages/signup",
   "pages/forgot-password",
   "pages/profile",
   "pages/notifications",
@@ -23,12 +23,21 @@ window.initMapInputs = window.initMapInputs || function() {
   "pages/driver-requests",
   "pages/driver-daily-trips",
   "pages/admin"
-].forEach((name) => {
+];
+
+// 💡 تعديل ذكي: لا تحقن ملف التسجيل والـ Firebase إلا إذا كنا في صفحة signup.html
+if (window.location.pathname.includes("signup.html")) {
+  scriptsToLoad.push("pages/signup");
+}
+
+scriptsToLoad.forEach((name) => {
   const script = document.createElement("script");
   script.async = false;
   script.src = `js/${name}.js`;
   document.head.appendChild(script);
 });
+
+/* وباقي كودك الخاص بالـ Tabs والـ OTP والـ Collapsible يبقى في الأسفل كما هو تماماً دون تغيير... */
 /* =========================================================
     تحميل الصفحة (عام)
 ========================================================= */

@@ -163,37 +163,55 @@ app.get("/admin/driver-requests", (req, res) => {
   });
 });
 
+/* ========================================================
+   تحديث: قبول السائق وإرسال الباسورد صريح للأدمن وتشفيره بالداتابيز
+======================================================== */
 app.put("/admin/driver-requests/:id/accept", (req, res) => {
   const driverId = req.params.id;
 
-  const sql = `
-    UPDATE driver
-    SET status = 'accepted'
-    WHERE driver_id = ?
-  `;
-
-  connection.query(sql, [driverId], (err) => {
-    if (err) {
-      console.log("Accept driver error:", err);
-      return res.json({ success: false, message: "فشل قبول السائق" });
-    }
-
-    connection.query(
-      "SELECT driver_id, password FROM driver WHERE driver_id = ?",
-      [driverId],
-      (err2, result) => {
-        if (err2 || result.length === 0) {
-          return res.json({ success: false, message: "فشل جلب بيانات الدخول" });
-        }
-
-        res.json({
-          success: true,
-          loginCode: "driver" + result[0].driver_id,
-          password: result[0].password
-        });
+  // 1. جلب بيانات السائق أولاً للحصول على كلمة المرور الصريحة قبل قبول الحساب
+  connection.query(
+    "SELECT driver_id, password FROM driver WHERE driver_id = ?",
+    [driverId],
+    async (errFetch, result) => {
+      if (errFetch || result.length === 0) {
+        return res.json({ success: false, message: "السائق غير موجود أو فشل جلب بياناته" });
       }
-    );
-  });
+
+      const plainPassword = result[0].password; // كلمة المرور العادية (driver1777...)
+
+      try {
+        // 2. تشفير كلمة المرور العادية الصريحة الآن باستخدام bcryptjs
+        const bcrypt = require("bcryptjs");
+        const hashedPassword = await bcrypt.hash(plainPassword, 10);
+
+        // 3. تحديث حالة السائق إلى مقبولة وحفظ النص المشفر الجديد مكان الكلمة الصريحة
+        const updateSql = `
+          UPDATE driver
+          SET status = 'accepted', password = ?
+          WHERE driver_id = ?
+        `;
+
+        connection.query(updateSql, [hashedPassword, driverId], (errUpdate) => {
+          if (errUpdate) {
+            console.log("Accept and encrypt driver error:", errUpdate);
+            return res.json({ success: false, message: "فشل قبول وتأمين السائق" });
+          }
+
+          // 4. إرجاع البيانات للأدمن (تظهر له كلمة المرور عادية واضحة لإبلاغ السائق بها)
+          return res.json({
+            success: true,
+            loginCode: "driver" + result[0].driver_id,
+            password: plainPassword // نرسل النص الصريح القديم للأدمن هنا فقط ليراه
+          });
+        });
+
+      } catch (cryptErr) {
+        console.log("Bcrypt driver encrypt error:", cryptErr);
+        return res.json({ success: false, message: "خطأ داخلي أثناء تشفير كلمة مرور السائق" });
+      }
+    }
+  );
 });
 
 app.put("/admin/driver-requests/:id/reject", (req, res) => {
@@ -367,32 +385,50 @@ app.post("/forgot-password/verify-code", (req, res) => {
   res.json({ success: true, message: "تم التحقق" });
 });
 
-app.put("/forgot-password/reset", (req, res) => {
+/* ========================================================
+   تحديث: إعادة تعيين كلمة المرور بالتشفير الآمن
+======================================================== */
+app.put("/forgot-password/reset", async (req, res) => {
   const { phone, code, newPassword } = req.body;
+
+  if (!phone || !code || !newPassword) {
+    return res.json({ success: false, message: "جميع الحقول مطلوبة" });
+  }
 
   const saved = resetCodes[phone];
 
   if (!saved || saved.code !== code || Date.now() > saved.expiresAt) {
-    return res.json({ success: false, message: "رمز التحقق غير صالح" });
+    return res.json({ success: false, message: "رمز التحقق غير صالح أو انتهت صلاحيته" });
   }
 
-  const sql = `
-    UPDATE customer
-    SET password = ?
-    WHERE phone_caustomer = ?
-  `;
+  try {
+    // 1. تشفير كلمة المرور الجديدة باستخدام bcryptjs قبل حفظها
+    const bcrypt = require("bcryptjs");
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  connection.query(sql, [newPassword, phone], (err) => {
-    if (err) {
-      console.log("Reset password error:", err);
-      return res.json({ success: false, message: "فشل تغيير كلمة المرور" });
-    }
+    // 2. تحديث الداتابيز بالنص المشفر بدلاً من النص الصريح
+    const sql = `
+      UPDATE customer
+      SET password = ?
+      WHERE phone_caustomer = ?
+    `;
 
-    delete resetCodes[phone];
+    connection.query(sql, [hashedPassword, phone], (err, result) => {
+      if (err) {
+        console.log("Reset password error:", err);
+        return res.json({ success: false, message: "خطأ في السيرفر، فشل تحديث البيانات" });
+      }
 
-    res.json({
-      success: true,
-      message: "تم تغيير كلمة المرور بنجاح"
+      delete resetCodes[phone];
+
+      res.json({
+        success: true,
+        message: "تم تغيير كلمة المرور بنجاح"
+      });
     });
-  });
+
+  } catch (cryptErr) {
+    console.log("Bcrypt password reset error:", cryptErr);
+    return res.json({ success: false, message: "خطأ داخلي أثناء تشفير البيانات" });
+  }
 });

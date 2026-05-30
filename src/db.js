@@ -1,11 +1,12 @@
 const mysql = require("mysql");
+require("dotenv").config(); // لضمان الاستقرار في قراءة المتغيرات
 
 const connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "root",
-  database: "boraq_database"
+  host: String(process.env.DB_HOST || "localhost"),
+  port: Number(process.env.DB_PORT || 3306),
+  user: String(process.env.DB_USER || "root"),
+  password: String(process.env.DB_PASSWORD || "root"), // تحويل صريح لنص لضمان قراءة كلمة المرور "root"
+  database: String(process.env.DB_NAME || "boraq_database")
 });
 
 module.exports = connection;
