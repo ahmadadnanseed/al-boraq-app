@@ -203,3 +203,30 @@ document.querySelectorAll(".otp-field").forEach((input,index,inputs)=>{
     });
 
 });
+
+// 🔑 حارس التنقل الذكي لصفحات الكابتن والأدمن
+document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
+  
+  // إذا مش مسجل دخول أو ما في توكن، ما في داعي نعدل الروابط
+  if (!token) return;
+
+  // الإمساك بجميع الروابط في الصفحة
+  const links = document.querySelectorAll("a");
+
+  links.forEach(link => {
+    const href = link.getAttribute("href");
+
+    // إذا كان الرابط يتوجه لصفحة خاصة بالسائق أو الأدمن ولا يحتوي على توكن مسبقاً
+    if (href && (href.includes("driver") || href.includes("admin")) && !href.includes("?token=")) {
+      
+      // منع السلوك الافتراضي للانتقال الأعمى
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        
+        // حقن التوكن المخزن بالـ localStorage داخل الرابط برمجياً عند الكبس
+        window.location.href = `${href}?token=${token}`;
+      });
+    }
+  });
+});
