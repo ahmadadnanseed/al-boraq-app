@@ -1,9 +1,13 @@
 const express = require("express");
 const connection = require("../db");
-const bcrypt = require("bcryptjs"); // استيراد مكتبة التشفير الآمن
+const bcrypt = require("bcryptjs"); 
+const jwt = require("jsonwebtoken"); // 1. استدعاء مكتبة JWT التي قمنا بتثبيتها
 
 const router = express.Router();
 const signupOtpCodes = {};
+
+// المفتاح السري لتشفير الـ Tokens (في الإنتاج الحقيقي يفضل وضعه في ملف الـ .env)
+const JWT_SECRET = process.env.JWT_SECRET || "BURAQ_SUPER_SECRET_SECURITY_KEY_2026";
 
 // دالة مساعدة لتقسيم الاسم
 function splitFullName(name) {
@@ -45,7 +49,7 @@ router.post("/signup/send-otp", (req, res) => {
 
     signupOtpCodes[phone] = {
       code,
-      expiresAt: Date.now() + 5 * 60 * 1000 // صلاحية 5 دقائق
+      expiresAt: Date.now() + 5 * 60 * 1000 
     };
 
     console.log("Signup OTP for", phone, "is:", code);
@@ -53,7 +57,6 @@ router.post("/signup/send-otp", (req, res) => {
     res.json({
       success: true,
       message: "تم إرسال رمز التحقق"
-      // أمنياً: لا ترسل الـ code في الاستجابة بالإنتاج الحقيقي، يرسل فقط عبر SMS.
     });
   });
 });
@@ -84,7 +87,6 @@ router.post("/signup/verify", async (req, res) => {
   }
 
   try {
-    // تشفير كلمة المرور بقوة 10 Salt Rounds
     const hashedPassword = await bcrypt.hash(password, 10);
     const { first, last } = splitFullName(name);
 
@@ -131,7 +133,6 @@ router.post("/signup", async (req, res) => {
     connection.query(sql, [first_name, last_name, phone, dob, hashedPassword], (err, result) => {
       if (err) {
         return loginDbError(res, "Signup error:", err); 
-        // أمنياً: حجبنا الـ err.sqlMessage لحماية هيكل الجداول من الانكشاف
       }
 
       res.json({ success: true, message: "تم إنشاء الحساب بنجاح", userId: result.insertId });
@@ -143,62 +144,82 @@ router.post("/signup", async (req, res) => {
 });
 
 /* ========================================================
-   4. تسجيل الدخول الآمن (Admin, Driver, Customer)
+   4. تسجيل الدخول الآمن وحقن الـ JWT لكل دور (Role)
 ======================================================== */
 router.post("/login", (req, res) => {
   const { loginType, phone, driverCode, adminCode, password } = req.body;
 
   if (!password) {
     return res.status(400).json({ success: false, message: "كلمة المرور مطلوبة" });
-
-  }
-// --- نظام تسجيل دخول الـ Admin المطور ---
-if (loginType === "admin") {
-  if (!adminCode) return res.status(400).json({ success: false, message: "رمز الأدمن مطلوب" });
-  
-  // تحويل الناتج إلى رقم حقيقي متوافق مع int(10) في الداتابيز
-const adminId = Number(adminCode.toLowerCase().replace("admin", ""));
-
-  if (isNaN(adminId)) {
-    return res.json({ success: false, message: "رمز الأدمن غير صالح" });
   }
 
-  const sql = `SELECT * FROM admin WHERE admin_id = ?`;
-  connection.query(sql, [adminId], async (err, result) => {
-    if (err) return loginDbError(res, "Admin login error:", err);
+  // --- نظام تسجيل دخول الـ Admin ---
+  if (loginType === "admin") {
+    if (!adminCode) return res.status(400).json({ success: false, message: "رمز الأدمن مطلوب" });
+    const adminId = Number(adminCode.toLowerCase().replace("admin", ""));
 
-    if (result.length === 0 || !(await bcrypt.compare(password, result[0].password))) {
-      return res.json({ success: false, message: "رقم الأدمن أو كلمة المرور غير صحيحة" });
+    if (isNaN(adminId)) {
+      return res.json({ success: false, message: "رمز الأدمن غير صالح" });
     }
 
-    return res.json({ success: true, role: "admin", adminId: result[0].admin_id });
-  });
-  return;
-}
+    const sql = `SELECT * FROM admin WHERE admin_id = ?`;
+    connection.query(sql, [adminId], async (err, result) => {
+      if (err) return loginDbError(res, "Admin login error:", err);
 
-// --- نظام تسجيل دخول الـ Driver المطور ---
-if (loginType === "driver") {
-  if (!driverCode) return res.status(400).json({ success: false, message: "الرقم الوظيفي مطلوب" });
-  
-  // تحويل الناتج إلى رقم حقيقي متوافق مع int(10) في الداتابيز
-  const driverId = Number(driverCode.toLowerCase().replace("driver", ""));
+      if (result.length === 0 || !(await bcrypt.compare(password, result[0].password))) {
+        return res.json({ success: false, message: "رقم الأدمن أو كلمة المرور غير صحيحة" });
+      }
 
-  if (isNaN(driverId)) {
-    return res.json({ success: false, message: "الرقم الوظيفي غير صالح" });
+      // 🔑 توليد بطاقة الـ JWT للأدمن بصلاحية 24 ساعة
+      const token = jwt.sign(
+        { id: result[0].admin_id, role: "admin" },
+        JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      return res.json({ 
+        success: true, 
+        role: "admin", 
+        adminId: result[0].admin_id,
+        token: token // إرسال التوكن للواجهة
+      });
+    });
+    return;
   }
 
-  const sql = `SELECT * FROM driver WHERE driver_id = ?`;
-  connection.query(sql, [driverId], async (err, result) => {
-    if (err) return loginDbError(res, "Driver login error:", err);
+  // --- نظام تسجيل دخول الـ Driver ---
+  if (loginType === "driver") {
+    if (!driverCode) return res.status(400).json({ success: false, message: "الرقم الوظيفي مطلوب" });
+    const driverId = Number(driverCode.toLowerCase().replace("driver", ""));
 
-    if (result.length === 0 || !(await bcrypt.compare(password, result[0].password))) {
-      return res.json({ success: false, message: "الرقم الوظيفي أو كلمة المرور غير صحيحة" });
+    if (isNaN(driverId)) {
+      return res.json({ success: false, message: "الرقم الوظيفي غير صالح" });
     }
 
-    return res.json({ success: true, role: "driver", driverId: result[0].driver_id });
-  });
-  return;
-}
+    const sql = `SELECT * FROM driver WHERE driver_id = ?`;
+    connection.query(sql, [driverId], async (err, result) => {
+      if (err) return loginDbError(res, "Driver login error:", err);
+
+      if (result.length === 0 || !(await bcrypt.compare(password, result[0].password))) {
+        return res.json({ success: false, message: "الرقم الوظيفي أو كلمة المرور غير صحيحة" });
+      }
+
+      // 🔑 توليد بطاقة الـ JWT للسائق بصلاحية 24 ساعة
+      const token = jwt.sign(
+        { id: result[0].driver_id, role: "driver" },
+        JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      return res.json({ 
+        success: true, 
+        role: "driver", 
+        driverId: result[0].driver_id,
+        token: token // إرسال التوكن للواجهة
+      });
+    });
+    return;
+  }
 
   // --- نظام تسجيل دخول الـ Customer ---
   if (!phone) return res.status(400).json({ success: false, message: "رقم الهاتف مطلوب" });
@@ -211,14 +232,23 @@ if (loginType === "driver") {
       return res.json({ success: false, message: "رقم الهاتف أو كلمة المرور غير صحيحة" });
     }
 
+    // 🔑 توليد بطاقة الـ JWT للزبون بصلاحية 24 ساعة
+    const token = jwt.sign(
+      { id: result[0].caustomer_id, role: "customer" },
+      JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
     res.json({
       success: true,
       role: "customer",
-      userId: result[0].caustomer_id
+      userId: result[0].caustomer_id,
+      token: token // إرسال التوكن للواجهة
     });
   });
 });
-// مسار مؤقت لتشفير حسابات الأدمن من داخل السيرفر مباشرة لضمان المطابقة
+
+// مسار مؤقت لتشفير حسابات الأدمن
 router.get("/setup-admins-securely", async (req, res) => {
   try {
     const hash1 = await bcrypt.hash("boraqadmin@ahm1516", 10);
@@ -229,7 +259,6 @@ router.get("/setup-admins-securely", async (req, res) => {
 
       connection.query("UPDATE admin SET password = ? WHERE admin_id = 2", [hash2], (err2) => {
         if (err2) return res.send("فشل تحديث الأدمن الثاني: " + err2.message);
-        
         res.send("تم تشفير حسابات الأدمن بنجاح ومطابقتها للسيرفر 100%!");
       });
     });
@@ -238,4 +267,45 @@ router.get("/setup-admins-securely", async (req, res) => {
   }
 });
 
+/* ========================================================
+   🔒 5. الحارس البرمجي (Middleware): التحقق من الـ JWT والصلاحية
+======================================================== */
+function verifyToken(allowedRoles = []) {
+  return (req, res, next) => {
+    const authHeader = req.headers["authorization"];
+    let token = authHeader && authHeader.split(" ")[1];
+
+    if (!token && req.query.token) {
+      token = req.query.token;
+    }
+
+    if (!token) {
+      if (req.accepts('html')) {
+        return res.status(404).send(`Cannot GET ${req.originalUrl}`);
+      }
+      return res.status(401).json({ success: false, message: "غير مصرح لك، التوكن مفقود" });
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, decodedUser) => {
+      if (err) {
+        if (req.accepts('html')) {
+          return res.status(404).send(`Cannot GET ${req.originalUrl}`);
+        }
+        return res.status(403).json({ success: false, message: "جلسة انتهت أو توكن غير صالح" });
+      }
+
+      if (allowedRoles.length && !allowedRoles.includes(decodedUser.role)) {
+        if (req.accepts('html')) {
+          return res.status(404).send(`Cannot GET ${req.originalUrl}`);
+        }
+        return res.status(403).json({ success: false, message: "صلاحياتك لا تسمح لك بالوصول لهذا القسم" });
+      }
+
+      req.user = decodedUser;
+      next();
+    });
+  };
+}
+// تصدير الراوتر والدالة الحارسة لاستخدامها لحماية الملفات الأخرى
 module.exports = router;
+module.exports.verifyToken = verifyToken;

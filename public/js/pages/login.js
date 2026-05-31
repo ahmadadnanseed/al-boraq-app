@@ -12,7 +12,7 @@ async function handleLogin(e) {
 
   let loginData;
 
-  // التمييز الذكي لنوع الحساب بناءً على الرمز المدخل
+  // التمييز الذكي لنوع الحساب بناءً على الرمز المدخل (RegEx)
   if (/^admin\d+$/i.test(rawInput)) {
     loginData = {
       loginType: "admin",
@@ -34,6 +34,7 @@ async function handleLogin(e) {
   }
 
   try {
+    // 1. إرسال طلب تسجيل الدخول إلى الباك آند
     const res = await fetch("/login", {
       method: "POST",
       headers: {
@@ -42,30 +43,43 @@ async function handleLogin(e) {
       body: JSON.stringify(loginData)
     });
 
+    // 2. استقبال وتحليل استجابة السيرفر
     const data = await res.json();
 
     if (data.success) {
-      // تخزين المعرفات وتوجيه المستخدم للصفحة الصحيحة
-      if (data.role === "admin") {
-        localStorage.setItem("adminId", data.adminId);
-        localStorage.setItem("userType", "admin");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("driverId");
-        window.location.href = "admin.html"; 
-      } else if (data.role === "driver") {
-        localStorage.setItem("driverId", data.driverId);
-        localStorage.setItem("userType", "driver");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("adminId");
-        window.location.href = "driver-requests.html";
-      } else {
-        localStorage.setItem("userId", data.userId);
-        localStorage.setItem("userType", "customer");
-        localStorage.removeItem("driverId");
-        localStorage.removeItem("adminId");
-        window.location.href = "index.html";
-      }
-    } else {
+    if (data.success) {
+  // تخزين المعرفات والتوكن (JWT) وتوجيه المستخدم بناءً على الصلاحيات
+  
+  if (data.role === "admin") {
+    localStorage.setItem("token", data.token); 
+    localStorage.setItem("adminId", data.adminId);
+    localStorage.setItem("userType", "admin");
+    
+    localStorage.removeItem("userId");
+    localStorage.removeItem("driverId");
+    // 🔑 تعديل ذكي: تمرير التوكن بالرابط ليعبر حارس السيرفر ويفتح الصفحة
+    window.location.href = `admin.html?token=${data.token}`; 
+
+  } else if (data.role === "driver") {
+    localStorage.setItem("token", data.token); 
+    localStorage.setItem("driverId", data.driverId);
+    localStorage.setItem("userType", "driver");
+    
+    localStorage.removeItem("userId");
+    localStorage.removeItem("adminId");
+    // 🔑 تمرير التوكن لصفحة السائق الرئيسية
+    window.location.href = `driver-requests.html?token=${data.token}`; 
+
+  } else {
+    localStorage.setItem("token", data.token); 
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("userType", "customer");
+    
+    localStorage.removeItem("driverId");
+    localStorage.removeItem("adminId");
+    window.location.href = "index.html"; // صفحة الركاب العادية ساكنة بـ public لا تحتاج توكن بالرابط
+  }
+}
       if (errorMsg) errorMsg.innerText = data.message || "فشل تسجيل الدخول";
     }
 
@@ -75,5 +89,5 @@ async function handleLogin(e) {
   }
 }
 
-// ربط الدالة بالـ window لتراها صفحة الـ HTML
+// ربط الدالة بالـ window لتراها صفحة الـ HTML عند الضغط على زر دخول
 window.handleLogin = handleLogin;

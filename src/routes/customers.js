@@ -12,23 +12,23 @@ function splitFullName(name) {
 }
 
 /* ==============================
-   جلب بيانات المستخدم للملف الشخصي
+   جلب بيانات المستخدم للملف الشخصي (آمن)
 ============================== */
 router.get("/user/:id", (req, res) => {
   const userId = req.params.id;
 
   const sql = `
-    SELECT *
+    SELECT caustomer_id, fast_name_caustomer, last_name_caustomer, phone_caustomer, date_of_birth_caustomer, email, gender
     FROM customer
     WHERE caustomer_id = ?
   `;
 
   connection.query(sql, [userId], (err, result) => {
     if (err) {
-      console.log("Get user error:", err);
+      console.error("Get user error:", err);
       return res.status(500).json({
         success: false,
-        message: "خطأ في جلب البيانات"
+        message: "خطأ داخلي في السيرفر" // حجب تفاصيل الخطأ الحساسة
       });
     }
 
@@ -47,7 +47,7 @@ router.get("/user/:id", (req, res) => {
 });
 
 /* ==============================
-   تعديل بيانات المستخدم
+   تعديل بيانات المستخدم (تم تأمينه وحجب تفاصيل الـ SQL)
 ============================== */
 router.put("/user/:id", (req, res) => {
   const userId = req.params.id;
@@ -70,14 +70,15 @@ router.put("/user/:id", (req, res) => {
 
   connection.query(
     sql,
-[first_name, last_name, phone || "", cleanDob, email || "", gender || "", userId],
+    [first_name, last_name, phone || "", cleanDob, email || "", gender || "", userId],
     (err, result) => {
       if (err) {
-        console.log("Update error:", err);
+        // طباعة تفاصيل الخطأ في كونسول السيرفر الخاص بك فقط لحمايتها
+        console.error("Update customer database error:", err); 
         return res.status(500).json({
           success: false,
-          message: "فشل التعديل",
-          error: err.sqlMessage
+          message: "فشل تحديث البيانات، يرجى المحاولة لاحقاً" 
+          // تم إزالة err.sqlMessage لمنع استكشاف هيكل الجداول من قبل المتطفلين
         });
       }
 
@@ -89,52 +90,34 @@ router.put("/user/:id", (req, res) => {
   );
 });
 
+/* ==============================
+   جلب اشتراكات العميل (آمن)
+============================== */
 router.get("/customer/subscriptions/:customerId", (req, res) => {
   const customerId = req.params.customerId;
 
   const sql = `
     SELECT
-      b.booking_id,
-      b.start_date_booking,
+      b.booking_id, b.start_date_booking,
       TIME_FORMAT(b.start_time, '%H:%i') AS start_time,
       TIME_FORMAT(b.end_time, '%H:%i') AS end_time,
-      b.trip_type,
-      b.pickup,
-      b.dropoff,
-      b.seats_count,
-      b.selected_seats,
-      b.price,
-      b.distance_km,
-      b.duration_min,
-
-      d.driver_id,
-      d.fast_name_driver,
-      d.last_name_driver,
-      d.phone_driver,
-      d.date_of_birth_driver,
-
-      v.vehicle_type,
-      v.vehicle_mode,
-      v.vehicle_year_of_manufacturel,
-      v.vehicle_license_blate_number,
-      v.color
-
+      b.trip_type, b.pickup, b.dropoff, b.seats_count, b.selected_seats, b.price, b.distance_km, b.duration_min,
+      d.driver_id, d.fast_name_driver, d.last_name_driver, d.phone_driver, d.date_of_birth_driver,
+      v.vehicle_type, v.vehicle_mode, v.vehicle_year_of_manufacturel, v.vehicle_license_blate_number, v.color
     FROM booking b
     LEFT JOIN driver d ON b.driver_id_fk = d.driver_id
     LEFT JOIN vehicle v ON v.driver_id_fk = d.driver_id
-
     WHERE b.customer_id_fk = ?
     AND b.status = 2
-
     ORDER BY b.booking_id DESC
   `;
 
   connection.query(sql, [customerId], (err, result) => {
     if (err) {
-      console.log("Customer subscriptions error:", err);
-      return res.json({
+      console.error("Customer subscriptions error:", err);
+      return res.status(500).json({
         success: false,
-        message: "فشل جلب الاشتراكات"
+        message: "خطأ داخلي أثناء جلب البيانات"
       });
     }
 

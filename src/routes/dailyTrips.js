@@ -32,7 +32,6 @@ function createDailyTripsFromBooking(bookingId, callback) {
 
     const booking = result[0];
     const startDate = new Date(booking.start_date_booking);
-
     const trips = [];
 
     for (let i = 0; i < 30; i++) {
@@ -92,48 +91,29 @@ router.get("/customer/today-trips/:customerId", (req, res) => {
 
   const sql = `
     SELECT
-      dt.daily_trip_id,
-      dt.trip_date,
-      TIME_FORMAT(dt.trip_time, '%H:%i') AS trip_time,
-      dt.trip_direction,
-      dt.pickup,
-      dt.dropoff,
-      dt.status,
-
-      d.fast_name_driver,
-      d.last_name_driver,
-      d.phone_driver,
-
-      dep.fast_name_dependent,
-      dep.last_name_dependent,
-      dep.relationship,
-
-      v.vehicle_type,
-      v.vehicle_mode,
-      v.vehicle_year_of_manufacturel,
-      v.color
-
+      dt.daily_trip_id, dt.trip_date, TIME_FORMAT(dt.trip_time, '%H:%i') AS trip_time,
+      dt.trip_direction, dt.pickup, dt.dropoff, dt.status,
+      d.fast_name_driver, d.last_name_driver, d.phone_driver,
+      dep.fast_name_dependent, dep.last_name_dependent, dep.relationship,
+      v.vehicle_type, v.vehicle_mode, v.vehicle_year_of_manufacturel, v.color
     FROM daily_trips dt
     JOIN driver d ON dt.driver_id_fk = d.driver_id
     LEFT JOIN dependent dep ON dt.dependent_id_fk = dep.dependent_id
     LEFT JOIN vehicle v ON v.driver_id_fk = d.driver_id
-
     WHERE dt.customer_id_fk = ?
     AND dt.trip_date = CURDATE()
     AND (
       dt.status IN ('scheduled','driver_started','driver_arrived','passenger_picked')
       OR (dt.status = 'completed' AND dt.customer_completion_confirmed = 0)
     )
-
     ORDER BY dt.trip_time ASC
   `;
 
   connection.query(sql, [customerId], (err, result) => {
     if (err) {
-      console.log("Today trips error:", err);
-      return res.json({ success: false, message: "فشل جلب إشعارات اليوم" });
+      console.error("Today trips error:", err);
+      return res.status(500).json({ success: false, message: "خطأ داخلي في السيرفر" });
     }
-
     res.json({ success: true, trips: result });
   });
 });
@@ -142,19 +122,21 @@ router.put("/daily-trips/:tripId/postpone", (req, res) => {
   const tripId = req.params.tripId;
   const { postponed_to } = req.body;
 
+  if (!postponed_to) {
+    return res.status(400).json({ success: false, message: "تاريخ التأجيل مطلوب" });
+  }
+
   const sql = `
     UPDATE daily_trips
-    SET status = 'postponed',
-        postponed_to = ?
+    SET status = 'postponed', postponed_to = ?
     WHERE daily_trip_id = ?
   `;
 
-  connection.query(sql, [postponed_to, tripId], (err) => {
+  connection.query(sql, [String(postponed_to).trim(), tripId], (err) => {
     if (err) {
-      console.log("Postpone trip error:", err);
-      return res.json({ success: false, message: "فشل تأجيل الرحلة" });
+      console.error("Postpone trip error:", err);
+      return res.status(500).json({ success: false, message: "فشل تأجيل الرحلة داخلياً" });
     }
-
     res.json({ success: true, message: "تم تأجيل الرحلة" });
   });
 });
@@ -163,22 +145,22 @@ router.put("/customer/daily-trips/:tripId/rate", (req, res) => {
   const tripId = req.params.tripId;
   const { rating, comment } = req.body;
 
+  if (rating === undefined || rating === null) {
+    return res.status(400).json({ success: false, message: "التقييم مطلوب" });
+  }
+
   const sql = `
     UPDATE daily_trips
-    SET
-      customer_completion_confirmed = 1,
-      customer_rating = ?,
-      customer_comment = ?
+    SET customer_completion_confirmed = 1, customer_rating = ?, customer_comment = ?
     WHERE daily_trip_id = ?
   `;
 
-  connection.query(sql, [rating, comment || "", tripId], (err) => {
+  connection.query(sql, [rating, (comment || "").trim(), tripId], (err) => {
     if (err) {
-      console.log("Rating error:", err);
-      return res.json({ success: false, message: "فشل حفظ التقييم" });
+      console.error("Rating database error:", err);
+      return res.status(500).json({ success: false, message: "فشل حفظ التقييم في السيرفر" });
     }
-
-    res.json({ success: true, message: "تم حفظ التقييم" });
+    res.json({ success: true, message: "تم حفظ التقييم بنجاح" });
   });
 });
 

@@ -1,3 +1,5 @@
+// ملف: js/pages/admin.js
+
 let currentSection = "users";
 let adminChart = null;
 let currentRows = [];
@@ -17,8 +19,34 @@ const tableHeaders = {
   drivers: ["ID", "الاسم", "الهاتف", "العنوان"]
 };
 
+// 🔒 دالة مساعدة لجلب هيدر الأمان بالتوكن المشفر تلقائياً
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}` // حقن التوكن بصيغة Bearer القياسية أمنياً
+  };
+}
+
+// 🔒 دالة للتحقق من الاستجابة وطرد المتطفلين أو من انتهت جلستهم
+function handleAuthResponse(status) {
+  if (status === 401 || status === 403) {
+    alert("جلسة غير صالحة أو غير مصرح لك بدخول هذا القسم!");
+    localStorage.clear(); // تنظيف الذاكرة
+    window.location.href = "login.html"; // الطرد الفوري لصفحة الدخول
+    return true;
+  }
+  return false;
+}
+
 async function loadAdminDashboard() {
-  const res = await fetch("/admin/dashboard-data");
+  // 🔑 تعديل أمني: إرسال الـ Headers المؤمنة بالتوكن
+  const res = await fetch("/admin/dashboard-data", {
+    headers: getAuthHeaders()
+  });
+
+  if (handleAuthResponse(res.status)) return;
+
   const data = await res.json();
 
   if (!data.success) {
@@ -37,7 +65,13 @@ async function loadAdminDashboard() {
 async function loadAdminSection(sectionKey) {
   currentSection = sectionKey;
 
-  const res = await fetch(`/admin/dashboard-section/${sectionKey}`);
+  // 🔑 تعديل أمني: إرسال الـ Headers المؤمنة بالتوكن للقسم
+  const res = await fetch(`/admin/dashboard-section/${sectionKey}`, {
+    headers: getAuthHeaders()
+  });
+
+  if (handleAuthResponse(res.status)) return;
+
   const data = await res.json();
 
   if (!data.success) {
@@ -62,9 +96,7 @@ function selectDashboardSection(sectionKey, evt) {
 }
 
 function renderAdminChart(sectionKey, count) {
-  document.getElementById("chartTitle").innerText =
-    `رسم بياني - ${sectionTitles[sectionKey]}`;
-
+  document.getElementById("chartTitle").innerText = `رسم بياني - ${sectionTitles[sectionKey]}`;
   const ctx = document.getElementById("adminChart").getContext("2d");
 
   if (adminChart) adminChart.destroy();
@@ -156,7 +188,13 @@ function resetSearchBox() {
 async function openDriverRequestsModal() {
   document.getElementById("driverRequestsModal").style.display = "flex";
 
-  const res = await fetch("/admin/driver-requests");
+  // 🔑 تعديل أمني: إرسال الـ Headers المؤمنة بالتوكن
+  const res = await fetch("/admin/driver-requests", {
+    headers: getAuthHeaders()
+  });
+
+  if (handleAuthResponse(res.status)) return;
+
   const data = await res.json();
 
   if (!data.success) {
@@ -181,10 +219,28 @@ function calculateAge(dob) {
   return age === null ? "" : age;
 }
 
+// 💡 دالة عامة مساعدة لحساب فرق السنوات بشكل آمن
+function yearsSinceBirth(dobString) {
+  if (!dobString) return null;
+  const birthDate = new Date(dobString);
+  if (isNaN(birthDate.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 async function acceptDriver(id) {
+  // 🔑 تعديل أمني: تمرير الهيدرز الموثقة مع طلب الـ PUT للقبول
   const res = await fetch(`/admin/driver-requests/${id}/accept`, {
-    method: "PUT"
+    method: "PUT",
+    headers: getAuthHeaders()
   });
+
+  if (handleAuthResponse(res.status)) return;
 
   const data = await res.json();
 
@@ -207,9 +263,13 @@ async function rejectDriver(id) {
   const ok = confirm("هل أنت متأكد من رفض وحذف هذا الطلب؟");
   if (!ok) return;
 
+  // 🔑 تعديل أمني: تمرير الهيدرز الموثقة مع طلب الـ PUT للرفض
   const res = await fetch(`/admin/driver-requests/${id}/reject`, {
-    method: "PUT"
+    method: "PUT",
+    headers: getAuthHeaders()
   });
+
+  if (handleAuthResponse(res.status)) return;
 
   const data = await res.json();
 
@@ -239,7 +299,7 @@ function renderDriverRequests(data) {
       <td>${driver.age}</td>
       <td>${driver.phone}</td>
       <td>
-        <a class="whatsapp-btn" target="_blank"href="https://wa.me/${formatPhone(driver.phone)}">
+        <a class="whatsapp-btn" target="_blank" href="https://wa.me/${formatPhone(driver.phone)}">
           واتساب
         </a>
       </td>
@@ -282,7 +342,29 @@ function filterDriverRequests() {
   renderDriverRequests(filtered);
 }
 
+// ملف: js/pages/admin.js
+
+function verifyAdminClientAccess() {
+  // 💡 شرط ذكي: لا تفحص ولا تطرد أحداً إلا إذا كان المسار الفعلي بالمتصفح هو صفحة الأدمن
+  if (!window.location.pathname.includes("admin.html")) {
+    return true; // اترك السكريبت يمر بسلام إذا كنا بصفحة الـ login
+  }
+
+  const token = localStorage.getItem("token");
+  const userType = localStorage.getItem("userType");
+
+  if (!token || userType !== "admin") {
+    alert("غير مصرح لك بدخول لوحة التحكم، يرجى تسجيل الدخول أولاً.");
+    window.location.href = "login.html";
+    return false;
+  }
+  return true;
+}
+
 function initAdminPage() {
+  // فحص أمن الواجهة أولاً
+  if (!verifyAdminClientAccess()) return;
+
   if (document.getElementById("usersCount")) {
     loadAdminDashboard();
   }
@@ -294,6 +376,7 @@ if (document.readyState === "loading") {
   initAdminPage();
 }
 
+// ربط الدوال بالـ window
 window.loadAdminDashboard = loadAdminDashboard;
 window.loadAdminSection = loadAdminSection;
 window.selectDashboardSection = selectDashboardSection;
