@@ -170,7 +170,6 @@ app.use((err, req, res, next) => {
 /* ========================================================
    لوحة تحكم الأدمن والعمليات (Endpoints)
 ======================================================== */
-
 app.get("/admin/driver-requests", (req, res) => {
   const sql = `
     SELECT driver_id, fast_name_driver, last_name_driver, date_of_birth_driver, phone_driver, address, password
@@ -238,20 +237,48 @@ app.put("/admin/driver-requests/:id/reject", (req, res) => {
   });
 });
 
+// المسار النهائي المعدل والشامل لتغذية البطاقات، الجداول السفلية عند الكبس، والرسم البياني معاً!
 app.get("/admin/dashboard-data", (req, res) => {
+  // الاستعلام الشامل لجلب الأعداد الحقيقية من الداتابيز
   const sql = `
     SELECT
       (SELECT COUNT(*) FROM customer) AS usersCount,
       (SELECT COUNT(*) FROM booking WHERE status = 1) AS pendingSubsCount,
       (SELECT COUNT(*) FROM booking WHERE status = 2) AS activeSubsCount,
-      (SELECT COUNT(*) FROM driver WHERE status = 'accepted') AS driversCount
+      (SELECT COUNT(*) FROM driver WHERE status = 'accepted') AS driversCount,
+      (SELECT COUNT(*) FROM vehicle) AS vehiclesCount
   `;
+
   connection.query(sql, (err, result) => {
     if (err) {
       console.log("Admin dashboard counts error:", err);
       return res.json({ success: false });
     }
-    res.json({ success: true, counts: result[0] });
+
+    const dataRow = result[0];
+
+    // الإرجاع المطور المطابق مية بالمية لمتطلبات كود صفحة الأدمن التفاعلية عندك
+    res.json({ 
+      success: true, 
+      
+      // التعديل الجوهري: فرد الخصائص في الطبقة الأولى مباشرة لتقرأها بطاقات العدادات العلوية
+      usersCount: dataRow.usersCount,
+      pendingSubsCount: dataRow.pendingSubsCount,
+      activeSubsCount: dataRow.activeSubsCount,
+      driversCount: dataRow.driversCount,
+      vehiclesCount: dataRow.vehiclesCount,
+
+      // إرجاع كائن counts مفروداً في الجيل الأول ليتوافق مع دوال الكبس وفلترة الجداول التفاعلية بالأسفل
+      counts: dataRow, 
+
+      // كائن stats لتغذية الأعمدة الأربعة الملونة في الرسم البياني الجديد
+      stats: {
+        customers: dataRow.usersCount,
+        drivers: dataRow.driversCount,
+        vehicles: dataRow.vehiclesCount,
+        bookings: dataRow.activeSubsCount
+      }
+    });
   });
 });
 
@@ -286,7 +313,6 @@ app.get("/admin/dashboard-section/:section", (req, res) => {
     res.json({ success: true, rows });
   });
 });
-
 /* ========================================================
    استعادة كلمة المرور (Forgot Password)
 ======================================================== */

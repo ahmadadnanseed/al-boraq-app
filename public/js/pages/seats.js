@@ -1,4 +1,6 @@
 let selectedSeats = [];
+// متغير للتحقق مما إذا تم إدخال بيانات الدفع الوهمية بنجاح
+let isVisaVerified = false;
 
 function selectSeat(seatElement) {
   const seatNumber = seatElement.dataset.seat;
@@ -99,16 +101,56 @@ async function cancelSeatBooking() {
   window.location.href = "booking.html";
 }
 
+// دالة جديدة لفتح نافذة إدخال بيانات الفيزا الوهمية
+function openVisaModal() {
+  if (selectedSeats.length === 0) {
+    alert("اختر مقعد واحد على الأقل أولاً");
+    return;
+  }
+  document.getElementById("visaModal").style.display = "flex";
+}
+
+// دالة جديدة لإغلاق نافذة الفيزا وتطهير المدخلات
+function closeVisaModal() {
+  document.getElementById("visaModal").style.display = "none";
+  document.getElementById("visaForm").reset();
+}
+
+// دالة جديدة لمعالجة إرسال الفيزا الوهمية والتحقق منها هندسياً
+function handleVisaSubmit(event) {
+  event.preventDefault();
+  
+  const cardNumber = document.getElementById("visaCardNumber").value;
+  if (cardNumber.length !== 16) {
+    alert("الرجاء إدخال رقم بطاقة ائتمان صحيح مكون من 16 خانة");
+    return;
+  }
+
+  isVisaVerified = true; // تفعيل شرط الدفع بنجاح
+  closeVisaModal();      // إغلاق النافذة
+  confirmBooking();      // استدعاء دالة الإرسال الحقيقية للسيرفر
+}
+
+// دالة تأكيد الحجز بعد تعديلها لفحص شرط الدفع الآمن أولاً
 async function confirmBooking() {
+  // فحص صارم: إذا لم يقم المستخدم بتعبئة الفيزا أولاً، يتم حظره وإجباره على التعبئة
+  if (!isVisaVerified) {
+    alert("يجب تعبئة بيانات الدفع أولاً لإكمال الاشتراك والطلب!");
+    openVisaModal();
+    return;
+  }
+
   const bookingId = localStorage.getItem("bookingId");
 
   if (!bookingId) {
     alert("لا يوجد رقم حجز");
+    isVisaVerified = false;
     return;
   }
 
   if (selectedSeats.length === 0) {
     alert("اختر مقعد واحد على الأقل");
+    isVisaVerified = false;
     return;
   }
 
@@ -133,28 +175,30 @@ async function confirmBooking() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-  selected_seats: selectedSeats,
-  seats_count: selectedSeats.length,
-  price: price.toFixed(2),
-  distance_km: routeInfo.distanceKm.toFixed(2),
-  duration_min: routeInfo.durationMin
-})
-  
+        selected_seats: selectedSeats,
+        seats_count: selectedSeats.length,
+        price: price.toFixed(2),
+        distance_km: routeInfo.distanceKm.toFixed(2),
+        duration_min: routeInfo.durationMin
+      })
     });
 
     const data = await res.json();
 
     if (!data.success) {
       alert(data.message || "فشل إرسال الطلب");
+      isVisaVerified = false;
       return;
     }
 
-    alert("تم إرسال طلبك للسائقين");
+    alert("تم التحقق من وسيلة الدفع بنجاح! وتم إرسال طلب اشتراكك إلى السائقين");
+    isVisaVerified = false; // تصفير للعمليات القادمة
     window.location.href = "schedule.html";
 
   } catch (err) {
     console.log("Route error:", err);
     alert("تعذر حساب المسافة الحقيقية");
+    isVisaVerified = false;
   }
 }
 
@@ -170,11 +214,15 @@ if (document.readyState === "loading") {
   initSeatsPage();
 }
 
+// تصدير جميع الدوال للنطاق العالمي لتفادي أي مشاكل ارتباط بالـ HTML
 window.selectedSeats = selectedSeats;
 window.selectSeat = selectSeat;
 window.calculateDistanceKm = calculateDistanceKm;
 window.calculateMonthlyPrice = calculateMonthlyPrice;
 window.updateSeatsSummary = updateSeatsSummary;
 window.cancelSeatBooking = cancelSeatBooking;
+window.openVisaModal = openVisaModal;
+window.closeVisaModal = closeVisaModal;
+window.handleVisaSubmit = handleVisaSubmit;
 window.confirmBooking = confirmBooking;
 window.initSeatsPage = initSeatsPage;

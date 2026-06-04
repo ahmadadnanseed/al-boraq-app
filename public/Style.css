@@ -3467,3 +3467,22 @@ label, .date-field {
   margin-top: 5px;
   min-height: 20px;
 }
+
+/* تنسيق أزرار الخيارات السريعة لتبدو احترافية مثل كتل البحث */
+.quick-opt-btn {
+    background-color: #1a233a; /* لون داكن متناسق مع براق */
+    color: #ffffff;
+    border: 1px solid #2d3956;
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quick-opt-btn:hover {
+    background-color: #14b8ff; /* تأثير الإضاءة الزرقاء لبراق عند التمرير */
+    border-color: #14b8ff;
+    transform: translateY(-2px);
+}

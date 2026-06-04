@@ -1,5 +1,5 @@
 const express = require("express");
-const connection = require("../db");
+const connection = require("../db"); // كائن الاتصال المعتمد هنا هو connection
 const { createDailyTripsFromBooking } = require("./dailyTrips");
 
 const router = express.Router();
@@ -11,6 +11,38 @@ function splitFullName(name) {
     last: parts.slice(1).join(" ") || ""
   };
 }
+
+// مسار جلب ملف السائق مع مركبتة بربط جدول driver مع جدول vehicle (تم تصليحه مية بالمية)
+router.get('/driver/profile/:id', async (req, res) => {
+  const driverId = req.params.id;
+  
+  // استعلام يدمج بيانات السائق والمركبة بناءً على الـ driver_id
+  const query = `
+    SELECT d.*, v.vehicle_type, v.vehicle_mode, v.vehicle_year_of_manufacturel 
+    FROM driver d 
+    LEFT JOIN vehicle v ON d.driver_id = v.driver_id_fk 
+    WHERE d.driver_id = ?
+  `;
+
+  try {
+    // تم التعديل هنا ليعمل على connection.query ليتوافق مع الاتصال الأصلي للملف
+    connection.query(query, [driverId], (err, results) => {
+      if (err) {
+        console.log("DB Query error in driver profile:", err);
+        return res.json({ success: false, message: "حدث خطأ في استعلام الداتابيز" });
+      }
+
+      if (results.length === 0) {
+        return res.json({ success: false, message: "Driver not found" });
+      }
+      
+      // إرسال البيانات الحقيقية للفرونت آند
+      res.json({ success: true, driver: results[0] });
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // 1. تقديم طلب السائق (تبقى كلمة المرور صريحة مؤقتاً في مرحلة الـ pending لكي يراها الأدمن)
 router.post("/driver/signup", (req, res) => {
@@ -47,7 +79,7 @@ router.post("/driver/signup", (req, res) => {
     connection.query(checkDriverSql, [phone], (err2, driverResult) => {
       if (err2) {
         console.log("Check driver error:", err2);
-        return res.json({ success: false, message: "Fشل التحقق من السائق" });
+        return res.json({ success: false, message: "فشل التحقق من السائق" });
       }
 
       if (driverResult.length > 0) {

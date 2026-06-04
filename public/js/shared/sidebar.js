@@ -25,9 +25,14 @@ async function loadSidebarUserData() {
 }
 
 function drivergoToProfile() {
-    window.location.href = "driver-profile.html";
+  const token = localStorage.getItem("token");
+  
+  if (token) {
+    window.location.href = `driver-profile.html?token=${token}`;
+  } else {
+    window.location.href = "login.html";
+  }
 }
-
 function initSidebar() {
   loadSidebarUserData();
 }

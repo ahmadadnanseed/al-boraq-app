@@ -74,3 +74,71 @@ function setBarHeight(selector, value, max) {
   const height = Math.max((value / max) * 140, 20);
   bar.style.height = `${height}px`;
 }
+let isWithdrawVerified = false;
+
+// دالة لفتح نافذة السحب
+function openWithdrawModal() {
+  document.getElementById("withdrawModal").style.display = "flex";
+}
+
+// دالة لإغلاق نافذة السحب وتصفير المدخلات
+function closeWithdrawModal() {
+  document.getElementById("withdrawModal").style.display = "none";
+  document.getElementById("withdrawForm").reset();
+}
+
+// دالة لتغيير النصوص حسب خيار السائق (محفظة أو بنك) لتبدو احترافية
+function toggleWithdrawFields() {
+  const method = document.getElementById("withdrawMethod").value;
+  const label = document.getElementById("methodLabel");
+  const input = document.getElementById("methodInput");
+  
+  if (method === "bank") {
+    label.innerText = "رقم الحساب الدولي (IBAN) أو كليك:";
+    input.placeholder = "JOXXXXXXXXXXXXXXXXXXXXXXXX";
+  } else {
+    label.innerText = "رقم المحفظة الإلكترونية:";
+    input.placeholder = "079XXXXXXXX";
+  }
+}
+
+// معالجة إرسال طلب السحب فور التحقق من إدخال البيانات
+function handleWithdrawSubmit(event) {
+  event.preventDefault();
+  
+  isWithdrawVerified = true;
+  closeWithdrawModal();
+  
+  // استدعاء دالة الإرسال الفعلية للسيرفر الخاصة بك
+  confirmWithdrawal();
+}
+
+// دالة إرسال طلب السحب للسيرفر (قم بدمج منطق الـ Fetch الخاص بك داخلها)
+async function confirmWithdrawal() {
+  if (!isWithdrawVerified) {
+    alert("الرجاء تحديد واجهة الحساب لإتمام عملية السحب!");
+    openWithdrawModal();
+    return;
+  }
+
+  // هنا تضع كود الـ Fetch الحقيقي لإرسال الطلب للأدمن، على سبيل المثال:
+  try {
+    // مثال لـ API السحب:
+    // const res = await fetch('/driver/withdraw', { method: 'POST', ... });
+    
+    alert("تم التحقق من الحساب بنجاح! تم إرسال طلب السحب وبانتظار موافقة الأدمن.");
+    isWithdrawVerified = false; // إعادة التصفير للأمان
+    
+  } catch (err) {
+    console.log("Withdrawal error:", err);
+    alert("حدث خطأ أثناء معالجة طلب السحب");
+    isWithdrawVerified = false;
+  }
+}
+
+// تصدير الدوال للنطاق العالمي لتفادي مشاكل الـ HTML
+window.openWithdrawModal = openWithdrawModal;
+window.closeWithdrawModal = closeWithdrawModal;
+window.toggleWithdrawFields = toggleWithdrawFields;
+window.handleWithdrawSubmit = handleWithdrawSubmit;
+window.confirmWithdrawal = confirmWithdrawal;

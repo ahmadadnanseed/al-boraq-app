@@ -6,9 +6,9 @@
     <title>براق | مركز المساعدة</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-   <script type="module" src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs"></script>
-   <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#003366">
+    <script type="module" src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs"></script>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#003366">
 </head>
 <body class="booking-page-bg">
     <header class="main-header">
@@ -49,18 +49,30 @@
 
             <div class="help-messages-area" id="helpMessagesArea" aria-label="محادثة مركز المساعدة">
                 <div class="help-message assistant-message">
-                    مرحبًا بك في مركز المساعدة، كيف يمكنني مساعدتك؟
+                    مرحبًا بك في مركز المساعدة، كيف يمكنني مساعدتك اليوم؟
                 </div>
             </div>
-<dotlottie-player
-  id="buraqMascot"
-  src="/animations/buraq-assistant.json"
-  background="transparent"
-  speed="1"
-  style="width:120px;height:120px"
-  loop
-  autoplay>
-</dotlottie-player>
+
+            <div class="assistant-zone" style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin: 15px 0;">
+                
+                <div class="quick-replies-container" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 90%;">
+                    <button class="quick-opt-btn" onclick="selectQuickOption('registration', 'كيفية إنشاء حساب؟')">كيفية إنشاء حساب؟ 📝</button>
+                    <button class="quick-opt-btn" onclick="selectQuickOption('subscriptions', 'كيفية الاشتراك؟')">كيفية الاشتراك؟ 💳</button>
+                    <button class="quick-opt-btn" onclick="selectQuickOption('no_trips', 'أتممت الاشتراك لكن لا أجد رحلاتي؟')">أتممت الاشتراك لكن لا أجد رحلاتي؟ 🗺️</button>
+                    <button class="quick-opt-btn" onclick="selectQuickOption('driver_signup', 'أريد التسجيل كسائق براق؟')">أريد التسجيل كسائق براق؟ 👨‍✈️</button>
+                </div>
+
+                <dotlottie-player
+                    id="buraqMascot"
+                    src="/animations/buraq-assistant.json"
+                    background="transparent"
+                    speed="0.6"
+                    style="width: 120px; height: 120px;"
+                    loop
+                    autoplay>
+                </dotlottie-player>
+            </div>
+
             <div class="help-input-area">
                 <input type="text" id="helpMessageInput" placeholder="اكتب رسالتك هنا..." aria-label="رسالة المستخدم">
                 <button type="button" id="helpSendButton">إرسال</button>
@@ -92,47 +104,61 @@
 
     <script src="script.js"></script>
     <script>
+        // معرفات عناصر الـ DOM الأصلية
         const helpMessagesArea = document.getElementById("helpMessagesArea");
         const helpMessageInput = document.getElementById("helpMessageInput");
         const helpSendButton = document.getElementById("helpSendButton");
         const buraqMascot = document.getElementById("buraqMascot");
         let mascotResetTimer;
 
-     function setMascotState(state) {
-    if (!buraqMascot) return;
+        // 🔑 مصفوفة الأجوبة المحلية المعدلة والمطابقة للمنطق الجديد بالظبط
+        const localResponses = {
+            "registration": "يمكنك إنشاء حساب جديد في تطبيق براق بالذهاب إلى صفحة (سجل الآن) بالأعلى، أدخل اسمك ورقم هاتفك وتاريخ ميلادك، ثم قم بتأكيد حسابك عبر رمز التحقق OTP الصادر برقمك الشخصي.",
+            
+            "subscriptions": "يوفر تطبيق براق حالياً 'الاشتراك الشهري' فقط. طريقة الاشتراك: 1. حدد نوع الرحلة (ذهاب فقط أو ذهاب وإياب). 2. حدد موقع الانطلاق والوصول بدقة على الخريطة وتاريخ البدء. 3. اختر نوع الحجز (هل هو لك شخصياً، أم لابنك/تابع، أم لموظف). 4. حدد المقعد المفضل لديك. 5. بعد التأكد من السعر الإجمالي، اضغط على إرسال طلبك ليتم تعميمه على السائقين.",
+            
+            "no_trips": "إذا أتممت الاشتراك ولم تجد رحلاتك، فقد يكون اشتراكك حالياً في مرحلة 'الانتظار' لحين تعيين كابتن مناسب لك. يرجى انتظار ظهور اشتراكك رسمياً في تبويب (الاشتراكات الفعالة)، علماً بأن رحلاتك اليومية ستظهر لك في الإشعارات فور حلول وقتها وجدولتها.",
+            
+            "driver_signup": "للعمل معنا ككابتن في براق، افتح القائمة الجانبية (Sidebar) واضغط على خيار 'سجل كسائق براق'، قم بتعبئة بياناتك الشخصية وبيانات مركبتك، وسنقوم بمراجعة طلبك وقبولك فوراً."
+        };
 
-    buraqMascot.classList.remove(
-        "mascot-idle",
-        "mascot-loading",
-        "mascot-error"
-    );
+        /* =========================================================
+           🤖 التحكم في حالات مجسم الـ Lottie (Mascot States)
+        ========================================================= */
+        function setMascotState(state) {
+            if (!buraqMascot) return;
 
-    if (state === "loading") {
-        buraqMascot.play();
-        buraqMascot.setSpeed(2);
+            buraqMascot.classList.remove(
+                "mascot-loading",
+                "mascot-error",
+                "mascot-idle"
+            );
 
-        buraqMascot.classList.add("mascot-loading");
+            if (state === "loading") {
+                buraqMascot.play();
+                buraqMascot.setSpeed(2.0);
+                buraqMascot.classList.add("mascot-loading");
 
-    } else if (state === "error") {
+            } else if (state === "error") {
+                buraqMascot.play();
+                buraqMascot.setSpeed(1.0);
+                buraqMascot.classList.add("mascot-error");
 
-        buraqMascot.play();
-        buraqMascot.setSpeed(1);
+                if (mascotResetTimer) clearTimeout(mascotResetTimer);
+                mascotResetTimer = setTimeout(() => {
+                    setMascotState("idle");
+                }, 2000);
 
-        buraqMascot.classList.add("mascot-error");
+            } else {
+                buraqMascot.play();
+                buraqMascot.setSpeed(0.6);
+                buraqMascot.classList.add("mascot-idle");
+            }
+        }
 
-        setTimeout(() => {
-            setMascotState("idle");
-        }, 2000);
-
-    } else {
-
-        buraqMascot.play();
-        buraqMascot.setSpeed(0.6);
-
-        buraqMascot.classList.add("mascot-idle");
-    }
-}
-
+        /* =========================================================
+           💬 إضافة فقاعات الرسائل إلى الشات
+        ========================================================= */
         function addHelpMessage(text, type) {
             const messageBubble = document.createElement("div");
             messageBubble.className = `help-message ${type}-message`;
@@ -141,6 +167,23 @@
             helpMessagesArea.scrollTop = helpMessagesArea.scrollHeight;
         }
 
+        /* =========================================================
+           💡 معالجة كبسات الخيارات السريعة (Quick Replies)
+        ========================================================= */
+        async function selectQuickOption(optionKey, optionText) {
+            addHelpMessage(optionText, "user");
+            setMascotState("loading");
+
+            setTimeout(() => {
+                const reply = localResponses[optionKey] || "أنا هنا لمساعدتك في استخدام تطبيق براق.";
+                addHelpMessage(reply, "assistant");
+                setMascotState("idle");
+            }, 600);
+        }
+
+        /* =========================================================
+           🚀 إرسال الرسالة المكتوبة يدوياً (الكتابة الحرة عبر Gemini)
+        ========================================================= */
         async function sendHelpMessage() {
             const message = helpMessageInput.value.trim();
 
@@ -160,32 +203,45 @@
                 });
 
                 const data = await response.json();
-                const reply = data.reply || "خدمة المساعدة غير متاحة حالياً";
-                addHelpMessage(reply, "assistant");
+                
+                if (data.success && data.reply) {
+                    const reply = data.reply;
+                    addHelpMessage(reply, "assistant");
 
-                if (reply.includes("أنا مساعد براق فقط")) {
-                    setMascotState("error");
+                    if (reply.includes("أنا مساعد براق فقط")) {
+                        setMascotState("error");
+                    } else {
+                        setMascotState("idle");
+                    }
                 } else {
-                    setMascotState("idle");
+                    const localFallback = "أنا مساعد براق، خدمة الـ AI مشغولة حالياً. يمكنك استخدام أزرار الدعم السريع المتاحة في الأعلى لمساعدتك فوراً!";
+                    addHelpMessage(localFallback, "assistant");
+                    setMascotState("error");
                 }
             } catch (error) {
-                const fallbackReply = "خدمة المساعدة غير متاحة حالياً";
+                console.error("Help Chat Error:", error);
+                const fallbackReply = "خدمة المساعدة تواجه ضغطاً حالياً. يمكنك دائماً استخدام خيارات الدعم السريع المتوفرة بالأعلى.";
                 addHelpMessage(fallbackReply, "assistant");
                 setMascotState("idle");
             }
         }
 
+        /* =========================================================
+           Event Listeners لربط الأحداث
+        ========================================================= */
         helpSendButton.addEventListener("click", sendHelpMessage);
         helpMessageInput.addEventListener("keydown", function(event) {
             if (event.key === "Enter") {
                 sendHelpMessage();
             }
         });
+
+        window.selectQuickOption = selectQuickOption;
     </script>
     <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js");
-  }
-</script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/service-worker.js");
+        }
+    </script>
 </body>
 </html>
