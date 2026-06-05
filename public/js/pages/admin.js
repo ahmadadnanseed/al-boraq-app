@@ -24,7 +24,7 @@ function getAuthHeaders() {
   const token = localStorage.getItem("token");
   return {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}` // حقن التوكن بصيغة Bearer القياسية أمنياً
+    "Authorization": `Bearer ${token}`
   };
 }
 
@@ -32,16 +32,15 @@ function getAuthHeaders() {
 function handleAuthResponse(status) {
   if (status === 401 || status === 403) {
     alert("جلسة غير صالحة أو غير مصرح لك بدخول هذا القسم!");
-    localStorage.clear(); // تنظيف الذاكرة
-    window.location.href = "login.html"; // الطرد الفوري لصفحة الدخول
+    localStorage.clear();
+    window.location.href = "login.html";
     return true;
   }
   return false;
 }
 
-// الدالة الأساسية المحدثة والمحمية مية بالمية لتغذية بطاقات العدادات العلوية
+// الدالة الأساسية لتغذية بطاقات العدادات العلوية وتشغيل الصفحة بنجاح وطرد الأصفار
 async function loadAdminDashboard() {
-  // 🔑 تعديل أمني: إرسال الـ Headers المؤمنة بالتوكن
   const res = await fetch("/admin/dashboard-data", {
     headers: getAuthHeaders()
   });
@@ -55,7 +54,6 @@ async function loadAdminDashboard() {
     return;
   }
 
-  // تصليح الربط: قمنا بدعم قراءة البيانات المفرودة أو من داخل كائن counts للاحتياط المطلق
   const source = data.counts ? data.counts : data;
 
   document.getElementById("usersCount").innerText = source.usersCount ?? 0;
@@ -63,36 +61,8 @@ async function loadAdminDashboard() {
   document.getElementById("activeSubsCount").innerText = source.activeSubsCount ?? 0;
   document.getElementById("driversCount").innerText = source.driversCount ?? 0;
 
-  // تحميل القسم الأول تلقائياً وجلب الرسم البياني والجدول الخاص به
+  // تحميل القسم الأول وجلب الرسم البياني والجدول الخاص به فوراً
   await loadAdminSection("users");
-}
-
-async function loadAdminSection(sectionKey) {
-  currentSection = sectionKey;
-
-  // 🔑 تعديل أمني: إرسال الـ Headers المؤمنة بالتوكن للقسم
-  const res = await fetch(`/admin/dashboard-section/${sectionKey}`, {
-    headers: getAuthHeaders()
-  });
-
-  if (handleAuthResponse(res.status)) return;
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert("فشل تحميل القسم");
-    return;
-  }
-
-  currentRows = data.rows;
-
-  // فحص أمني لضمان تحديث التفاعل بدون أخطاء إذا كانت دالة renderAdminChart مخصصة
-  if (typeof renderAdminChart === "function") {
-    renderAdminChart(sectionKey, currentRows.length);
-  }
-  
-  renderAdminTable(sectionKey, currentRows);
-  resetSearchBox();
 }
 
 function selectDashboardSection(sectionKey, evt) {
@@ -100,83 +70,88 @@ function selectDashboardSection(sectionKey, evt) {
     card.classList.remove("active-card");
   });
 
-  evt.currentTarget.classList.add("active-card");
+  if (evt && evt.currentTarget) {
+    evt.currentTarget.classList.add("active-card");
+  }
   loadAdminSection(sectionKey);
 }
 
-// دالة تهيئة وبناء الرسم البياني الرباعي الملون المطور والمحمي من الاختفاء والكراش
-async function initAdminChart() {
-  const chartElement = document.getElementById("myAdminChart") || document.getElementById("chart") || document.querySelector("canvas");
-  
-  if (!chartElement) {
-    console.log("عنصر الرسم البياني غير موجود في هذه الواجهة حالياً");
-    return;
-  }
+// دالة تحميل القسم لتقوم بتحديث الجدول السفلي وتحديث الرسم البياني بالأرباح والتحليلات
+async function loadAdminSection(sectionKey) {
+  currentSection = sectionKey;
 
-  const ctx = chartElement.getContext("2d");
+  // 1. جلب بيانات الجدول السفلي المعتادة
+  const res = await fetch(`/admin/dashboard-section/${sectionKey}`, {
+    headers: getAuthHeaders()
+  });
+  if (handleAuthResponse(res.status)) return;
+  const data = await res.json();
+  if (!data.success) return;
+
+  currentRows = data.rows;
+  renderAdminTable(sectionKey, currentRows);
+  resetSearchBox();
+
+  // 2. 🚀 السحر التفاعلي الحقيقي: جلب التقارير المالية والتقييمات وتحديث الـ Chart
+  updateDynamicChart(sectionKey);
+}
+
+// دالة تحديث وبناء الرسم البياني التفاعلي ديناميكياً بالألوان المخصصة لبراق
+async function updateDynamicChart(sectionKey) {
+  const chartElement = document.getElementById("myAdminChart") || document.getElementById("adminChart") || document.querySelector("canvas");
+  if (!chartElement) return;
 
   try {
-    const res = await fetch("/admin/dashboard-data", {
+    const res = await fetch(`/admin/chart-analytics/${sectionKey}`, {
       headers: getAuthHeaders()
     });
-    const data = await res.json();
+    const result = await res.json();
+    if (!result.success) return;
 
-    // فحص ذكي للبيانات؛ إذا تعذر السحب الحقيقي نقرأ من الكائنات الاحتياطية
-    let statsSource = data.stats ? data.stats : {};
-    let customersCount = data.success ? (statsSource.customers ?? data.usersCount) : 17; 
-    let driversCount = data.success ? (statsSource.drivers ?? data.driversCount) : 10;
-    let vehiclesCount = data.success ? (statsSource.vehicles ?? data.vehiclesCount) : 10;
-    let bookingsCount = data.success ? (statsSource.bookings ?? data.activeSubsCount) : 4;
+    // تحديث عنوان كرت الرسم البياني بالـ HTML ليتناسب مع القسم المالي المختار
+    const chartTitleElement = document.getElementById("chartTitle");
+    if (chartTitleElement) chartTitleElement.innerText = result.title;
 
-    // بناء كائن الرسم البياني بالأعمدة الأربعة الملونة
-    new Chart(ctx, {
+    // تدمير الرسم البياني السابق لمنع تداخل الأعمدة والظلال الثابتة عند التحويل
+    if (adminChart) {
+      adminChart.destroy();
+    }
+
+    const ctx = chartElement.getContext("2d");
+    const colors = ["#2E75B6", "#ED7D31", "#70AD47", "#FFC000", "#14b8ff"];
+
+    adminChart = new Chart(ctx, {
       type: "bar",
       data: {
-        labels: ["الركاب (Customers)", "الكابتنية (Drivers)", "المركبات (Vehicles)", "الاشتراكات الفعالة"],
+        labels: result.labels,
         datasets: [{
-          label: "توزيع وإحصائيات النظام الإجمالية",
-          data: [customersCount, driversCount, vehiclesCount, bookingsCount],
-          backgroundColor: [
-            "#2E75B6", // أزرق ركاب
-            "#ED7D31", // برتقالي كباتن
-            "#70AD47", // أخضر سيارات
-            "#FFC000"  // أصفر اشتراكات مفعّلة
-          ],
+          label: result.datasetLabel,
+          data: result.values,
+          backgroundColor: colors.slice(0, result.values.length),
           borderWidth: 1,
-          borderRadius: 8
+          borderRadius: 6
         }]
       },
       options: {
         responsive: true,
         plugins: {
-          legend: {
-            labels: { font: { family: "Arial", size: 14 }, color: "#ffffff" }
-          }
+          legend: { labels: { color: "#ffffff", font: { family: "Arial", size: 13 } } }
         },
         scales: {
-          y: {
-            beginAtZero: true,
-            grid: { color: "rgba(255, 255, 255, 0.1)" },
-            ticks: { color: "#ffffff" }
-          },
-          x: {
-            grid: { display: false },
-            ticks: { color: "#ffffff", font: { weight: "bold" } }
-          }
+          y: { beginAtZero: true, grid: { color: "rgba(255, 255, 255, 0.1)" }, ticks: { color: "#ffffff" } },
+          x: { grid: { display: false }, ticks: { color: "#ffffff", font: { weight: "bold" } } }
         }
       }
     });
 
   } catch (err) {
-    console.log("Error loading admin chart visual:", err);
+    console.log("Error updating dynamic chart visuals:", err);
   }
 }
 
-// تشغيل الرسم البياني فور تجهيز الواجهة وبدون إعاقة لباقي البيانات
-if (document.readyState === "loading") {
-  window.addEventListener("DOMContentLoaded", initAdminPage);
-} else {
-  initAdminPage();
+// دالة الإقلاع الافتراضية
+async function initAdminChart() {
+  updateDynamicChart("users");
 }
 
 function renderAdminTable(sectionKey, rows) {
@@ -211,28 +186,60 @@ function renderAdminTable(sectionKey, rows) {
   });
 }
 
-function searchById() {
-  const input = document.getElementById("searchInput").value.trim();
+async function handleAdminSearch() {
+  const searchInput = document.getElementById("searchInput");
   const resultBox = document.getElementById("searchResultBox");
 
-  if(!resultBox) return;
+  if (!searchInput || !resultBox) return;
 
-  const found = currentRows.find(item => String(item.id) === input);
-
-  if (!found) {
-    resultBox.innerHTML = "لا يوجد نتيجة لهذا الـ ID";
+  const searchId = searchInput.value.trim();
+  if (!searchId) {
+    alert("الرجاء إدخال الـ ID أولاً للبحث الموجه");
     return;
   }
 
-  let html = `<h4 style="color:#14b8ff;">تم العثور على النتيجة</h4>`;
+  // تحديد اسم القسم ليعرفه الأدمن باللغة العربية أثناء البحث
+  let currentSectionName = sectionTitles[currentSection] || "القسم الحالي";
+  resultBox.innerHTML = `جاري البحث في قسم [${currentSectionName}]...`;
 
-  Object.entries(found).forEach(([key, value]) => {
-    html += `<p><strong>${key}:</strong> ${value ?? "--"}</p>`;
-  });
+  try {
+    // نمرر currentSection مع الـ searchId في مسار الـ API
+    const res = await fetch(`/admin/advanced-search/${currentSection}/${searchId}`, {
+      headers: getAuthHeaders()
+    });
 
-  resultBox.innerHTML = html;
+    if (handleAuthResponse(res.status)) return;
+
+    const result = await res.json();
+
+    if (result.success) {
+      let entityLabel = result.type === "customer" ? "راكب / مستخدم" : result.type === "driver" ? "سائق / كابتن" : "اشتراك رحلة";
+      
+      // 🚀 جلب التوكن الحالي المخزن في المتصفح لتمريره بالرابط علناً بالطريقة القديمة
+      const token = localStorage.getItem("token");
+
+      resultBox.innerHTML = `
+        <h4 style="color: #17b497; margin-top: 10px;">تم العثور على النتيجة ✅</h4>
+        <div style="margin-top: 8px; font-size: 14px; line-height: 1.6;">
+          <p><strong>نوع الكيان:</strong> ${entityLabel}</p>
+          <p><strong>المعرف ID:</strong> ${result.data.id}</p>
+          <p><strong>الاسم:</strong> ${result.data.name || result.data.customerName || 'موقع خريطة مجدول'}</p>
+        </div>
+        
+        <button type="button" onclick="window.location.href='/admin-view.html?id=${result.data.id}&type=${result.type}&token=${token}'"
+                style="margin-top: 15px; width: 100%; padding: 10px; background: #f27a2b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 12px rgba(242, 122, 43, 0.3);">
+          📊 عرض الملف الشخصي والإحصائيات
+        </button>
+      `;
+    } else {
+      // سيعرض رسالة تفيد بعدم وجود هذا الـ ID في هذا القسم تحديداً
+      resultBox.innerHTML = `<span style="color: #e63946;">❌ ${result.message}</span>`;
+    }
+  } catch (err) {
+    console.error("Advanced search error:", err);
+    resultBox.innerHTML = `<span style="color: #e63946;">خطأ أثناء الاتصال بالسيرفر.</span>`;
+  }
 }
-
 function resetSearchBox() {
   const searchInput = document.getElementById("searchInput");
   const searchResultBox = document.getElementById("searchResultBox");
@@ -367,40 +374,10 @@ function renderDriverRequests(data) {
   });
 }
 
-function formatPhone(phone) {
-  if (!phone) return "";
-
-  phone = String(phone).trim();
-  phone = phone.replace(/\s+/g, "");
-  phone = phone.replace("+", "");
-
-  if (phone.startsWith("00")) {
-    phone = phone.substring(2);
-  }
-
-  if (phone.startsWith("0")) {
-    phone = "962" + phone.substring(1);
-  }
-
-  return phone;
-}
-
-function filterDriverRequests() {
-  const keyword = document.getElementById("driverSearchInput").value.trim().toLowerCase();
-
-  const filtered = driverRequests.filter(driver =>
-    String(driver.id).includes(keyword) ||
-    driver.name.toLowerCase().includes(keyword)
-  );
-
-  renderDriverRequests(filtered);
-}
-
 function verifyAdminClientAccess() {
   if (!window.location.pathname.includes("admin.html")) {
     return true; 
   }
-
   const token = localStorage.getItem("token");
   const userType = localStorage.getItem("userType");
 
@@ -412,24 +389,42 @@ function verifyAdminClientAccess() {
   return true;
 }
 
-// دالة الإقلاع الرئيسية المحدثة والمضمونة
+function formatPhone(phone) {
+  if (!phone) return "";
+  phone = String(phone).trim().replace(/\s+/g, "").replace("+", "");
+  if (phone.startsWith("00")) phone = phone.substring(2);
+  if (phone.startsWith("0")) phone = "962" + phone.substring(1);
+  return phone;
+}
+
+function filterDriverRequests() {
+  const keyword = document.getElementById("driverSearchInput").value.trim().toLowerCase();
+  const filtered = driverRequests.filter(driver =>
+    String(driver.id).includes(keyword) || driver.name.toLowerCase().includes(keyword)
+  );
+  renderDriverRequests(filtered);
+}
+
 function initAdminPage() {
   if (!verifyAdminClientAccess()) return;
 
   if (document.getElementById("usersCount")) {
     loadAdminDashboard();
   }
-  
-  // تفعيل بناء الرسم البياني الرباعي بالتوازي مع العدادات بدون إعاقة
-  initAdminChart();
 }
 
-// ربط الدوال بالنطاق العالمي لتعمل مع الـ HTML بالـ onclick
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", initAdminPage);
+} else {
+  initAdminPage();
+}
+
+// ربط الدوال بنطاق الـ Window العالمي
 window.loadAdminDashboard = loadAdminDashboard;
 window.loadAdminSection = loadAdminSection;
 window.selectDashboardSection = selectDashboardSection;
 window.renderAdminTable = renderAdminTable;
-window.searchById = searchById;
+window.handleAdminSearch = handleAdminSearch; // 🚀 ربط الدالة الجديدة بنطاق الويندوز
 window.resetSearchBox = resetSearchBox;
 window.openDriverRequestsModal = openDriverRequestsModal;
 window.calculateAge = calculateAge;

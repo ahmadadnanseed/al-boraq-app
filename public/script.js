@@ -22,7 +22,8 @@ const scriptsToLoad = [
   "pages/driver-profile",
   "pages/driver-requests",
   "pages/driver-daily-trips",
-  "pages/admin"
+  "pages/admin",
+  "pages/admin-view"
 ];
 
 // 💡 تعديل ذكي: لا تحقن ملف التسجيل والـ Firebase إلا إذا كنا في صفحة signup.html

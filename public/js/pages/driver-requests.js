@@ -258,7 +258,6 @@ if (document.readyState === "loading") {
 }
 
 // تصدير جميع الدوال للنطاق العالمي (Global Scope) لتفادي أي مشاكل ارتباط بملف الـ HTML
-window.toggleDriverStatus = toggleDriverStatus;
 window.applyDynamicFilters = applyDynamicFilters;
 window.toggleDriverRequest = toggleDriverRequest;
 window.acceptBookingRequest = acceptBookingRequest;
