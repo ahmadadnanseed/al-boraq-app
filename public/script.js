@@ -2,7 +2,6 @@ window.initMapInputs = window.initMapInputs || function() {
   window.__googleMapsReady = true;
 };
 
-// تحديد السكريبتات المطلوب تحميلها ديناميكياً
 const scriptsToLoad = [
   "core/api",
   "core/storage",
@@ -26,7 +25,6 @@ const scriptsToLoad = [
   "pages/admin-view"
 ];
 
-// 💡 تعديل ذكي: لا تحقن ملف التسجيل والـ Firebase إلا إذا كنا في صفحة signup.html
 if (window.location.pathname.includes("signup.html")) {
   scriptsToLoad.push("pages/signup");
 }
@@ -38,13 +36,8 @@ scriptsToLoad.forEach((name) => {
   document.head.appendChild(script);
 });
 
-/* وباقي كودك الخاص بالـ Tabs والـ OTP والـ Collapsible يبقى في الأسفل كما هو تماماً دون تغيير... */
-/* =========================================================
-    تحميل الصفحة (عام)
-========================================================= */
 document.addEventListener('DOMContentLoaded', function() {
 
-    // قائمة المدن
     const cityBtn = document.getElementById('citySelect');
     if (cityBtn) {
         cityBtn.addEventListener('click', function(e) {
@@ -55,9 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-/* =========================================================
-   👥 الحجز - التحكم بالكميات
-========================================================= */
 function updateQty(id, change) {
     const display = document.getElementById(id);
     let val = parseInt(display.innerText);
@@ -66,21 +56,15 @@ function updateQty(id, change) {
     }
 }
 
-/* =========================================================
-    جدول الرحلات + فتح/إغلاق الاشتراك
-========================================================= */
 function loadSchedule(header) {
     const card = header.parentElement;
     const content = card.querySelector('.sub-content-collapsible');
     const tableBody = document.getElementById('scheduleBody');
 
-    // 1. فتح وإغلاق القائمة
     card.classList.toggle('active');
 
-    // 2. إذا كان الجدول فيه بيانات لا تعيد التوليد
     if (tableBody.innerHTML.trim() !== "") return;
 
-    // 3. توليد 30 رحلة
     let today = new Date();
     let html = "";
 
@@ -104,9 +88,6 @@ function loadSchedule(header) {
     tableBody.innerHTML = html;
 }
 
-/* =========================================================
-   ✏️ تعديل الرحلات (Modal)
-========================================================= */
 function openEditModal(date = "") {
     const modal = document.getElementById('editModal');
     const overlay = document.getElementById('overlay');
@@ -129,9 +110,6 @@ function saveEdit() {
     closeEditModal();
 }
 
-/* =========================================================
-    OTP Auto Focus
-========================================================= */
 document.querySelectorAll('.otp-field, .otp-digit').forEach((input, index, inputs) => {
     input.addEventListener('input', () => {
         if (input.value.length >= 1 && index < inputs.length - 1) {
@@ -142,26 +120,16 @@ document.querySelectorAll('.otp-field, .otp-digit').forEach((input, index, input
 
 
 
-/* =========================================================
-    الأدمن Tabs
-========================================================= */
 function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(p => p.style.display = 'none');
     document.getElementById(tabId).style.display = 'block';
 }
 
-/* =========================================================
-   👨‍✈️ تعديل بيانات السائق
-========================================================= */
-/* =========================================================
-   👨‍✈️ توليد جدول رحلات الساىق 
-========================================================= */
 
 function driver_loadSchedule(header) {
     const content = header.nextElementSibling;
     content.classList.toggle('active');
 
-    // توليد الرحلات إذا أول مرة
     const tableBody = document.getElementById('scheduleBody');
     if (tableBody && tableBody.innerHTML === "") {
         for (let i = 1; i <= 30; i++) {
@@ -205,27 +173,21 @@ document.querySelectorAll(".otp-field").forEach((input,index,inputs)=>{
 
 });
 
-// 🔑 حارس التنقل الذكي لصفحات الكابتن والأدمن
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
   
-  // إذا مش مسجل دخول أو ما في توكن، ما في داعي نعدل الروابط
   if (!token) return;
 
-  // الإمساك بجميع الروابط في الصفحة
   const links = document.querySelectorAll("a");
 
   links.forEach(link => {
     const href = link.getAttribute("href");
 
-    // إذا كان الرابط يتوجه لصفحة خاصة بالسائق أو الأدمن ولا يحتوي على توكن مسبقاً
     if (href && (href.includes("driver") || href.includes("admin")) && !href.includes("?token=")) {
       
-      // منع السلوك الافتراضي للانتقال الأعمى
       link.addEventListener("click", (e) => {
         e.preventDefault();
         
-        // حقن التوكن المخزن بالـ localStorage داخل الرابط برمجياً عند الكبس
         window.location.href = `${href}?token=${token}`;
       });
     }

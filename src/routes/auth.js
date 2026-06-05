@@ -1,15 +1,13 @@
 const express = require("express");
 const connection = require("../db");
 const bcrypt = require("bcryptjs"); 
-const jwt = require("jsonwebtoken"); // 1. استدعاء مكتبة JWT التي قمنا بتثبيتها
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 const signupOtpCodes = {};
 
-// المفتاح السري لتشفير الـ Tokens (في الإنتاج الحقيقي يفضل وضعه في ملف الـ .env)
 const JWT_SECRET = process.env.JWT_SECRET || "BURAQ_SUPER_SECRET_SECURITY_KEY_2026";
 
-// دالة مساعدة لتقسيم الاسم
 function splitFullName(name) {
   const parts = (name || "").trim().split(" ");
   return {
@@ -18,15 +16,11 @@ function splitFullName(name) {
   };
 }
 
-// دالة موحدة للتعامل مع أخطاء السيرفر لحجب التفاصيل الحساسة
 function loginDbError(res, logLabel, err) {
   console.error(logLabel, err);
   return res.status(500).json({ success: false, message: "خطأ داخلي في السيرفر" });
 }
 
-/* ========================================================
-   1. إرسال رمز التحقق (OTP)
-======================================================== */
 router.post("/signup/send-otp", (req, res) => {
   const { phone } = req.body;
 
@@ -61,9 +55,6 @@ router.post("/signup/send-otp", (req, res) => {
   });
 });
 
-/* ========================================================
-   2. تأكيد رمز التحقق وإنشاء الحساب بالتشفير
-======================================================== */
 router.post("/signup/verify", async (req, res) => {
   const { name, phone, dob, password, code } = req.body;
 
@@ -110,9 +101,6 @@ router.post("/signup/verify", async (req, res) => {
   }
 });
 
-/* ========================================================
-   3. تسجيل مستخدم جديد مباشر (بدون OTP)
-======================================================== */
 router.post("/signup", async (req, res) => {
   const { name, phone, dob, password } = req.body;
 
@@ -143,9 +131,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-/* ========================================================
-   4. تسجيل الدخول الآمن وحقن الـ JWT لكل دور (Role)
-======================================================== */
 router.post("/login", (req, res) => {
   const { loginType, phone, driverCode, adminCode, password } = req.body;
 
@@ -153,7 +138,6 @@ router.post("/login", (req, res) => {
     return res.status(400).json({ success: false, message: "كلمة المرور مطلوبة" });
   }
 
-  // --- نظام تسجيل دخول الـ Admin ---
   if (loginType === "admin") {
     if (!adminCode) return res.status(400).json({ success: false, message: "رمز الأدمن مطلوب" });
     const adminId = Number(adminCode.toLowerCase().replace("admin", ""));
@@ -170,7 +154,6 @@ router.post("/login", (req, res) => {
         return res.json({ success: false, message: "رقم الأدمن أو كلمة المرور غير صحيحة" });
       }
 
-      // 🔑 توليد بطاقة الـ JWT للأدمن بصلاحية 24 ساعة
       const token = jwt.sign(
         { id: result[0].admin_id, role: "admin" },
         JWT_SECRET,
@@ -181,13 +164,12 @@ router.post("/login", (req, res) => {
         success: true, 
         role: "admin", 
         adminId: result[0].admin_id,
-        token: token // إرسال التوكن للواجهة
+        token: token
       });
     });
     return;
   }
 
-  // --- نظام تسجيل دخول الـ Driver ---
   if (loginType === "driver") {
     if (!driverCode) return res.status(400).json({ success: false, message: "الرقم الوظيفي مطلوب" });
     const driverId = Number(driverCode.toLowerCase().replace("driver", ""));
@@ -204,7 +186,6 @@ router.post("/login", (req, res) => {
         return res.json({ success: false, message: "الرقم الوظيفي أو كلمة المرور غير صحيحة" });
       }
 
-      // 🔑 توليد بطاقة الـ JWT للسائق بصلاحية 24 ساعة
       const token = jwt.sign(
         { id: result[0].driver_id, role: "driver" },
         JWT_SECRET,
@@ -215,13 +196,12 @@ router.post("/login", (req, res) => {
         success: true, 
         role: "driver", 
         driverId: result[0].driver_id,
-        token: token // إرسال التوكن للواجهة
+        token: token
       });
     });
     return;
   }
 
-  // --- نظام تسجيل دخول الـ Customer ---
   if (!phone) return res.status(400).json({ success: false, message: "رقم الهاتف مطلوب" });
 
   const sql = `SELECT * FROM customer WHERE phone_caustomer = ?`;
@@ -232,7 +212,6 @@ router.post("/login", (req, res) => {
       return res.json({ success: false, message: "رقم الهاتف أو كلمة المرور غير صحيحة" });
     }
 
-    // 🔑 توليد بطاقة الـ JWT للزبون بصلاحية 24 ساعة
     const token = jwt.sign(
       { id: result[0].caustomer_id, role: "customer" },
       JWT_SECRET,
@@ -243,12 +222,11 @@ router.post("/login", (req, res) => {
       success: true,
       role: "customer",
       userId: result[0].caustomer_id,
-      token: token // إرسال التوكن للواجهة
+      token: token
     });
   });
 });
 
-// مسار مؤقت لتشفير حسابات الأدمن
 router.get("/setup-admins-securely", async (req, res) => {
   try {
     const hash1 = await bcrypt.hash("boraqadmin@ahm1516", 10);
@@ -267,9 +245,6 @@ router.get("/setup-admins-securely", async (req, res) => {
   }
 });
 
-/* ========================================================
-   🔒 5. الحارس البرمجي (Middleware): التحقق من الـ JWT والصلاحية
-======================================================== */
 function verifyToken(allowedRoles = []) {
   return (req, res, next) => {
     const authHeader = req.headers["authorization"];
@@ -306,6 +281,5 @@ function verifyToken(allowedRoles = []) {
     });
   };
 }
-// تصدير الراوتر والدالة الحارسة لاستخدامها لحماية الملفات الأخرى
 module.exports = router;
 module.exports.verifyToken = verifyToken;

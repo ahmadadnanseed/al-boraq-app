@@ -1,13 +1,8 @@
-/* ========================================================
-   🚀 المنطق البرمجي المؤمن والحارس لصفحة استعراض الكيانات للأدمن
-======================================================== */
 
-// التقاط المعاملات من الرابط
 const urlParams = new URLSearchParams(window.location.search);
 const targetId = urlParams.get('id');
 const targetType = urlParams.get('type');
 
-// تشغيل الجلب فوراً عند تحميل الصفحة
 document.addEventListener("DOMContentLoaded", () => {
   if (targetId && targetType) {
     loadTargetDetails();
@@ -17,9 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// 🚀 التعديل: نقوم بجلب التوكن بداخل دالة الهيدرز مباشرة لكي يتعرف عليها المتصفح
 function getAuthHeaders() {
-  const token = localStorage.getItem("token"); // 🔑 أضفنا هذا السطر لتعريف المتغير بأمان
+  const token = localStorage.getItem("token");
   return {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${token}`
@@ -126,5 +120,4 @@ async function handleDelete() {
   }
 }
 
-// جعل دالة الحذف مرئية للـ HTML
 window.handleDelete = handleDelete;

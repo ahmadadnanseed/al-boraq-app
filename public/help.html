@@ -104,14 +104,12 @@
 
     <script src="script.js"></script>
     <script>
-        // معرفات عناصر الـ DOM الأصلية
         const helpMessagesArea = document.getElementById("helpMessagesArea");
         const helpMessageInput = document.getElementById("helpMessageInput");
         const helpSendButton = document.getElementById("helpSendButton");
         const buraqMascot = document.getElementById("buraqMascot");
         let mascotResetTimer;
 
-        // 🔑 مصفوفة الأجوبة المحلية المعدلة والمطابقة للمنطق الجديد بالظبط
         const localResponses = {
             "registration": "يمكنك إنشاء حساب جديد في تطبيق براق بالذهاب إلى صفحة (سجل الآن) بالأعلى، أدخل اسمك ورقم هاتفك وتاريخ ميلادك، ثم قم بتأكيد حسابك عبر رمز التحقق OTP الصادر برقمك الشخصي.",
             
@@ -122,9 +120,6 @@
             "driver_signup": "للعمل معنا ككابتن في براق، افتح القائمة الجانبية (Sidebar) واضغط على خيار 'سجل كسائق براق'، قم بتعبئة بياناتك الشخصية وبيانات مركبتك، وسنقوم بمراجعة طلبك وقبولك فوراً."
         };
 
-        /* =========================================================
-           🤖 التحكم في حالات مجسم الـ Lottie (Mascot States)
-        ========================================================= */
         function setMascotState(state) {
             if (!buraqMascot) return;
 
@@ -156,9 +151,6 @@
             }
         }
 
-        /* =========================================================
-           💬 إضافة فقاعات الرسائل إلى الشات
-        ========================================================= */
         function addHelpMessage(text, type) {
             const messageBubble = document.createElement("div");
             messageBubble.className = `help-message ${type}-message`;
@@ -167,9 +159,6 @@
             helpMessagesArea.scrollTop = helpMessagesArea.scrollHeight;
         }
 
-        /* =========================================================
-           💡 معالجة كبسات الخيارات السريعة (Quick Replies)
-        ========================================================= */
         async function selectQuickOption(optionKey, optionText) {
             addHelpMessage(optionText, "user");
             setMascotState("loading");
@@ -181,9 +170,6 @@
             }, 600);
         }
 
-        /* =========================================================
-           🚀 إرسال الرسالة المكتوبة يدوياً (الكتابة الحرة عبر Gemini)
-        ========================================================= */
         async function sendHelpMessage() {
             const message = helpMessageInput.value.trim();
 
@@ -226,9 +212,6 @@
             }
         }
 
-        /* =========================================================
-           Event Listeners لربط الأحداث
-        ========================================================= */
         helpSendButton.addEventListener("click", sendHelpMessage);
         helpMessageInput.addEventListener("keydown", function(event) {
             if (event.key === "Enter") {

@@ -1,5 +1,5 @@
 const express = require("express");
-const connection = require("../db"); // كائن الاتصال المعتمد هنا هو connection
+const connection = require("../db");
 const { createDailyTripsFromBooking } = require("./dailyTrips");
 
 const router = express.Router();
@@ -12,11 +12,9 @@ function splitFullName(name) {
   };
 }
 
-// مسار جلب ملف السائق مع مركبتة بربط جدول driver مع جدول vehicle (تم تصليحه مية بالمية)
 router.get('/driver/profile/:id', async (req, res) => {
   const driverId = req.params.id;
   
-  // استعلام يدمج بيانات السائق والمركبة بناءً على الـ driver_id
   const query = `
     SELECT d.*, v.vehicle_type, v.vehicle_mode, v.vehicle_year_of_manufacturel 
     FROM driver d 
@@ -25,7 +23,6 @@ router.get('/driver/profile/:id', async (req, res) => {
   `;
 
   try {
-    // تم التعديل هنا ليعمل على connection.query ليتوافق مع الاتصال الأصلي للملف
     connection.query(query, [driverId], (err, results) => {
       if (err) {
         console.log("DB Query error in driver profile:", err);
@@ -36,7 +33,6 @@ router.get('/driver/profile/:id', async (req, res) => {
         return res.json({ success: false, message: "Driver not found" });
       }
       
-      // إرسال البيانات الحقيقية للفرونت آند
       res.json({ success: true, driver: results[0] });
     });
   } catch (error) {
@@ -44,7 +40,6 @@ router.get('/driver/profile/:id', async (req, res) => {
   }
 });
 
-// 1. تقديم طلب السائق (تبقى كلمة المرور صريحة مؤقتاً في مرحلة الـ pending لكي يراها الأدمن)
 router.post("/driver/signup", (req, res) => {
   const {
     userId,
@@ -86,7 +81,6 @@ router.post("/driver/signup", (req, res) => {
         return res.json({ success: false, message: "لقد تم إرسال طلبك بالفعل" });
       }
 
-      // توليد كلمة المرور المؤقتة الصريحة
       const tempPassword = "driver" + Date.now();
 
       const driverSql = `
@@ -129,7 +123,6 @@ router.post("/driver/signup", (req, res) => {
   });
 });
 
-// 2. جلب الملف الشخصي (تم حجب الباسورد هنا أمنياً لحماية التشفير)
 router.get("/driver/profile-by-id/:driverId", (req, res) => {
   const driverId = req.params.driverId;
 

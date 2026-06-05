@@ -1,5 +1,4 @@
 let selectedSeats = [];
-// متغير للتحقق مما إذا تم إدخال بيانات الدفع الوهمية بنجاح
 let isVisaVerified = false;
 
 function selectSeat(seatElement) {
@@ -101,7 +100,6 @@ async function cancelSeatBooking() {
   window.location.href = "booking.html";
 }
 
-// دالة جديدة لفتح نافذة إدخال بيانات الفيزا الوهمية
 function openVisaModal() {
   if (selectedSeats.length === 0) {
     alert("اختر مقعد واحد على الأقل أولاً");
@@ -110,13 +108,11 @@ function openVisaModal() {
   document.getElementById("visaModal").style.display = "flex";
 }
 
-// دالة جديدة لإغلاق نافذة الفيزا وتطهير المدخلات
 function closeVisaModal() {
   document.getElementById("visaModal").style.display = "none";
   document.getElementById("visaForm").reset();
 }
 
-// دالة جديدة لمعالجة إرسال الفيزا الوهمية والتحقق منها هندسياً
 function handleVisaSubmit(event) {
   event.preventDefault();
   
@@ -126,14 +122,12 @@ function handleVisaSubmit(event) {
     return;
   }
 
-  isVisaVerified = true; // تفعيل شرط الدفع بنجاح
-  closeVisaModal();      // إغلاق النافذة
-  confirmBooking();      // استدعاء دالة الإرسال الحقيقية للسيرفر
+  isVisaVerified = true;
+  closeVisaModal();
+  confirmBooking();
 }
 
-// دالة تأكيد الحجز بعد تعديلها لفحص شرط الدفع الآمن أولاً
 async function confirmBooking() {
-  // فحص صارم: إذا لم يقم المستخدم بتعبئة الفيزا أولاً، يتم حظره وإجباره على التعبئة
   if (!isVisaVerified) {
     alert("يجب تعبئة بيانات الدفع أولاً لإكمال الاشتراك والطلب!");
     openVisaModal();
@@ -192,7 +186,7 @@ async function confirmBooking() {
     }
 
     alert("تم التحقق من وسيلة الدفع بنجاح! وتم إرسال طلب اشتراكك إلى السائقين");
-    isVisaVerified = false; // تصفير للعمليات القادمة
+    isVisaVerified = false;
     window.location.href = "schedule.html";
 
   } catch (err) {
@@ -214,7 +208,6 @@ if (document.readyState === "loading") {
   initSeatsPage();
 }
 
-// تصدير جميع الدوال للنطاق العالمي لتفادي أي مشاكل ارتباط بالـ HTML
 window.selectedSeats = selectedSeats;
 window.selectSeat = selectSeat;
 window.calculateDistanceKm = calculateDistanceKm;

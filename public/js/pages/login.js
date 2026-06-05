@@ -1,7 +1,6 @@
-// ملف: js/pages/login.js
 
 async function handleLogin(e) {
-  e.preventDefault(); // منع إعادة تحميل الصفحة الافتراضي
+  e.preventDefault();
 
   const rawInput = document.getElementById("userPhone").value.trim();
   const countryCode = document.getElementById("countryCode").value;
@@ -12,7 +11,6 @@ async function handleLogin(e) {
 
   let loginData;
 
-  // التمييز الذكي لنوع الحساب بناءً على الرمز المدخل (RegEx)
   if (/^admin\d+$/i.test(rawInput)) {
     loginData = {
       loginType: "admin",
@@ -34,7 +32,6 @@ async function handleLogin(e) {
   }
 
   try {
-    // 1. إرسال طلب تسجيل الدخول إلى الباك آند
     const res = await fetch("/login", {
       method: "POST",
       headers: {
@@ -43,12 +40,10 @@ async function handleLogin(e) {
       body: JSON.stringify(loginData)
     });
 
-    // 2. استقبال وتحليل استجابة السيرفر
     const data = await res.json();
 
     if (data.success) {
     if (data.success) {
-  // تخزين المعرفات والتوكن (JWT) وتوجيه المستخدم بناءً على الصلاحيات
   
   if (data.role === "admin") {
     localStorage.setItem("token", data.token); 
@@ -57,7 +52,6 @@ async function handleLogin(e) {
     
     localStorage.removeItem("userId");
     localStorage.removeItem("driverId");
-    // 🔑 تعديل ذكي: تمرير التوكن بالرابط ليعبر حارس السيرفر ويفتح الصفحة
     window.location.href = `admin.html?token=${data.token}`; 
 
   } else if (data.role === "driver") {
@@ -67,7 +61,6 @@ async function handleLogin(e) {
     
     localStorage.removeItem("userId");
     localStorage.removeItem("adminId");
-    // 🔑 تمرير التوكن لصفحة السائق الرئيسية
     window.location.href = `driver-requests.html?token=${data.token}`; 
 
   } else {
@@ -77,7 +70,7 @@ async function handleLogin(e) {
     
     localStorage.removeItem("driverId");
     localStorage.removeItem("adminId");
-    window.location.href = "index.html"; // صفحة الركاب العادية ساكنة بـ public لا تحتاج توكن بالرابط
+    window.location.href = "index.html";
   }
 }
       if (errorMsg) errorMsg.innerText = data.message || "فشل تسجيل الدخول";
@@ -89,5 +82,4 @@ async function handleLogin(e) {
   }
 }
 
-// ربط الدالة بالـ window لتراها صفحة الـ HTML عند الضغط على زر دخول
 window.handleLogin = handleLogin;

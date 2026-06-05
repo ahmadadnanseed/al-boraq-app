@@ -1,4 +1,3 @@
-// ملف: js/pages/admin.js
 
 let currentSection = "users";
 let adminChart = null;
@@ -19,7 +18,6 @@ const tableHeaders = {
   drivers: ["ID", "الاسم", "الهاتف", "العنوان"]
 };
 
-// 🔒 دالة مساعدة لجلب هيدر الأمان بالتوكن المشفر تلقائياً
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
   return {
@@ -28,7 +26,6 @@ function getAuthHeaders() {
   };
 }
 
-// 🔒 دالة للتحقق من الاستجابة وطرد المتطفلين أو من انتهت جلستهم
 function handleAuthResponse(status) {
   if (status === 401 || status === 403) {
     alert("جلسة غير صالحة أو غير مصرح لك بدخول هذا القسم!");
@@ -39,7 +36,6 @@ function handleAuthResponse(status) {
   return false;
 }
 
-// الدالة الأساسية لتغذية بطاقات العدادات العلوية وتشغيل الصفحة بنجاح وطرد الأصفار
 async function loadAdminDashboard() {
   const res = await fetch("/admin/dashboard-data", {
     headers: getAuthHeaders()
@@ -61,7 +57,6 @@ async function loadAdminDashboard() {
   document.getElementById("activeSubsCount").innerText = source.activeSubsCount ?? 0;
   document.getElementById("driversCount").innerText = source.driversCount ?? 0;
 
-  // تحميل القسم الأول وجلب الرسم البياني والجدول الخاص به فوراً
   await loadAdminSection("users");
 }
 
@@ -76,11 +71,9 @@ function selectDashboardSection(sectionKey, evt) {
   loadAdminSection(sectionKey);
 }
 
-// دالة تحميل القسم لتقوم بتحديث الجدول السفلي وتحديث الرسم البياني بالأرباح والتحليلات
 async function loadAdminSection(sectionKey) {
   currentSection = sectionKey;
 
-  // 1. جلب بيانات الجدول السفلي المعتادة
   const res = await fetch(`/admin/dashboard-section/${sectionKey}`, {
     headers: getAuthHeaders()
   });
@@ -92,11 +85,9 @@ async function loadAdminSection(sectionKey) {
   renderAdminTable(sectionKey, currentRows);
   resetSearchBox();
 
-  // 2. 🚀 السحر التفاعلي الحقيقي: جلب التقارير المالية والتقييمات وتحديث الـ Chart
   updateDynamicChart(sectionKey);
 }
 
-// دالة تحديث وبناء الرسم البياني التفاعلي ديناميكياً بالألوان المخصصة لبراق
 async function updateDynamicChart(sectionKey) {
   const chartElement = document.getElementById("myAdminChart") || document.getElementById("adminChart") || document.querySelector("canvas");
   if (!chartElement) return;
@@ -108,11 +99,9 @@ async function updateDynamicChart(sectionKey) {
     const result = await res.json();
     if (!result.success) return;
 
-    // تحديث عنوان كرت الرسم البياني بالـ HTML ليتناسب مع القسم المالي المختار
     const chartTitleElement = document.getElementById("chartTitle");
     if (chartTitleElement) chartTitleElement.innerText = result.title;
 
-    // تدمير الرسم البياني السابق لمنع تداخل الأعمدة والظلال الثابتة عند التحويل
     if (adminChart) {
       adminChart.destroy();
     }
@@ -149,7 +138,6 @@ async function updateDynamicChart(sectionKey) {
   }
 }
 
-// دالة الإقلاع الافتراضية
 async function initAdminChart() {
   updateDynamicChart("users");
 }
@@ -198,12 +186,10 @@ async function handleAdminSearch() {
     return;
   }
 
-  // تحديد اسم القسم ليعرفه الأدمن باللغة العربية أثناء البحث
   let currentSectionName = sectionTitles[currentSection] || "القسم الحالي";
   resultBox.innerHTML = `جاري البحث في قسم [${currentSectionName}]...`;
 
   try {
-    // نمرر currentSection مع الـ searchId في مسار الـ API
     const res = await fetch(`/admin/advanced-search/${currentSection}/${searchId}`, {
       headers: getAuthHeaders()
     });
@@ -215,7 +201,6 @@ async function handleAdminSearch() {
     if (result.success) {
       let entityLabel = result.type === "customer" ? "راكب / مستخدم" : result.type === "driver" ? "سائق / كابتن" : "اشتراك رحلة";
       
-      // 🚀 جلب التوكن الحالي المخزن في المتصفح لتمريره بالرابط علناً بالطريقة القديمة
       const token = localStorage.getItem("token");
 
       resultBox.innerHTML = `
@@ -232,7 +217,6 @@ async function handleAdminSearch() {
         </button>
       `;
     } else {
-      // سيعرض رسالة تفيد بعدم وجود هذا الـ ID في هذا القسم تحديداً
       resultBox.innerHTML = `<span style="color: #e63946;">❌ ${result.message}</span>`;
     }
   } catch (err) {
@@ -419,12 +403,11 @@ if (document.readyState === "loading") {
   initAdminPage();
 }
 
-// ربط الدوال بنطاق الـ Window العالمي
 window.loadAdminDashboard = loadAdminDashboard;
 window.loadAdminSection = loadAdminSection;
 window.selectDashboardSection = selectDashboardSection;
 window.renderAdminTable = renderAdminTable;
-window.handleAdminSearch = handleAdminSearch; // 🚀 ربط الدالة الجديدة بنطاق الويندوز
+window.handleAdminSearch = handleAdminSearch;
 window.resetSearchBox = resetSearchBox;
 window.openDriverRequestsModal = openDriverRequestsModal;
 window.calculateAge = calculateAge;

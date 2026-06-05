@@ -76,18 +76,15 @@ function setBarHeight(selector, value, max) {
 }
 let isWithdrawVerified = false;
 
-// دالة لفتح نافذة السحب
 function openWithdrawModal() {
   document.getElementById("withdrawModal").style.display = "flex";
 }
 
-// دالة لإغلاق نافذة السحب وتصفير المدخلات
 function closeWithdrawModal() {
   document.getElementById("withdrawModal").style.display = "none";
   document.getElementById("withdrawForm").reset();
 }
 
-// دالة لتغيير النصوص حسب خيار السائق (محفظة أو بنك) لتبدو احترافية
 function toggleWithdrawFields() {
   const method = document.getElementById("withdrawMethod").value;
   const label = document.getElementById("methodLabel");
@@ -102,18 +99,15 @@ function toggleWithdrawFields() {
   }
 }
 
-// معالجة إرسال طلب السحب فور التحقق من إدخال البيانات
 function handleWithdrawSubmit(event) {
   event.preventDefault();
   
   isWithdrawVerified = true;
   closeWithdrawModal();
   
-  // استدعاء دالة الإرسال الفعلية للسيرفر الخاصة بك
   confirmWithdrawal();
 }
 
-// دالة إرسال طلب السحب للسيرفر (قم بدمج منطق الـ Fetch الخاص بك داخلها)
 async function confirmWithdrawal() {
   if (!isWithdrawVerified) {
     alert("الرجاء تحديد واجهة الحساب لإتمام عملية السحب!");
@@ -121,13 +115,10 @@ async function confirmWithdrawal() {
     return;
   }
 
-  // هنا تضع كود الـ Fetch الحقيقي لإرسال الطلب للأدمن، على سبيل المثال:
   try {
-    // مثال لـ API السحب:
-    // const res = await fetch('/driver/withdraw', { method: 'POST', ... });
     
     alert("تم التحقق من الحساب بنجاح! تم إرسال طلب السحب وبانتظار موافقة الأدمن.");
-    isWithdrawVerified = false; // إعادة التصفير للأمان
+    isWithdrawVerified = false;
     
   } catch (err) {
     console.log("Withdrawal error:", err);
@@ -136,7 +127,6 @@ async function confirmWithdrawal() {
   }
 }
 
-// تصدير الدوال للنطاق العالمي لتفادي مشاكل الـ HTML
 window.openWithdrawModal = openWithdrawModal;
 window.closeWithdrawModal = closeWithdrawModal;
 window.toggleWithdrawFields = toggleWithdrawFields;

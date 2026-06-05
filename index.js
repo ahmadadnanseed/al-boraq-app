@@ -1,11 +1,9 @@
-// ملف: index.js
 
 const express = require("express");
 require("dotenv").config();
-const path = require("path"); // 1. استدعاء مكتبة المسارات لإرسال ملفات الـ HTML
+const path = require("path");
 const connection = require("./src/db");
 
-// 2. استيراد الحارس البرمجي (verifyToken) من ملف الـ auth
 const { verifyToken } = require("./src/routes/auth"); 
 
 const authRoutes = require("./src/routes/auth");
@@ -17,24 +15,15 @@ const driverRoutes = require("./src/routes/drivers");
 const app = express();
 const PORT = 3000;
 
-/* ==============================
-   Middleware العامة
-============================== */
 app.use(express.static("public"));
 app.use(express.json());
 
-/* ==============================
-   الـ Routers الخاصة بالـ APIs
-============================== */
 app.use(authRoutes);
 app.use(customerRoutes);
 app.use(bookingRoutes);
 app.use(dailyTripRoutes);
 app.use(driverRoutes);
 
-/* ==============================
-   مساعد الذكاء الاصطناعي (Gemini)
-============================== */
 app.post("/api/help-chat", async (req, res) => {
   const { message } = req.body;
 
@@ -132,15 +121,11 @@ If outside BURAQ:
   }
 });
 
-/* ========================================================
-   🔒 نظام تأمين وتوجيه الصفحات الخاصة (Server-Side Protection)
-======================================================== */
 
 app.get("/admin.html", verifyToken(["admin"]), (req, res) => {
   res.sendFile(path.join(__dirname, "private_views", "admin.html"));
 });
 
-// إرجاع الحماية الصارمة لصفحة الاستعراض القديمة
 app.get("/admin-view.html", verifyToken(["admin"]), (req, res) => {
   res.sendFile(path.join(__dirname, "private_views", "admin-view.html")); 
 });
@@ -161,7 +146,6 @@ app.get("/driver-statistics.html", verifyToken(["driver", "admin"]), (req, res) 
   res.sendFile(path.join(__dirname, "private_views", "driver-statistics.html"));
 });
 
-// 💡 3. المعالج المخصص لإرجاع نص صريح "Cannot GET" عند محاولة الدخول غير المصرح
 app.use((err, req, res, next) => {
   if (err.message === "غير مصرح لك، التوكن مفقود" || err.message === "جلسة انتهت أو توكن غير صالح" || res.statusCode === 403) {
     res.status(404).send(`Cannot GET ${req.originalUrl}`);
@@ -170,14 +154,7 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-// ========================================================
-// لوحة تحكم الأدمن المتقدمة والتفاعلية ديناميكياً - مشروع براق
-// ========================================================
-// ========================================================
-// لوحة تحكم الأدمن المتقدمة والتفاعلية ديناميكياً - مشروع براق
-// ========================================================
 
-// 1. مسار جلب أعداد البطاقات الأربعة العلوية الأساسية عند تحميل الصفحة أول مرة
 app.get("/admin/dashboard-data", (req, res) => {
   const sql = `
     SELECT
@@ -195,7 +172,6 @@ app.get("/admin/dashboard-data", (req, res) => {
   });
 });
 
-// 2. مسار جلب بيانات الجداول السفلية عند كبس الكروت لتصفية الأسماء والـ IDs
 const ADMIN_DASHBOARD_SECTION_SQL = {
   users: `
     SELECT caustomer_id AS id, CONCAT(fast_name_caustomer, ' ', last_name_caustomer) AS name, phone_caustomer AS phone, DATE_FORMAT(date_of_birth_caustomer, '%Y-%m-%d') AS dob
@@ -228,10 +204,6 @@ app.get("/admin/dashboard-section/:section", (req, res) => {
   });
 });
 
-// ========================================================
-// 🚀 المسار العام الشامل والنهائي لتغذية الرسم البياني التفاعلي (براق)
-// مطابق 100% لأسماء جداولك الفعلية: daily_trips و start_date_booking
-// ========================================================
 
 app.get("/admin/chart-analytics/:section", (req, res) => {
   const section = req.params.section;
@@ -325,7 +297,6 @@ app.get("/admin/chart-analytics/:section", (req, res) => {
   } 
   
   else if (section === "drivers") {
-    // 🔑 تم إصلاح استدعاء الجدول الحقيقي ليصبح daily_trips بالجمع بنجاح لتشغيل كرت الكباتن
     const sql = `
       SELECT 
         (SELECT COUNT(*) FROM driver WHERE status = 'accepted') AS totalDrivers,
@@ -354,7 +325,6 @@ app.get("/admin/chart-analytics/:section", (req, res) => {
     return res.json({ success: false, message: "قسم غير مدعوم" });
   }
 });
-// 4. مسارات إدارة السائقين الجانبية (قبول ورفض طلبات الاشتراك بـ الـ Modal)
 app.get("/admin/driver-requests", (req, res) => {
   const sql = `
     SELECT driver_id, fast_name_driver, last_name_driver, date_of_birth_driver, phone_driver, address, password
@@ -413,15 +383,10 @@ app.put("/admin/driver-requests/:id/reject", (req, res) => {
     res.json({ success: true, message: "تم رفض الطلب" });
   });
 });
-/* ========================================================
-   🔍 نظام البحث المتقدم والحذف المستهدف للأدمن (براّق)
-======================================================== */
 
-// أ. مسار فحص الـ ID الموجه والمحصور حسب القسم النشط حالياً (تعديل براّق)
 app.get("/admin/advanced-search/:section/:id", verifyToken(["admin"]), (req, res) => {
   const { section, id } = req.params;
 
-  // 1. إذا كان الأدمن واقف في كرت المستخدمين (الركاب)
   if (section === "users") {
     const customerSql = `
       SELECT 
@@ -441,7 +406,6 @@ app.get("/admin/advanced-search/:section/:id", verifyToken(["admin"]), (req, res
     });
   } 
   
-  // 2. إذا كان الأدمن واقف في كرت السائقين (الكباتن)
   else if (section === "drivers") {
     const driverSql = `
       SELECT 
@@ -461,7 +425,6 @@ app.get("/admin/advanced-search/:section/:id", verifyToken(["admin"]), (req, res
     });
   } 
   
-  // 3. إذا كان الأدمن واقف في كرت الاشتراكات (الفعالة أو المعلقة)
   else if (section === "activeSubs" || section === "pendingSubs") {
     const bookingSql = `
       SELECT 
@@ -488,7 +451,6 @@ app.get("/admin/advanced-search/:section/:id", verifyToken(["admin"]), (req, res
   }
 });
 
-// ب. مسار الحذف المستهدف والآمن المحمي بـ ON DELETE CASCADE
 app.delete("/admin/delete-target/:type/:id", verifyToken(["admin"]), (req, res) => {
   const { type, id } = req.params;
   let sql = "";
@@ -511,9 +473,6 @@ app.delete("/admin/delete-target/:type/:id", verifyToken(["admin"]), (req, res) 
     res.json({ success: true, message: "تم حذف الكيان بنجاح تفعيل التحديث التلقائي" });
   });
 });
-/* ========================================================
-   استعادة كلمة المرور (Forgot Password)
-======================================================== */
 const resetCodes = {};
 
 app.post("/forgot-password/send-code", (req, res) => {
@@ -581,9 +540,6 @@ app.put("/forgot-password/reset", async (req, res) => {
   }
 });
 
-/* ========================================================
-   اتصال قاعدة البيانات وتشغيل السيرفر
-======================================================== */
 connection.connect((err) => {
   if (err) {
     console.log("DB connection FAILED:", err);

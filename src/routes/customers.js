@@ -11,9 +11,6 @@ function splitFullName(name) {
   };
 }
 
-/* ==============================
-   جلب بيانات المستخدم للملف الشخصي (آمن)
-============================== */
 router.get("/user/:id", (req, res) => {
   const userId = req.params.id;
 
@@ -28,7 +25,7 @@ router.get("/user/:id", (req, res) => {
       console.error("Get user error:", err);
       return res.status(500).json({
         success: false,
-        message: "خطأ داخلي في السيرفر" // حجب تفاصيل الخطأ الحساسة
+        message: "خطأ داخلي في السيرفر"
       });
     }
 
@@ -46,9 +43,6 @@ router.get("/user/:id", (req, res) => {
   });
 });
 
-/* ==============================
-   تعديل بيانات المستخدم (تم تأمينه وحجب تفاصيل الـ SQL)
-============================== */
 router.put("/user/:id", (req, res) => {
   const userId = req.params.id;
   const { name, phone, dob, email, gender } = req.body;
@@ -73,12 +67,10 @@ router.put("/user/:id", (req, res) => {
     [first_name, last_name, phone || "", cleanDob, email || "", gender || "", userId],
     (err, result) => {
       if (err) {
-        // طباعة تفاصيل الخطأ في كونسول السيرفر الخاص بك فقط لحمايتها
         console.error("Update customer database error:", err); 
         return res.status(500).json({
           success: false,
           message: "فشل تحديث البيانات، يرجى المحاولة لاحقاً" 
-          // تم إزالة err.sqlMessage لمنع استكشاف هيكل الجداول من قبل المتطفلين
         });
       }
 
@@ -90,9 +82,6 @@ router.put("/user/:id", (req, res) => {
   );
 });
 
-/* ==============================
-   جلب اشتراكات العميل (آمن)
-============================== */
 router.get("/customer/subscriptions/:customerId", (req, res) => {
   const customerId = req.params.customerId;
 
