@@ -2,13 +2,19 @@ let resetPhoneNumber = "";
 let resetCode = "";
 
 async function sendResetCode() {
-  const phoneInput = document.getElementById("resetPhone").value.trim();
+  let phoneInput = document.getElementById("resetPhone").value.trim();
 
   if (!phoneInput) {
     alert("أدخل رقم الهاتف");
     return;
   }
 
+  // 🔧 هان السر! إذا كتب المستخدم 0 في البداية (مثل: 078...)، قم بحذفه فوراً
+  if (phoneInput.startsWith("0")) {
+    phoneInput = phoneInput.substring(1); // بيحذف الـ 0 الأول
+  }
+
+  // دمج الرقم الصافي مع مفتاح الدولة للأردن
   resetPhoneNumber = "+962" + phoneInput;
 
   const res = await fetch("/forgot-password/send-code", {
@@ -25,9 +31,7 @@ async function sendResetCode() {
   }
 
   window.open(data.whatsappUrl, "_blank");
-document.getElementById(
-"verificationPhone"
-).innerText = resetPhoneNumber;
+  document.getElementById("verificationPhone").innerText = resetPhoneNumber;
   showResetStep(2);
 }
 
@@ -102,6 +106,7 @@ function showResetStep(step) {
   document.getElementById(`forgot-step${step}`).style.display = "block";
 }
 
+// ربط الدوال بالـ window لتشتغل عِبر الـ HTML بدون مشاكل
 window.sendResetCode = sendResetCode;
 window.verifyResetCode = verifyResetCode;
 window.finishPasswordReset = finishPasswordReset;

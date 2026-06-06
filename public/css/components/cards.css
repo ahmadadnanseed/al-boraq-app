@@ -1,6 +1,3 @@
-/* ========================================================
-   🚀 BURAQ COMPONENTS: GENERAL CARDS & STAT OVERVIEWS
-======================================================== */
 
 .overview-card {
     background: rgba(255, 255, 255, 0.05);
@@ -105,7 +102,6 @@
     border-top-color: #f27a2b; 
 }
 
-/* التسميات والتشخيصات العامة */
 .role-badge {
     padding: 3px 10px;
     border-radius: 20px;
