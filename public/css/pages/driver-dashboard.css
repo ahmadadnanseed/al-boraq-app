@@ -1,0 +1,351 @@
+/* ========================================================
+   🚀 BURAQ PAGES: DRIVER INTERFACES, TRIP REQUESTS & STATS
+======================================================== */
+
+.driver-dashboard-bg { 
+    background-color: #f0f4f8; 
+    margin: 0; 
+}
+
+.driver-top-nav { 
+    background: #003366; 
+    color: white; 
+    padding: 15px 20px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.online-dot { 
+    width: 12px; 
+    height: 12px; 
+    background: #28a745; 
+    border-radius: 50%; 
+    box-shadow: 0 0 10px #28a745; 
+}
+
+/* --- قسم كروت الطلبات والخرائط المصغرة --- */
+.requests-container { 
+    padding: 20px; 
+}
+
+.driver-request-summary {
+    padding: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.driver-request-summary h3 {
+    margin: 10px 0 4px;
+    color: #003366;
+}
+
+.driver-request-summary p {
+    margin: 0;
+    color: #555;
+    font-weight: bold;
+}
+
+.request-arrow {
+    color: #003366;
+    font-size: 1.3rem;
+    transition: 0.3s;
+}
+
+.driver-request-card.active .driver-request-details { 
+    display: block; 
+}
+
+.driver-request-card.active .request-arrow {
+    transform: rotate(180deg);
+}
+
+.driver-request-details {
+    display: none;
+    padding: 18px;
+    border-top: 1px solid #eee;
+}
+
+.driver-request-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.driver-request-grid p {
+    background: #f5f8fc;
+    padding: 10px;
+    border-radius: 10px;
+    color: #333;
+    margin: 0;
+}
+
+.driver-mini-map {
+    display: none;
+    width: 100%;
+    height: 300px;
+    border-radius: 15px;
+    margin-top: 15px;
+}
+
+.driver-request-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.map-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: #00aeef;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.empty-requests {
+    background: white;
+    color: #003366;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.trip-type-tag {
+     background: #e7f1ff; 
+     color: #003366; 
+     padding: 5px 12px; 
+     border-radius: 20px; 
+     font-weight: bold; 
+     font-size: 0.8rem; 
+}
+
+.trip-price { 
+    font-size: 1.2rem; 
+    font-weight: bold; 
+    color: #28a745; 
+}
+
+.loc-item {
+     display: flex; 
+     gap: 15px; 
+     align-items: flex-start; 
+}
+
+.loc-item label { 
+    font-size: 0.75rem; 
+    color: #888; 
+    display: block; 
+}
+
+.loc-item p { 
+    margin: 2px 0 0; 
+    font-size: 0.95rem; 
+    font-weight: bold; 
+}
+
+.loc-divider { 
+    height: 30px; 
+    border-right: 2px dashed #ddd; 
+    margin: -5px 10px 5px 0; 
+}
+
+.user-mini-info {
+     display: flex; 
+     align-items: center; 
+     gap: 10px; 
+     margin: 20px 0; 
+     padding-top: 15px; 
+     border-top: 1px solid #eee; 
+}
+
+.user-mini-info img { 
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%; 
+}
+
+.driver-contact-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.driver-action-btn {
+    flex: 1;
+    background: #003d7a;
+    color: #fff;
+    text-decoration: none;
+    padding: 13px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.driver-action-btn:hover {
+    background: #0059b3;
+}
+
+/* --- الإحصائيات البيانية ومخططات الأرباح للكباتن --- */
+.driver-stats-container {
+    width: 92%;
+    max-width: 1100px;
+    margin: 120px auto 40px;
+}
+
+.driver-stats-title {
+    color: #ffffff;
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.driver-stats-title i {
+    color: #00aeef;
+    margin-left: 8px;
+}
+
+.stats-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+    margin-bottom: 30px;
+}
+
+.stats-card {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    position: relative;
+}
+
+.stats-circle {
+    width: 115px;
+    height: 115px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    border: 12px solid #e9f6ff;
+    border-top-color: #00aeef;
+    border-right-color: #0059b3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #003366;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.stats-card h3 {
+    color: #003366;
+    font-size: 1rem;
+    margin: 10px 0 0;
+}
+
+.stats-icon {
+    position: absolute;
+    bottom: 14px;
+    left: 18px;
+    color: #00aeef;
+    font-size: 1.4rem;
+}
+
+.trips-summary-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 30px;
+}
+
+.trips-summary-box h2 {
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 25px;
+}
+
+.stats-bar-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: end;
+    height: 210px;
+    border-bottom: 2px solid rgba(255,255,255,0.25);
+}
+
+.stats-bar-item {
+    text-align: center;
+    color: #ffffff;
+    width: 20%;
+}
+
+.stats-bar-item span {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.stats-bar {
+    width: 55px;
+    margin: 0 auto 10px;
+    border-radius: 12px 12px 0 0;
+}
+
+.stats-bar.completed { background: #16a34a; }
+.stats-bar.pending { background: #00aeef; }
+.stats-bar.postponed { background: #f59e0b; }
+.stats-bar.cancelled { background: #dc2626; }
+
+.stats-bar-item p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.earnings-card {
+    background: linear-gradient(135deg, #0059b3, #00aeef);
+    border-radius: 24px;
+    padding: 26px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.28);
+}
+
+.earnings-card h2 { margin: 0 0 10px; }
+.earnings-card p {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.earnings-card button {
+    border: none;
+    background: #ffffff;
+    color: #0059b3;
+    padding: 14px 24px;
+    border-radius: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.rating-box {
+    margin-top: 12px;
+    background: #f5f8fc;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.rating-box select, .rating-box textarea {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}

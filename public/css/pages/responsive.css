@@ -1,0 +1,105 @@
+/* ========================================================
+   🚀 BURAQ PAGES: GLOBAL RESPONSIVE MEDIA QUERIES
+======================================================== */
+
+@media (max-width: 900px) {
+    .stats-cards-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* 🔧 هان السر! تعديل الهيدر ليصغر وينكمش على الموبايل بدون ما يختفي أي زر */
+@media (max-width: 768px) {
+    /* تفعيل إظهار المكونات ومنع إخفائها */
+    .nav-links-modern, .auth-group {
+        display: flex !important; 
+    }
+
+    .navbar-container {
+        padding: 8px 10px !important;
+        gap: 8px !important;
+    }
+
+    .header-right-side {
+        gap: 10px !important;
+    }
+
+    /* تصغير حجم نصوص الروابط */
+    .nav-links-modern {
+        gap: 10px !important;
+    }
+
+    .nav-item-effect {
+        font-size: 0.8rem !important; /* صغرنا الخط */
+    }
+
+    /* تصغير حجم اللوجو والكلمة جنبها */
+    .brand span {
+        font-size: 0.95rem !important;
+    }
+    
+    .brand img {
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    /* تصغير أزرار الحساب لتقفل على السطر */
+    .auth-group {
+        gap: 6px !important;
+    }
+
+    .login-link-new {
+        font-size: 0.75rem !important;
+        padding: 6px 10px !important;
+    }
+
+    .signup-btn {
+        font-size: 0.75rem !important;
+        padding: 6px 12px !important;
+    }
+
+    /* باقي تعديلات الصفحات العامة تحت الموبايل (بدون تغيير) */
+    .booking-card-container,
+    .schedule-container,
+    .driver-stats-container,
+    .help-page-container,
+    .admin-main-wrapper,
+    .requests-container {
+        width: 94% !important;
+        max-width: 94% !important;
+        margin: 95px auto 25px !important;
+        padding: 0 !important;
+        box-sizing: border-box;
+    }
+    .stats-cards-grid, .stats-overview-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .driver-contact-actions {
+        flex-direction: column !important;
+        gap: 10px;
+    }
+    .driver-action-btn, .accept-btn, .reject-btn, .map-btn, .confirm-search-btn, .driver-confirm-btn, .auth-btn, .login-btn {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    .driver-details { flex-direction: column !important; text-align: center; }
+    .driver-trip-table, .admin-modal-table-wrapper, .table-wrapper { overflow-x: auto !important; }
+    .table-head, .table-row { min-width: 560px; }
+    .map-box { width: 94% !important; max-width: 94% !important; }
+    .picker-map, .driver-mini-map { height: 280px !important; }
+    .help-chat-card, .help-support-section, .earnings-card { width: 100%; box-sizing: border-box; }
+    .help-input-area { flex-direction: column; }
+    .help-input-area button { width: 100%; }
+    .modal-card, .modal-content, .admin-modal-card { width: 94% !important; max-width: 94% !important; box-sizing: border-box; }
+    .assistant-mascot { width: 70px; height: 70px; bottom: 75px; right: 15px; }
+}
+
+@media (max-width: 600px) {
+    .driver-stats-container { width: 94%; margin-top: 100px; }
+    .stats-cards-grid { grid-template-columns: 1fr; }
+    .earnings-card { flex-direction: column; gap: 18px; text-align: center; }
+    .login-page-body { align-items: flex-start; padding-top: 70px; }
+    .login-card { max-width: 92%; padding: 26px 18px; }
+    .login-card .logo { width: 110px; height: 110px; }
+    .login-card h2 { font-size: 1.45rem; }
+}

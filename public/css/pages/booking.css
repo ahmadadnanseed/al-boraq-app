@@ -1,0 +1,418 @@
+/* ========================================================
+   🚀 BURAQ PAGES: PASSENGER BOOKING & SEAT SELECTION
+======================================================== */
+
+.booking-page-bg {
+    background: #001a33 !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.booking-logo-header {
+    text-align: center;
+    padding-top: 80px;
+    margin-bottom: 10px;
+}
+
+.logo-glow-wrapper img {
+    width: 100px;
+    height: 100px;
+    border: 2px solid #00aeef;
+    border-radius: 50%;
+    padding: 5px;
+}
+
+.booking-card-container {
+    background: #002b55 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px !important;
+    padding: 20px 25px !important;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin-bottom: 40px;
+}
+
+.booking-title {
+    font-size: 1.5rem !important;
+    color: #fff !important;
+    margin-bottom: 20px !important;
+    text-align: center;
+}
+
+.location-group,
+.date-group,
+.passengers-group,
+.other-person-group,
+.full-car-group {
+    background: rgba(255, 255, 255, 0.06) !important;
+    padding: 18px !important;
+    border-radius: 16px !important;
+    margin-bottom: 15px !important;
+}
+
+.location-item {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.35);
+}
+
+.location-item:last-child {
+    border-bottom: none;
+}
+
+.location-item label,
+.date-group label,
+.selection-row label,
+label, .date-field {
+    color: #fff !important;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.loc-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.loc-input-wrap i {
+    color: #fff;
+    font-size: 1.4rem;
+}
+
+.location-input {
+    flex: 1;
+    min-height: 48px;
+    color: white;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1rem;
+}
+
+.location-input::placeholder {
+    color: rgba(255,255,255,0.85);
+}
+
+.location-input gmp-place-autocomplete {
+    width: 100%;
+}
+
+.location-input input {
+    width: 100% !important;
+    background: #111 !important;
+    color: #fff !important;
+    border: 1px solid #00aeef !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    box-sizing: border-box;
+}
+
+.current-location-btn {
+    background: #00aeef;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: 0.3s;
+}
+
+.current-location-btn:hover {
+    background: #008fc7;
+    transform: translateY(-2px);
+}
+
+.time-selection {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.time-box {
+    flex: 1;
+    min-width: 140px;
+}
+
+.time-field,
+.date-field {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: #fff;
+    color: #003366 !important;
+    box-sizing: border-box;
+    margin-top: 8px;
+}
+
+.selection-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.custom-check {
+    width: 20px;
+    height: 20px;
+    accent-color: #00aeef;
+}
+
+.full-car-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.other-preview {
+    margin-top: 10px;
+    background: rgba(0, 174, 239, 0.15);
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+#otherPersonModal .modal-card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+.confirm-search-btn {
+    width: 100%; 
+    padding: 12px !important; 
+    background: #0059b3; 
+    color: white; 
+    border: none; 
+    border-radius: 50px; 
+    font-size: 1rem !important; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    margin-top: 10px !important;
+}
+
+.confirm-search-btn:hover { 
+    background: #003d7a; 
+    transform: scale(1.02); 
+}
+
+/* --- 🔧 إصلاح الخرائط المنبثقة الحرج (الـ Popups الجاهزة) --- */
+.map-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.75) !important;
+    z-index: 99999 !important; /* تجعلها تطفو فوق الأزرار تماماً وتمنع حجب الكبسات */
+    display: none; /* يتم التحكم بها بالـ JS ليصبح flex */
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.map-box {
+    width: 90% !important;
+    max-width: 500px !important;
+    background: #002b55 !important;
+    border-radius: 20px !important;
+    padding: 20px !important;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5) !important;
+    box-sizing: border-box !important;
+    margin: auto !important;
+    position: relative !important;
+}
+
+.map-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    color: white !important;
+    margin-bottom: 15px !important;
+}
+
+.map-header h3 {
+    margin: 0 !important;
+    color: white !important;
+    font-size: 1.2rem !important;
+}
+
+.map-header button {
+    border: none !important;
+    background: #dc3545 !important;
+    color: white !important;
+    font-size: 20px !important;
+    border-radius: 50% !important;
+    width: 36px !important;
+    height: 36px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.map-search-input {
+    width: 100% !important;
+    padding: 12px !important;
+    margin: 10px 0 !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    color: #001a33 !important;
+}
+
+.picker-map {
+    width: 100% !important;
+    height: 350px !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}
+
+.confirm-map-btn {
+    width: 100% !important;
+    margin-top: 15px !important;
+    padding: 14px !important;
+    background: #00aeef !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: 0.3s !important;
+}
+
+.confirm-map-btn:hover {
+    background: #008fc7 !important;
+}
+
+/* --- واجهة حجز المقاعد والسيارة --- */
+.car-layout {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 25px;
+    padding: 40px 20px;
+    margin-bottom: 25px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.car-layout span, 
+.car-layout label { 
+    color: #ffffff !important;
+    font-weight: bold !important;
+    font-size: 1rem !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.seat-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.front-row {
+     justify-content: space-around; 
+     max-width: 250px; 
+}
+
+.seat-square {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    transition: 0.3s;
+}
+
+.seat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.seat-box.available .seat-square { background-color: #f8f9fa; cursor: pointer; }
+.seat-box.reserved .seat-square { background-color: #6c757d; cursor: not-allowed; }
+.seat-box.selected .seat-square { background-color: #007bff; border-color: #0056b3; }
+
+.seat-number {
+    color: white;
+    font-weight: bold;
+}
+
+.legend-group {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.legend-color {
+     width: 20px; 
+     height: 20px; 
+     border-radius: 5px; 
+     border: 1px solid #ddd; 
+}
+
+.legend-color.available { background-color: #f8f9fa; }
+.legend-color.reserved { background-color: #6c757d; }
+.legend-color.selected { background-color: #007bff; }
+
+.booking-summary-box {
+    background: rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 18px;
+    margin: 20px 0;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.booking-summary-box h3 {
+    margin-top: 0;
+    color: #00aeef;
+}
+
+.booking-summary-box p {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.seat-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.cancel-booking-btn {
+    width: 100%;
+    padding: 14px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+}

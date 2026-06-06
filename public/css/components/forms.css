@@ -1,0 +1,111 @@
+/* ========================================================
+   🚀 BURAQ COMPONENTS: FORM CONTROLS & CONTROLLER INPUTS
+======================================================== */
+
+.input-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.input-group input, #loginForm input {
+    width: 100%;
+    height: 52px;
+    padding: 0 16px;
+    border-radius: 16px;
+    font-size: 1rem;
+    background: #eef5ff;
+    color: #001a33;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-sizing: border-box;
+    outline: none;
+}
+
+#loginForm input::placeholder {
+    color: #6b7280;
+}
+
+.phone-input-wrapper {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.phone-input-wrapper select {
+    height: 52px;
+    border-radius: 14px;
+    border: none;
+    padding: 0 8px;
+    background: #ffffff;
+    color: #001a33;
+    font-weight: bold;
+}
+
+.otp-flex {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    direction: ltr;
+    margin: 25px 0;
+}
+
+.otp-field {
+    width: 55px !important;
+    height: 55px !important;
+    text-align: center !important;
+    font-size: 26px !important;
+    font-weight: bold !important;
+    color: #003366 !important;
+    background: #ffffff !important;
+    border: 2px solid #0d6efd !important;
+    border-radius: 12px !important;
+    caret-color: #003366 !important;
+}
+
+.custom-select-wrapper {
+    position: relative;
+    user-select: none;
+    cursor: pointer;
+}
+
+.select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff !important;
+    color: #001a33 !important;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.custom-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #001a33 !important;
+    border: 1px solid #00aeef;
+    border-radius: 10px;
+    z-index: 9999 !important;
+    display: none;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.custom-select-wrapper.open .custom-options {
+    display: block !important;
+}
+
+.option-item {
+    padding: 12px;
+    color: white;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: 0.3s;
+}
+
+.option-item:hover {
+    background: #00aeef;
+}

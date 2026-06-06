@@ -6,8 +6,10 @@ const FILES_TO_CACHE = [
   "/index.html",
   "/login.html",
   "/signup.html",
+  "/admin-view.html",       
   "/Style.css",
   "/script.js",
+  "/public/js/pages/admin.js", 
   "/img/my-horse4.png"
 ];
 

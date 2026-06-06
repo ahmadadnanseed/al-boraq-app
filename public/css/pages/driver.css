@@ -1,0 +1,219 @@
+/* ========================================================
+   🚀 BURAQ PAGES: DRIVER PORTAL, SIGNUP, & REGISTER STEPS
+======================================================== */
+
+.driver-page-title {
+    color: #003366;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.driver-header { 
+    text-align: center; 
+    padding: 40px 20px 20px; 
+}
+
+.brand-logo-circle {
+    width: 90px; 
+    height: 90px; 
+    background: white; 
+    border-radius: 50%;
+    margin: 0 auto 15px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.brand-logo-circle img { 
+    width: 60px; 
+    height: 60px; 
+    object-fit: contain; 
+}
+
+.driver-card-container {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 30px;
+    max-width: 450px;
+    margin: 40px auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.form-section-title, .brand-name-blue, .welcome-msg {
+    color: #ffffff !important;
+    text-align: center;
+}
+
+.welcome-msg {
+    color: #dfe6ff !important;
+    margin-bottom: 20px;
+}
+
+/* --- نظام الـ Stepper لتسجيل الكباتن --- */
+.stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 40px;
+    padding: 0 40px;
+}
+
+.stepper-wrapper::before {
+    content: "";
+    position: absolute;
+    top: 15px; 
+    left: 65px; 
+    right: 65px; 
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 1;
+}
+
+.stepper-item {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    flex: 1;
+}
+
+.step-counter {
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.4s all ease;
+}
+
+.stepper-item.active .step-counter,
+.stepper-item.completed .step-counter {
+    background-color: #00aeef !important;
+    border-color: #00aeef;
+    box-shadow: 0 0 20px rgba(0, 174, 239, 0.8);
+    transform: scale(1.1);
+}
+
+.step-name {
+    color: #dfe6ff !important;
+    font-size: 0.8rem;
+    transition: 0.3s;
+}
+
+.stepper-item.active .step-name,
+.stepper-item.completed .step-name {
+    color: #00aeef !important;
+    font-weight: bold;
+}
+
+/* --- حقول إدخال بيانات السائقين --- */
+.input-box { 
+    margin-bottom: 18px; 
+    text-align: right; 
+}
+
+.input-box label { 
+    color: #00aeef !important;
+    font-weight: bold; 
+    margin-bottom: 8px; 
+    display: block; 
+}
+
+.input-box input, .input-box select { 
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    border-radius: 10px;
+    padding: 12px;
+    width: 100%;
+    box-sizing: border-box; 
+}
+
+.input-box input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.input-box select {
+    background-color: #ffffff !important;
+    color: #001a33 !important;
+    cursor: pointer;
+    font-weight: bold;
+    appearance: none;
+}
+
+.input-box select option {
+    background-color: #ffffff !important; 
+    color: #001a33 !important; 
+    padding: 10px;
+}
+
+.gender-selection { 
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 15px; 
+    padding: 5px 0; 
+    font-size: 0.85rem; 
+}
+
+.gender-selection label {
+    color: #ffffff !important;
+    margin-left: 10px;
+    font-weight: normal;
+}
+
+.phone-row-input {
+     display: flex; 
+     gap: 10px; 
+     direction: ltr; 
+}
+
+.flag-code { 
+    display: flex; 
+    align-items: center; 
+    gap: 5px; 
+    padding: 10px; 
+    background: #fff; 
+    border: 1px solid #eee; 
+    border-radius: 10px; 
+    font-size: 0.9rem;
+}
+
+.driver-confirm-btn {
+    width: 100%; 
+    padding: 15px; 
+    background: linear-gradient(135deg, #00aeef 0%, #007bff 100%) !important;
+    color: white !important; 
+    border: none;
+    border-radius: 50px; 
+    font-size: 1.1rem; 
+    font-weight: bold;
+    cursor: pointer; 
+    transition: 0.3s; 
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0, 174, 239, 0.4);
+}
+
+.driver-confirm-btn:hover { 
+    background: #002244; 
+    transform: translateY(-2px); 
+}
+
+.card-footer-text { 
+    text-align: center; 
+    margin-top: 25px; 
+    font-size: 0.9rem; 
+    color: #666; 
+}
+
+.card-footer-text a { 
+    color: #003366; 
+    font-weight: bold; 
+    text-decoration: none; 
+}

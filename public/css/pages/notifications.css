@@ -1,0 +1,145 @@
+/* ========================================================
+   🚀 BURAQ PAGES: NOTIFICATIONS, USER PROFILE & SETTINGS LISTS
+======================================================== */
+
+.notifications-container {
+    width: 90%;
+    max-width: 650px;
+    margin: 120px auto 40px;
+}
+
+.notification-text h3 {
+    margin: 0 0 8px;
+    color: #003366;
+}
+
+.notification-text p {
+    margin: 0;
+    line-height: 1.7;
+    color: #333;
+}
+
+.notification-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e7f4ff;
+    color: #0059b3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.notification-time {
+    display: inline-block;
+    margin-top: 10px;
+    color: #00aeef;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.postpone-btn {
+    margin-top: 12px;
+    background: #0059b3;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.arrival-alert {
+    margin-top: 12px;
+    background: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* --- واجهة الملف الشخصي للمستخدم --- */
+.profile-body {
+     background: #f2f5f8; 
+     margin: 0; 
+     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+.profile-header-nav { 
+    background: white; 
+    padding: 12px 15px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 1px solid #eee;
+}
+
+.user-main-info {
+     background: white; 
+     text-align: center; 
+     padding: 25px 0; 
+     margin-bottom: 8px; 
+}
+
+.avatar-circle { 
+    width: 65px; 
+    height: 65px; 
+    background: #e2e8f0; 
+    border-radius: 50%; 
+    margin: 0 auto 10px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 1.5rem; 
+    color: #003366; 
+    font-weight: bold;
+}
+
+#topName { margin: 0; font-size: 1.1rem; color: #333; }
+#topPhone { margin: 5px 0 0; color: #888; font-size: 0.85rem; }
+
+.settings-list { background: white; }
+.setting-item { 
+    display: flex; 
+    align-items: center; 
+    padding: 12px 20px; 
+    border-bottom: 1px solid #f8f8f8; 
+    cursor: pointer; 
+    transition: 0.2s;
+}
+
+.setting-item:active { background: #f0f0f0; }
+.setting-text { flex: 1; text-align: right; margin-right: 15px; }
+.label { display: block; font-size: 0.7rem; color: #999; }
+.value { display: block; font-size: 0.9rem; color: #333; margin-top: 2px; }
+.icon-gray { color: #666; font-size: 1.1rem; }
+.verified { color: #28a745; font-size: 0.75rem; margin-right: 4px; }
+.list-divider { height: 10px; background: #f2f5f8; }
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.info-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  border-right: 4px solid #17b497;
+}
+
+.info-item label { 
+  color: #8892b0; 
+  font-size: 14px; 
+  display: block; 
+  margin-bottom: 5px; 
+}
+
+.info-item span { 
+  font-size: 18px; 
+  font-weight: bold; 
+}

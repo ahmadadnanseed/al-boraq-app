@@ -1,0 +1,127 @@
+/* ========================================================
+   🚀 BURAQ COMPONENTS: GENERAL CARDS & STAT OVERVIEWS
+======================================================== */
+
+.overview-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(5px);
+    transition: 0.3s ease;
+}
+
+.overview-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 174, 239, 0.2);
+    border-color: rgba(0, 174, 239, 0.3);
+}
+
+.overview-card i {
+    font-size: 2rem;
+    color: #00aeef;
+}
+
+.card-text-group h3 {
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+.card-text-group p {
+    margin: 2px 0 0;
+    font-size: 0.9rem;
+    color: #dfe6ff;
+}
+
+.subscription-item-card {
+    background: white; 
+    border-radius: 15px; 
+    margin-bottom: 20px;
+    overflow: hidden; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.driver-request-card {
+    background: #fff;
+    border-radius: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    overflow: hidden;
+}
+
+.notification-card {
+    background: white;
+    color: #003366;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+}
+
+.notification-card.today {
+    border-right: 6px solid #00aeef;
+}
+
+.profile-card {
+    background: rgba(16, 28, 48, 0.85);
+    border-radius: 16px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    flex: 1;
+    min-width: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 6px solid #102a45;
+    border-top-color: #17b497;
+    margin: 0 auto 15px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.stat-box.orange .stat-circle { 
+    border-top-color: #f27a2b; 
+}
+
+/* التسميات والتشخيصات العامة */
+.role-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.role-badge.user {
+    background: rgba(0, 174, 239, 0.15);
+    color: #00aeef;
+}
+
+.discount-tag {
+    background: #ffcc00;
+    color: #001a33 !important;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}

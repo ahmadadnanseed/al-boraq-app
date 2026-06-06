@@ -1,0 +1,73 @@
+/* ========================================================
+   🚀 BURAQ COMPONENTS: DATA TABLES & GRIDS
+======================================================== */
+
+.table-wrapper {
+    background: white; 
+    border-radius: 15px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    margin-bottom: 25px; 
+}
+
+.schedule-table, .modern-dark-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    text-align: right; 
+}
+
+.schedule-table th { 
+    background: #f8f9fa; 
+    padding: 12px; 
+    color: #003366; 
+    border-bottom: 2px solid #eee; 
+}
+
+.schedule-table td {
+    padding: 12px; 
+    border-bottom: 1px solid #eee; 
+    color: #444; 
+    font-size: 0.9rem; 
+}
+
+.modern-dark-table th {
+    padding: 15px;
+    color: #00aeef;
+    font-weight: bold;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.modern-dark-table td {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+.modern-dark-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.driver-trip-table {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.driver-trip-table .table-head,
+.driver-trip-table .table-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+    padding: 12px;
+    color: #003366;
+    font-weight: bold;
+}
+
+.driver-trip-table .table-head {
+    background: #f5f8fc;
+}
+
+.driver-trip-table .table-row {
+    border-top: 1px solid #eee;
+}
