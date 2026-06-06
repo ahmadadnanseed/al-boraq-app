@@ -1,3 +1,8 @@
+
+// ========================================================
+// 📱 1. قِسم رحلات السائق اليومية (Driver Today Trips)
+// ========================================================
+
 async function loadDriverTodayTrips() {
   const container = document.getElementById("driverTodayTripsList");
   if (!container) return;
@@ -13,7 +18,7 @@ async function loadDriverTodayTrips() {
     const res = await fetch(`/driver/today-trips/${driverId}`);
     const data = await res.json();
 
-    if (!data.success || data.trips.length === 0) {
+    if (!data.success || !data.trips || data.trips.length === 0) {
       container.innerHTML = `<p class="empty-requests">لا توجد رحلات اليوم</p>`;
       return;
     }
@@ -45,6 +50,7 @@ async function loadDriverTodayTrips() {
       const card = document.createElement("div");
       card.className = "subscription-item-card driver-daily-card";
 
+      // 🔧 التعديل الجذري والنهائي: تم تنظيف الروابط وتعديل صياغة الـ Template Literals لتعمل فوراً بالمتصفح
       card.innerHTML = `
         <div class="sub-header-main" onclick="toggleSubscriptionCard(this)">
           <div class="sub-title-info">
@@ -68,7 +74,7 @@ async function loadDriverTodayTrips() {
               <span>${trip.trip_time}</span>
               <span>
                 <a href="https://www.google.com/maps/dir/?api=1&origin=${pickup?.lat},${pickup?.lng}&destination=${dropoff?.lat},${dropoff?.lng}" target="_blank">
-                  <i class="bi bi-geo-alt"></i> الخريطة
+                  <i class="bi bi-geo-alt"></i> الخريطة الخارجية
                 </a>
               </span>
               <span class="trip-status-text">${actionText}</span>
@@ -99,40 +105,20 @@ async function loadDriverTodayTrips() {
             <div id="driverTodayMap-${trip.daily_trip_id}" class="driver-mini-map"></div>
 
             <div class="driver-contact-actions" style="margin-top:10px;">
-              <button class="map-btn" onclick='drawDriverToCustomerMap(${trip.daily_trip_id}, ${JSON.stringify(pickup)})'>
+              <button class="map-btn" onclick='drawDriverToCustomerMap(${trip.daily_trip_id}, ${JSON.stringify(pickup)}, ${JSON.stringify(dropoff)})'>
                 عرض الطريق للراكب
               </button>
 
               ${
                 trip.status === "scheduled"
-                  ? `
-                    <button class="accept-btn" onclick="markDriverStarted(${trip.daily_trip_id}, event)">
-                      بدء الرحلة
-                    </button>
-                  `
+                  ? `<button class="accept-btn" onclick="markDriverStarted(${trip.daily_trip_id}, event)">بدء الرحلة</button>`
                   : trip.status === "driver_started"
-                  ? `
-                    <button class="accept-btn" onclick="markDriverArrived(${trip.daily_trip_id}, event)">
-                      أنا وصلت
-                    </button>
-                  `
+                  ? `<button class="accept-btn" onclick="markDriverArrived(${trip.daily_trip_id}, event)">أنا وصلت</button>`
                   : trip.status === "driver_arrived"
-                  ? `
-                    <button class="accept-btn" onclick="markPassengerPicked(${trip.daily_trip_id}, event)">
-                      هل أقلت الراكب؟
-                    </button>
-                  `
+                  ? `<button class="accept-btn" onclick="markPassengerPicked(${trip.daily_trip_id}, event)">هل أقلت الراكب؟</button>`
                   : trip.status === "passenger_picked"
-                  ? `
-                    <button class="accept-btn" onclick="markTripCompleted(${trip.daily_trip_id}, event)">
-                      تم إنزال الراكب
-                    </button>
-                  `
-                  : `
-                    <button class="accept-btn" disabled style="background:#777; cursor:not-allowed;">
-                      تم التوصيل
-                    </button>
-                  `
+                  ? `<button class="accept-btn" onclick="markTripCompleted(${trip.daily_trip_id}, event)">تم إنزال الراكب</button>`
+                  : `<button class="accept-btn" disabled style="background:#777; cursor:not-allowed;">تم التوصيل</button>`
               }
             </div>
           </div>
@@ -143,7 +129,7 @@ async function loadDriverTodayTrips() {
     });
 
   } catch (err) {
-    console.log("Driver trips error:", err);
+    console.error("Driver trips error:", err);
     container.innerHTML = `<p class="empty-requests">خطأ في تحميل الرحلات</p>`;
   }
 }
@@ -151,7 +137,6 @@ async function loadDriverTodayTrips() {
 function updateTripStatus(button, text) {
   const card = button.closest(".driver-daily-card");
   const statusText = card?.querySelector(".trip-status-text");
-
   if (statusText) {
     statusText.textContent = text;
   }
@@ -159,11 +144,7 @@ function updateTripStatus(button, text) {
 
 async function markDriverStarted(tripId, event) {
   const button = event.target;
-
-  const res = await fetch(`/driver/daily-trips/${tripId}/start`, {
-    method: "PUT"
-  });
-
+  const res = await fetch(`/driver/daily-trips/${tripId}/start`, { method: "PUT" });
   const data = await res.json();
 
   if (!data.success) {
@@ -172,18 +153,13 @@ async function markDriverStarted(tripId, event) {
   }
 
   updateTripStatus(button, "قادم");
-
   button.textContent = "أنا وصلت";
   button.setAttribute("onclick", `markDriverArrived(${tripId}, event)`);
 }
 
 async function markDriverArrived(tripId, event) {
   const button = event.target;
-
-  const res = await fetch(`/driver/daily-trips/${tripId}/arrived`, {
-    method: "PUT"
-  });
-
+  const res = await fetch(`/driver/daily-trips/${tripId}/arrived`, { method: "PUT" });
   const data = await res.json();
 
   if (!data.success) {
@@ -192,20 +168,14 @@ async function markDriverArrived(tripId, event) {
   }
 
   alert("تم إشعار الراكب بأنك وصلت");
-
   updateTripStatus(button, "وصلت");
-
   button.textContent = "هل أقلت الراكب؟";
   button.setAttribute("onclick", `markPassengerPicked(${tripId}, event)`);
 }
 
 async function markPassengerPicked(tripId, event) {
   const button = event.target;
-
-  const res = await fetch(`/driver/daily-trips/${tripId}/picked`, {
-    method: "PUT"
-  });
-
+  const res = await fetch(`/driver/daily-trips/${tripId}/picked`, { method: "PUT" });
   const data = await res.json();
 
   if (!data.success) {
@@ -214,18 +184,13 @@ async function markPassengerPicked(tripId, event) {
   }
 
   updateTripStatus(button, "تم ركوب الراكب");
-
   button.textContent = "تم إنزال الراكب";
   button.setAttribute("onclick", `markTripCompleted(${tripId}, event)`);
 }
 
 async function markTripCompleted(tripId, event) {
   const button = event.target;
-
-  const res = await fetch(`/driver/daily-trips/${tripId}/completed`, {
-    method: "PUT"
-  });
-
+  const res = await fetch(`/driver/daily-trips/${tripId}/completed`, { method: "PUT" });
   const data = await res.json();
 
   if (!data.success) {
@@ -234,9 +199,7 @@ async function markTripCompleted(tripId, event) {
   }
 
   alert("تم إنهاء الرحلة بنجاح");
-
   updateTripStatus(button, "تم التوصيل");
-
   button.textContent = "تم التوصيل";
   button.disabled = true;
   button.style.background = "#777";
@@ -246,21 +209,18 @@ async function markTripCompleted(tripId, event) {
 function driverParseJson(value) {
   try {
     let parsed = value;
-
-    if (typeof parsed === "string") {
-      parsed = JSON.parse(parsed);
-    }
-
-    if (typeof parsed === "string") {
-      parsed = JSON.parse(parsed);
-    }
-
+    if (typeof parsed === "string") parsed = JSON.parse(parsed);
+    if (typeof parsed === "string") parsed = JSON.parse(parsed);
     return parsed;
   } catch (e) {
     console.log("driverParseJson error:", e, value);
     return null;
   }
 }
+
+// ========================================================
+// ⚙️ 2. تشغيل وتأمين الصفحة عند التحميل
+// ========================================================
 
 function initDriverDailyTripsPage() {
   if (document.getElementById("driverTodayTripsList")) {
@@ -274,6 +234,7 @@ if (document.readyState === "loading") {
   initDriverDailyTripsPage();
 }
 
+// ربط الدوال بالـ window لضمان عمل الـ onclick بالـ HTML
 window.loadDriverTodayTrips = loadDriverTodayTrips;
 window.markDriverArrived = markDriverArrived;
 window.driverParseJson = driverParseJson;

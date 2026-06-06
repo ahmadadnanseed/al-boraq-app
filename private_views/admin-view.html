@@ -9,11 +9,15 @@
 
 <div class="container">
   <div class="header-bar">
-   <button class="btn-back" onclick="const token = localStorage.getItem('token'); window.location.href='/admin.html?token=' + token;">
-  ⬅ رجوع للوحة التحكم
-</button>
+    <button class="btn-back" onclick="{const token = localStorage.getItem('token'); window.location.href='/admin.html?token=' + token;}">
+      ⬅ رجوع للوحة التحكم
+    </button>
     <h2 id="viewTitle">جاري تحميل البيانات...</h2>
-    <button class="btn-delete" id="deleteBtn" style="display: none;" onclick="handleDelete()">حذف من النظام 🗑️</button>
+    
+    <button class="btn-delete" id="deleteBtn" style="display: none;" 
+            onclick="{const token = localStorage.getItem('token'); window.location.href='/admin.html?token=' + token; handleDelete();}">
+      حذف من النظام 🗑️
+    </button>
   </div>
 
   <div class="profile-card" id="mainCard" style="display: none;">

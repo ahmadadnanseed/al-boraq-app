@@ -88,69 +88,57 @@ function drawDriverRoute(bookingId, pickup, dropoff) {
   drawDirectionsOnMap(mapEl, pickup, dropoff);
 }
 
-function drawDriverToCustomerMap(tripId, pickup) {
-  const modal = document.getElementById("mapModal");
-
-  if (!pickup) {
-    alert("موقع الراكب غير متوفر");
+function drawDriverToCustomerMap(tripId, pickup, dropoff) {
+  if (!pickup || !dropoff) {
+    alert("إحداثيات الرحلة (موقع الراكب أو الوجهة) غير مكتملة");
     return;
   }
 
-  if (!navigator.geolocation) {
-    alert("المتصفح لا يدعم تحديد الموقع");
+  // 1. تحديد نقطة البداية والنهاية من البيانات الحقيقية القادمة من السيرفر
+  const origin = { lat: parseFloat(pickup.lat), lng: parseFloat(pickup.lng) };
+  const destination = { lat: parseFloat(dropoff.lat), lng: parseFloat(dropoff.lng) };
+
+  // 2. التحقق من وجود مكتبة جوجل مابس
+  if (typeof google === "undefined" || !google.maps) {
+    alert("مكتبة جوجل مابس لم يتم تحميلها بعد");
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const driverLocation = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude
-      };
+  // 3. الإمساك بعنصر الخريطة المصغرة الخاص بالكرت الحالي
+  const mapEl = document.getElementById(`driverTodayMap-${tripId}`);
+  if (!mapEl) {
+    alert("تعذر تحضير عنصر الخريطة في الشاشة");
+    return;
+  }
 
-      const mapEl = document.getElementById(`driverTodayMap-${tripId}`);
-      if (!mapEl) {
-        alert("تعذر تحضير الخريطة");
-        return;
-      }
+  // إظهار عنصر الخريطة
+  mapEl.style.display = "block";
 
-      mapEl.style.display = "block";
-if (typeof google === "undefined" || !google.maps) {
-  return;
-}
+  // 4. بناء الخريطة وتشغيل خدمة رسم المسارات الديناميكية
+  const map = new google.maps.Map(mapEl, {
+    zoom: 13,
+    center: origin,
+    disableDefaultUI: true // لتنظيف شكل الخريطة المصغرة على الموبايل
+  });
 
-const map = new google.maps.Map(mapEl, {
-  center: driverLocation,
-  zoom: 13,
-  mapTypeControl: false,
-  streetViewControl: false
-});
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
+  
+  directionsRenderer.setMap(map);
 
-      const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer({ map });
-
-      directionsService.route(
-        {
-          origin: driverLocation,
-          destination: {
-            lat: Number(pickup.lat),
-            lng: Number(pickup.lng)
-          },
-          travelMode: google.maps.TravelMode.DRIVING
-        },
-        (result, status) => {
-          if (status !== "OK") {
-            alert("تعذر عرض الطريق");
-            return;
-          }
-
-          directionsRenderer.setDirections(result);
-        }
-      );
+  // 5. طلب رسم الطريق الفعلي من موقع الراكب إلى وجهته
+  directionsService.route(
+    {
+      origin: origin,
+      destination: destination,
+      travelMode: google.maps.TravelMode.DRIVING
     },
-    (error) => {
-      console.log(error);
-      alert("لم يتم السماح بالوصول إلى الموقع");
+    (response, status) => {
+      if (status === "OK") {
+        directionsRenderer.setDirections(response);
+      } else {
+        console.error("جوجل مابس فشل في رسم الطريق بسبب: " + status);
+      }
     }
   );
 }
